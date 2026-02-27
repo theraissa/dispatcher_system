@@ -1,0 +1,22 @@
+services:
+
+  backend:
+      build: ./backend
+      ports:
+        - "5000:5000"
+      volumes:
+        - ./backend:/app
+      environment:
+        - FLASK_ENV=development
+        - FLASK_DEBUG=1
+      command: python app.py
+
+  frontend:
+    image: node:20-alpine 
+    working_dir: /app
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: sh -c "npm install && npm run dev -- --host"

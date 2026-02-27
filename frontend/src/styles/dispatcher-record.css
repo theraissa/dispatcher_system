@@ -1,0 +1,99 @@
+* {
+    font-family: "Inter", sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /*evitar que o padding acrescente valor*/
+}
+body {
+  background-color: #F5EFE7;
+}
+/* CABEÇA - NAVEGAÇÃO */
+header {
+    width: 100%;
+    height: 70px;
+    padding: 10px;
+    background-color: #213555;
+}
+header nav h1 {
+    display: flex;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+}
+/* CORPO DOS FORMULARIOS */
+main {
+    text-align: center;
+}
+.container {
+    display: flex;
+    justify-content: space-around;
+    margin: 100px;
+    margin-bottom: 20px;
+}
+
+/* PRIMEIRO CONTAINER */
+section {
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 47%;
+}
+
+/*TITULOS DO BLOCO*/
+h3 {
+    font-size: 25px;
+    text-align: center;
+    padding: 15px;
+}
+
+/*TITULOS E LOCAL DA ENTRADA DE DADOS*/
+label {
+    display: block;
+    text-align: left;
+    font-size: 16px;
+    margin: 10px 0 5px;
+    font-weight: bold;
+}
+input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+
+}
+
+/*CAMPOS EMBUTIDOS*/
+.inline-fields {
+    display: flex;
+    justify-content: space-between;
+}
+.inline-fields div {
+    width: 48%;
+}
+
+/*BOTÃO - ANEXAR*/
+button {
+    background-color: #333;
+    color: white;
+    padding: 8px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-bottom: 50px;
+    width: 40%;
+    font-size: 16px;
+    font-weight: bold;
+
+}
+
+/*BOTÃO - ENVIAR*/
+button.enviar {
+    width: 25%;
+    margin-top: 20px;
+    padding: 10px 100px;
+    font-size: 20px;
+}

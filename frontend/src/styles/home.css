@@ -1,0 +1,208 @@
+* {
+    font-family: "Inter", sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /*evitar que o padding acrescente valor*/
+}
+/*CABEÇA - NAVEGAÇÃO*/
+header {
+    width: 100%;
+    height: 70px;
+    padding: 10px;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    background-color: #213555;
+    color: white;
+}
+
+/*LINKS E BOTÕES - NAVEGAÇÃO*/
+nav ul {
+    list-style: none;
+    margin-right: 80px;
+}
+nav ul li {
+    display: inline; /*elemento alinhados em uma linha*/
+    margin-right: 10px;
+}
+nav ul li a:hover {
+    background-color: #3E5879;
+    border-radius: 10px;
+}
+nav ul li a, .button-login, .button-cadastro {
+    color: white;
+    font-size: 18px;
+    text-decoration: none;
+    background: none;
+    border: none;
+    padding: 7px 18px; /*tamanho do botão*/
+}
+
+.button-login, .button-cadastro {
+    background-color: #3E5879;
+    border-radius: 10px;
+}
+.button-login {
+    background-color: white;
+    color: #213555;
+}
+
+.button-login:hover {
+    background-color: #3E5879;
+    color: white;
+    border-radius: 10px;
+}
+.button-cadastro:hover {
+    background-color: white;
+    color: #213555;
+    border-radius: 10px;
+}
+
+/* SESSÃO - LOGIN */
+.sessao-login-form {
+    padding: 250px;
+    text-align: center;
+    background-color: #D8C4B6;
+}
+/*TITULO*/
+.sessao-login-form h1{
+    color: #1E1E1E;
+    font-size: 75px;
+}
+/* PARAGRAFO */
+.sessao-login-form p {
+    font-size: 25px;
+    padding: 20px;
+    color: #757575;
+    margin-bottom: 50px;
+}
+.login-form input {
+    padding: 10px 250px;
+    margin-right: 5px;
+    border-radius: 6px;
+    border: 1px solid white;
+    font-size: 18px;
+}
+.login-form button {
+    padding: 10px 50px;
+    border: none;
+    background-color: #2C2C2C;
+    color: white;
+    border-radius: 5px;
+    font-size: 18px;
+}
+/* SESSÃO CARROSSEL */
+.sessao-carrossel {
+    padding: 100px;
+    background-color: #F5EFE7;
+}
+.carrossel-container {
+    display: flex;
+    gap: 20px;
+}
+.carrossel-card {
+    flex: 0 0 450px; /* Impede que os cards cresçam e define a largura */
+    height: 500px;
+    padding: 40px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    transition: transform 0.3s ease; /* Transição suave para o hover */
+}
+.carrossel-card:hover {
+    transform: scale(1.05); /* Aumenta um pouco o card no hover */
+}
+.titulo-sessao {
+    font-size: 25px;
+    color: #333;
+    margin-bottom: 30px;
+}
+.parag-sessao {
+    font-size: 18px;
+    line-height: 1.6;
+    color: #666;
+}
+ /* SESSÃO SOBRE NOS */
+.sessao-sobre-nos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 50px;
+    background-color: #D8C4B6;
+}
+.sobre-nos-texto {
+    width: 70%; /* Ajuste a largura conforme necessário */
+    padding: 50px;
+    border-radius: 15px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); 
+}
+.titulo-sobre-nos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 50px;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: left;
+}
+.parag-sobre-nos {
+    font-size: 20px;
+    line-height: 1.8;
+    color: #555;
+    text-align: left; /* Alinhe o parágrafo à esquerda */
+    text-indent: 0; /* Remova a indentação */
+    margin-bottom: 15px;
+}
+/*RODAPE*/
+footer {
+    background-color: #f9f9f9;
+    padding: 100px 50px 30px 100px;
+    border-top: 1px solid #eee;
+}
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+}
+.footer-coluna h4 {
+    color: #333;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+.footer-coluna ul {
+    list-style: none;
+}
+.footer-coluna ul li {
+    margin-bottom: 8px;
+}
+.footer-coluna ul li a {
+    color: #777;
+    text-decoration: none;
+    font-size: 16px;
+    transition: color 0.3s ease;
+}
+.footer-coluna ul li a:hover {
+    color: #213555; /* Cor de destaque */
+}
+.footer-coluna.contato p {
+    color: #777;
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+/* FOOTER BOTTOM */
+.footer-bottom {
+    text-align: center;
+    font-size: 15px;
+    color: #999;
+    margin-top: 100px;
+}
+.footer-bottom a {
+    color: #999;
+    text-decoration: none;
+}
+.footer-bottom a:hover {
+    color: #213555;
+}
