@@ -14,7 +14,7 @@ update_venv() {
     source .venv/bin/activate
     echo "📦 Instalando dependências do requirements.txt..."
     pip install --upgrade pip
-    pip install -r requirements.txt
+    pip install -r backend/requirements.txt
     
     deactivate
     echo "✅ Ambiente virtual local atualizado!"
@@ -39,6 +39,19 @@ case "$1" in
     ;;
   venv)
     update_venv
+    ;;
+  migrate-init)
+    echo "🏗️ Inicializando pasta de migrações..."
+    docker compose -f docker-compose.dev.yml exec backend flask db init
+    ;;
+  migrate)
+    echo "🔍 Gerando nova migração..."
+    read -p "Digite a descrição da mudança: " MESSAGE
+    docker compose -f docker-compose.dev.yml exec backend flask db migrate -m "$MESSAGE"
+    ;;
+  upgrade)
+    echo "🆙 Aplicando mudanças no banco de dados..."
+    docker compose -f docker-compose.dev.yml exec backend flask db upgrade
     ;;
   *)
     echo "Uso: ./dev.sh {start|stop|build|logs}"

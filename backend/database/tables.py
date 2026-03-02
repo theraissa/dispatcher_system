@@ -2,7 +2,7 @@
 Módulo com as tabelas do banco de dados
 """
 
-from instances import db
+from database import db
 from sqlalchemy import Column, DateTime, Integer
 from sqlalchemy import String
 from sqlalchemy.sql import func
