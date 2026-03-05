@@ -1,7 +1,7 @@
 import styled from "styled-components"
-import HeaderClient from "../../components/record/client-record/HeaderClient"
-import CardInfo from "../../components/record/client-record/CardInfo"
-import FormClient from "../../components/record/client-record/FormClient"
+import HeaderClient from "../../components/record/client-record/header-client"
+import CardInfo from "../../components/record/client-record/card-info"
+import FormClient from "../../components/record/client-record/form-client"
 
 const Page = styled.div`
   min-height: 100vh;
