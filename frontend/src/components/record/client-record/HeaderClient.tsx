@@ -1,9 +1,29 @@
+import styled from "styled-components"
+
+const Header = styled.header`
+  width: 100%;
+  height: 70px;
+  background-color: #213555;
+  color: white;
+`
+
+const Nav = styled.nav`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+`
+
+const Title = styled.h1`
+  font-size: 30px;
+`
+
 export default function HeaderClient() {
-    return (
-        <header>
-            <nav>
-                <h1>Olá, Cliente</h1>
-            </nav>
-        </header>
-    );
+  return (
+    <Header>
+      <Nav>
+        <Title>Olá, Cliente</Title>
+      </Nav>
+    </Header>
+  )
 }

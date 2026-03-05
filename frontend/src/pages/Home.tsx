@@ -1,9 +1,8 @@
-import Navbar from "../components/home/Navbar.tsx"
-import LoginSection from "../components/home/LoginSection.tsx"
-import CarouselSection from "../components/home/CarouselSection.tsx"
-import AboutSection from "../components/home/AboutSection.tsx"
-import Footer from "../components/home/Footer.tsx"
-import "../styles/home.css"
+import Navbar from "../components/home/Navbar"
+import LoginSection from "../components/home/LoginSection"
+import CarouselSection from "../components/home/CarouselSection"
+import AboutSection from "../components/home/AboutSection"
+import Footer from "../components/home/Footer"
 
 export default function Home() {
   return (
@@ -14,5 +13,5 @@ export default function Home() {
       <AboutSection />
       <Footer />
     </>
-  );
+  )
 }
