@@ -4,6 +4,7 @@ import os
 import database.tables # para identificar onde está as tables
 
 from flask import Flask
+from flask_migrate import upgrade
 from flask_cors import CORS
 from database import db, migrate
 from services.user_client import UserClientService
@@ -24,7 +25,11 @@ def create_app():
     # ========= Necessário para que as rotas possam usar db.session ==========
     db.init_app(app)
     migrate.init_app(app, db)
-
+    
+    # ========= Aplica as Migrações ==========
+    with app.app_context():
+        upgrade()
+    
     # ========= Configurações de CORS ==========
     CORS(app)
     
