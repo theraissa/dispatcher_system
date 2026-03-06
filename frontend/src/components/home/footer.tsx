@@ -1,4 +1,5 @@
 import styled from "styled-components"
+import { Link } from "react-router-dom"
 
 const FooterContainer = styled.footer`
   background-color: #f9f9f9;
@@ -29,7 +30,7 @@ const Item = styled.li`
   margin-bottom: 8px;
 `
 
-const LinkItem = styled.a`
+const LinkItem = styled(Link)`
   color: #777;
   text-decoration: none;
   font-size: 16px;
@@ -51,45 +52,35 @@ export default function Footer() {
     <FooterContainer>
         <Grid>
             <Column>
-                <Title>Use cases</Title>
+                <Title>Despachante</Title>
                 <List>
-                    <Item><LinkItem href="#">UI design</LinkItem></Item>
-                    <Item><LinkItem href="#">UX design</LinkItem></Item>
-                    <Item><LinkItem href="#">Wireframing</LinkItem></Item>
-                    <Item><LinkItem href="#">Diagramming</LinkItem></Item>
+                    <Item><LinkItem to="/register/dispatcher">Crie seu Usuário</LinkItem></Item>
                 </List>
             </Column>
             <Column>
                 <Title>Explore</Title>
                 <List>
-                    <Item><LinkItem href="#">UI design</LinkItem></Item>
-                    <Item><LinkItem href="#">UX design</LinkItem></Item>
-                    <Item><LinkItem href="#">Wireframing</LinkItem></Item>
-                    <Item><LinkItem href="#">Diagramming</LinkItem></Item>
+                    <Item><LinkItem to="">UI design</LinkItem></Item>
+                    <Item><LinkItem to="">UX design</LinkItem></Item>
+                    <Item><LinkItem to="">Wireframing</LinkItem></Item>
+                    <Item><LinkItem to="">Diagramming</LinkItem></Item>
                 </List>
             </Column>
             <Column>
                 <Title>Resources</Title>
                 <List>
-                    <Item><LinkItem href="#">UI design</LinkItem></Item>
-                    <Item><LinkItem href="#">UX design</LinkItem></Item>
-                    <Item><LinkItem href="#">Wireframing</LinkItem></Item>
-                    <Item><LinkItem href="#">Diagramming</LinkItem></Item>
-                </List>
-            </Column>
-            <Column>
-                <Title>Company</Title>
-                <List>
-                    <Item><LinkItem href="#">UI design</LinkItem></Item>
-                    <Item><LinkItem href="#">UX design</LinkItem></Item>
-                    <Item><LinkItem href="#">Wireframing</LinkItem></Item>
-                    <Item><LinkItem href="#">Diagramming</LinkItem></Item>
+                    <Item><LinkItem to="">UI design</LinkItem></Item>
+                    <Item><LinkItem to="">UX design</LinkItem></Item>
+                    <Item><LinkItem to="">Wireframing</LinkItem></Item>
+                    <Item><LinkItem to="">Diagramming</LinkItem></Item>
                 </List>
             </Column>
             <Column>
                 <Title>Contact</Title>
-                <LinkItem>Email: info@seudominio.com</LinkItem>
-                <LinkItem>Phone: (XX) XXXX-XXXX</LinkItem>
+                <List>
+                    <Item><LinkItem to="">Email: info@seudominio.com</LinkItem></Item>
+                    <Item><LinkItem to="">Phone: (XX) XXXX-XXXX</LinkItem></Item>
+                </List>
             </Column>
         </Grid>
         <Bottom>

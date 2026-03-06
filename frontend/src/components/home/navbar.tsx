@@ -65,10 +65,10 @@ export default function Navbar() {
     <Header>
       <Nav>
         <List>
-          <Item><BaseButton href="#">Funcionalidades</BaseButton></Item>
-          <Item><BaseButton href="#">Sobre</BaseButton></Item>
-          <Item><LoginButton href="#">Login</LoginButton></Item>
-          <Item><CadastroButton to="/cadastro">Cadastrar</CadastroButton></Item>
+          <Item><BaseButton to="#">Funcionalidades</BaseButton></Item>
+          <Item><BaseButton to="#">Sobre</BaseButton></Item>
+          <Item><LoginButton to="#">Login</LoginButton></Item>
+          <Item><CadastroButton to="/register/client">Cadastrar</CadastroButton></Item>
         </List>
       </Nav>
     </Header>

@@ -1,4 +1,6 @@
 import styled from "styled-components"
+import { useNavigate } from "react-router-dom"
+import { useState } from "react"
 
 const Container = styled.section`
   width: 40%;
@@ -46,26 +48,57 @@ const Button = styled.button`
 
 export default function FormClient() {
 
-  async function handleSubmit(event) {
+  const navigate = useNavigate()
+
+  const [formData, setFormData] = useState({
+    nome_cliente: "",
+    cpf_cliente: "",
+    email_cliente: "",
+    senha_cliente: "",
+    confirmar_senha: ""
+  })
+
+  function handleChange(event: any) {
+    const { name, value } = event.target
+
+    setFormData({
+      ...formData,
+      [name]: value
+    })
+  }
+
+  async function handleSubmit(event: any) {
     event.preventDefault()
 
-    const formData = new FormData(event.target)
-    const dadosParaEnviar = Object.fromEntries(formData)
-
-    if (dadosParaEnviar.senha_cliente !== dadosParaEnviar.confirmar_senha) {
+    if (formData.senha_cliente !== formData.confirmar_senha) {
       alert("As senhas não coincidem!")
       return
     }
 
-    delete dadosParaEnviar.confirmar_senha
+    const dadosParaEnviar = {
+      nome_cliente: formData.nome_cliente,
+      cpf_cliente: formData.cpf_cliente,
+      email_cliente: formData.email_cliente,
+      senha_cliente: formData.senha_cliente
+    }
 
-    await fetch('http://localhost:5000/api/dispatcher-system/client', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(dadosParaEnviar),
-    })
+    const response = await fetch(
+      "http://localhost:5000/api/dispatcher-system/client",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(dadosParaEnviar)
+      }
+    )
 
-    alert("Usuário Criado!")
+    if (response.ok) {
+      alert("Usuário Criado!")
+      navigate("/initial/search-dispatcher")
+    } else {
+      alert("Erro ao criar usuário")
+    }
   }
 
   return (
@@ -73,21 +106,58 @@ export default function FormClient() {
       <Form onSubmit={handleSubmit}>
 
         <Label>Nome Completo</Label>
-        <Input type="text" name="nome_cliente" placeholder="Digite seu nome completo" required/>
+        <Input
+          type="text"
+          name="nome_cliente"
+          value={formData.nome_cliente}
+          onChange={handleChange}
+          placeholder="Digite seu nome completo"
+          required
+        />
 
         <Label>CPF</Label>
-        <Input type="text" name="cpf_cliente" placeholder="Digite seu CPF" required/>
+        <Input
+          type="text"
+          name="cpf_cliente"
+          value={formData.cpf_cliente}
+          onChange={handleChange}
+          placeholder="Digite seu CPF"
+          required
+        />
 
         <Label>Email</Label>
-        <Input type="email" name="email_cliente" placeholder="Digite seu email" required/>
+        <Input
+          type="email"
+          name="email_cliente"
+          value={formData.email_cliente}
+          onChange={handleChange}
+          placeholder="Digite seu email"
+          required
+        />
 
         <Label>Senha</Label>
-        <Input type="password" name="senha_cliente" placeholder="Digite sua senha" required/>
+        <Input
+          type="password"
+          name="senha_cliente"
+          value={formData.senha_cliente}
+          onChange={handleChange}
+          placeholder="Digite sua senha"
+          required
+        />
 
         <Label>Confirmar Senha</Label>
-        <Input type="password" name="confirmar_senha" placeholder="Digite sua senha" required/>
+        <Input
+          type="password"
+          name="confirmar_senha"
+          value={formData.confirmar_senha}
+          onChange={handleChange}
+          placeholder="Digite sua senha"
+          required
+        />
 
-        <Button type="submit">Cadastrar</Button>
+        <Button type="submit">
+          Cadastrar
+        </Button>
 
       </Form>
     </Container>
