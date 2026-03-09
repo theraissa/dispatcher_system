@@ -1,33 +1,34 @@
 """
-Modelos Pydantic relacionados ao serviço de User Client.
+Modelos Pydantic relacionados ao UserService.
 """
 
-from typing import Optional, List
 from datetime import datetime
+from typing import List, Optional
+
 from pydantic import BaseModel, ConfigDict, RootModel
 
 
 class CreateUserRequest(BaseModel):
-    """Modelo de criação do serviço User Client."""
+    """Modelo de criação do UserService."""
 
-    cpf : Optional[str] = None
-    rg : Optional[str] = None
-    name : Optional[str] = None
+    cpf: Optional[str] = None
+    rg: Optional[str] = None
+    name: Optional[str] = None
     date_birth: Optional[str] = None
     contact: Optional[str] = None
     email: Optional[str] = None
     password: Optional[str] = None
-    
+
     model_config = ConfigDict(extra="forbid")
 
 
 class UserResponse(BaseModel):
-    """Modelo de resposta para o serviço User Client."""
+    """Modelo de resposta para o UserService."""
 
     id: int
-    cpf : Optional[str]
-    rg : Optional[str]
-    name : Optional[str]
+    cpf: Optional[str]
+    rg: Optional[str]
+    name: Optional[str]
     date_birth: Optional[str]
     contact: Optional[str]
     email: Optional[str]
@@ -35,10 +36,11 @@ class UserResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     deleted_at: Optional[datetime]
-    
+
     model_config = ConfigDict(from_attributes=True)
 
-class ListUserClientResponse(RootModel):
-    """Modelo de listagem para o serviço User Client"""
+
+class ListUserResponse(RootModel):
+    """Modelo de listagem para o UserService."""
 
     root: List[UserResponse]
