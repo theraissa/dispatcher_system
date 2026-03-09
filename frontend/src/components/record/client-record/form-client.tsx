@@ -51,10 +51,10 @@ export default function FormClient() {
   const navigate = useNavigate()
 
   const [formData, setFormData] = useState({
-    nome_cliente: "",
-    cpf_cliente: "",
-    email_cliente: "",
-    senha_cliente: "",
+    name: "",
+    cpf: "",
+    email: "",
+    password: "",
     confirmar_senha: ""
   })
 
@@ -70,20 +70,20 @@ export default function FormClient() {
   async function handleSubmit(event: any) {
     event.preventDefault()
 
-    if (formData.senha_cliente !== formData.confirmar_senha) {
+    if (formData.password !== formData.confirmar_senha) {
       alert("As senhas não coincidem!")
       return
     }
 
     const dadosParaEnviar = {
-      nome_cliente: formData.nome_cliente,
-      cpf_cliente: formData.cpf_cliente,
-      email_cliente: formData.email_cliente,
-      senha_cliente: formData.senha_cliente
+      name: formData.name,
+      cpf: formData.cpf,
+      email: formData.email,
+      password: formData.password
     }
 
     const response = await fetch(
-      "http://localhost:5000/api/dispatcher-system/client",
+      "http://localhost:5000/api/dispatcher-system/user",
       {
         method: "POST",
         headers: {
@@ -108,8 +108,8 @@ export default function FormClient() {
         <Label>Nome Completo</Label>
         <Input
           type="text"
-          name="nome_cliente"
-          value={formData.nome_cliente}
+          name="name"
+          value={formData.name}
           onChange={handleChange}
           placeholder="Digite seu nome completo"
           required
@@ -118,8 +118,8 @@ export default function FormClient() {
         <Label>CPF</Label>
         <Input
           type="text"
-          name="cpf_cliente"
-          value={formData.cpf_cliente}
+          name="cpf"
+          value={formData.cpf}
           onChange={handleChange}
           placeholder="Digite seu CPF"
           required
@@ -128,8 +128,8 @@ export default function FormClient() {
         <Label>Email</Label>
         <Input
           type="email"
-          name="email_cliente"
-          value={formData.email_cliente}
+          name="email"
+          value={formData.email}
           onChange={handleChange}
           placeholder="Digite seu email"
           required
@@ -138,8 +138,8 @@ export default function FormClient() {
         <Label>Senha</Label>
         <Input
           type="password"
-          name="senha_cliente"
-          value={formData.senha_cliente}
+          name="password"
+          value={formData.password}
           onChange={handleChange}
           placeholder="Digite sua senha"
           required
@@ -155,9 +155,7 @@ export default function FormClient() {
           required
         />
 
-        <Button type="submit">
-          Cadastrar
-        </Button>
+        <Button type="submit">Cadastrar</Button>
 
       </Form>
     </Container>
