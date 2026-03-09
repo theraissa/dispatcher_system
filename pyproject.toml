@@ -1,0 +1,46 @@
+# Usado apenas para configurar o black, isort, flake8 e pylint. 
+
+[tool.black]
+line-length = 140
+target-version = ['py312']
+preview = true
+exclude = '''
+/(
+    \.venv
+  | node_modules
+  | frontend
+  | database/migrations
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 140
+src_paths = ["./*"]
+skip_glob = [
+    "**/node_modules/**",
+    "**/frontend/**",
+    "**/database/migrations/**",
+]
+
+[tool.flake8]
+extend-ignore = [
+    "E722",
+    "ANN101", # Missing type annotation for self in method
+    "ANN102", # Missing type annotation for cls in classmethod
+    "ANN401", # Dynamically typed expressions (Any) - explicit 'Any' is usually okay
+    "ANN204", # Allow missing return type for __init__
+]
+max-line-length = 140
+exclude = """
+    .venv,
+    **/frontend,
+    **/database/migrations,
+    **/migrations/,
+"""
+
+[tool.pylint]
+max-line-length = 140
+
+[tool.pylint.main]
+init-hook = "import sys; sys.path.append('./backend')"

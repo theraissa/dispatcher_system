@@ -1,0 +1,15 @@
+{
+    "editor.formatOnSave": true,
+    // Python
+    "python.defaultInterpreterPath": ".venv/bin/python",
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true
+    },
+    "black-formatter.path": [
+        "./.venv/bin/black"
+    ],
+    "pylint.args": [
+        "--rcfile=pyproject.toml"
+    ]
+}
