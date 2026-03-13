@@ -2,12 +2,13 @@
 Módulo com implementação do serviço UserService.
 """
 
+from typing import Any
+from datetime import datetime
+
 from flask_sqlalchemy import SQLAlchemy
 from database.tables import UserDB
-from models.user import CreateUserRequest, UserResponse, ListUserResponse
-from typing import Any
+from models.user import CreateUserRequest, UserResponse, ListUserResponse, LoginUserRequest
 from flask import abort
-from datetime import datetime
 
 
 class UserService:
@@ -32,6 +33,43 @@ class UserService:
         list_users = UserDB.query.filter(UserDB.deleted_at.is_(None)).all()
         response = ListUserResponse(root=[UserResponse.model_validate(user) for user in list_users])
         return response.model_dump()
+
+    def get_user_by_cpf(self, user_cpf: str) -> dict[str, Any]:
+        """
+        Recupera um usuário a partir do CPF.
+
+        Args:
+            user_cpf (str): CPF do usuário.
+        Returns:
+            dict: Dados serializados do usuário encontrado.
+        """
+        user = UserDB.query.filter(UserDB.cpf == user_cpf, UserDB.deleted_at.is_(None))
+
+        if not user:
+            abort(404, description=f"User with CPF '{user_cpf}' not found.")
+
+        return UserResponse.model_validate(user).model_dump()
+
+    def get_user_by_email_and_password(self, user_data: LoginUserRequest) -> dict[str, Any]:
+        """
+        Recupera um usuário a partir do email e senha.
+
+        Args:
+            user_email (str): email do usuário.
+            user_password (str): senha do usuário.
+        Returns:
+            dict: Dados serializados do usuário encontrado.
+        """
+        user = UserDB.query.filter(
+            UserDB.email == user_data.email,
+            UserDB.password == user_data.password,
+            UserDB.deleted_at.is_(None),
+        ).first()
+
+        if not user:
+            abort(404, description="User not found.")
+
+        return UserResponse.model_validate(user).model_dump()
 
     def create_user(self, user_data: CreateUserRequest) -> dict[str, Any]:
         """
@@ -59,9 +97,7 @@ class UserService:
         Returns:
             dict[str, Any]: Um dicionário serializado contendo o objeto  atualizado.
         """
-        user_to_update = UserDB.query.filter(
-            UserDB.id == user_id, UserDB.deleted_at.is_(None)
-        ).first()
+        user_to_update = UserDB.query.filter(UserDB.id == user_id, UserDB.deleted_at.is_(None)).first()
         if not user_to_update:
             abort(404, description=f"User with ID '{user_id}' not found.")
 
@@ -82,9 +118,7 @@ class UserService:
         Returns:
             dict[str, Any]: Um dicionário serializado contendo o objeto marcado como deletado.
         """
-        user_to_delete = UserDB.query.filter(
-            UserDB.id == user_id, UserDB.deleted_at.is_(None)
-        ).first()
+        user_to_delete = UserDB.query.filter(UserDB.id == user_id, UserDB.deleted_at.is_(None)).first()
         if not user_to_delete:
             abort(404, description=f"User with ID '{user_id}' not found.")
 

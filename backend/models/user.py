@@ -8,6 +8,15 @@ from typing import List, Optional
 from pydantic import BaseModel, ConfigDict, RootModel
 
 
+class LoginUserRequest(BaseModel):
+    """Modelo de login do UserService."""
+
+    email: Optional[str]
+    password: Optional[str]
+
+    model_config = ConfigDict(extra="forbid")
+
+
 class CreateUserRequest(BaseModel):
     """Modelo de criação do UserService."""
 

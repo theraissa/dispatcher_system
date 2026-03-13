@@ -57,9 +57,29 @@ class DispatcherService:
             )
         return ListDispatcherResponse(root=response).model_dump()
 
-    def create_dispatcher(
-        self, dispatcher_data: CreateDispatcherFullRequest
-    ) -> dict[str, Any]:
+    def get_dispatcher_by_cpf(self, dispatcher_cpf: str) -> dict:
+        """
+        Recupera um despachante a partir do CPF do usuário associado.
+
+        Args:
+            dispatcher_cpf (str): CPF do usuário vinculado ao despachante.
+        Returns:
+            dict: Dados serializados do despachante encontrado.
+        """
+        dispatcher = (
+            self.db.session.query(DispatcherDB)
+            .join(UserDB, DispatcherDB.user_id == UserDB.id)
+            .filter(UserDB.cpf == dispatcher_cpf)
+            .filter(DispatcherDB.deleted_at.is_(None))
+            .first()
+        )
+
+        if not dispatcher:
+            abort(404, description=f"Dispatcher with CPF '{dispatcher_cpf}' not found.")
+
+        return DispatcherResponse.model_validate(dispatcher).model_dump()
+
+    def create_dispatcher(self, dispatcher_data: CreateDispatcherFullRequest) -> dict[str, Any]:
         """
         Cria um novo despachante.
 
@@ -70,7 +90,7 @@ class DispatcherService:
         """
 
         try:
-            # 1️⃣ criar usuário
+            # criar usuário
             new_user = UserDB(
                 cpf=dispatcher_data.user.cpf,
                 rg=dispatcher_data.user.rg,
@@ -84,7 +104,7 @@ class DispatcherService:
             self.db.session.add(new_user)
             self.db.session.flush()
 
-            # 2️⃣ criar dispatcher
+            # criar dispatcher
             new_dispatcher = DispatcherDB(
                 user_id=new_user.id,
                 regis_crdd=dispatcher_data.dispatcher.regis_crdd,
@@ -94,7 +114,7 @@ class DispatcherService:
             self.db.session.add(new_dispatcher)
             self.db.session.flush()
 
-            # 3️⃣ criar office
+            # criar office
             new_office = OfficeDB(
                 dispatcher_id=new_dispatcher.id,
                 contact=dispatcher_data.office.contact,
@@ -129,9 +149,7 @@ class DispatcherService:
         Returns:
             dict[str, Any]: Um dicionário serializado contendo o objeto atualizado.
         """
-        dispatcher_to_update = DispatcherDB.query.filter(
-            DispatcherDB.id == dispatcher_id, DispatcherDB.deleted_at.is_(None)
-        ).first()
+        dispatcher_to_update = DispatcherDB.query.filter(DispatcherDB.id == dispatcher_id, DispatcherDB.deleted_at.is_(None)).first()
         if not dispatcher_to_update:
             abort(404, description=f"Dispatcher with ID '{dispatcher_id}' not found.")
 
@@ -152,9 +170,7 @@ class DispatcherService:
         Returns:
             dict[str, Any]: Um dicionário serializado contendo o objeto marcado como deletado.
         """
-        dispatcher_to_delete = DispatcherDB.query.filter(
-            DispatcherDB.id == dispatcher_id, DispatcherDB.deleted_at.is_(None)
-        ).first()
+        dispatcher_to_delete = DispatcherDB.query.filter(DispatcherDB.id == dispatcher_id, DispatcherDB.deleted_at.is_(None)).first()
         if not dispatcher_to_delete:
             abort(404, description=f"Dispatcher with ID '{dispatcher_id}' not found.")
 

@@ -3,7 +3,7 @@ Módulo de rotas relacionadas aos usuários.
 """
 
 from flask import Flask, Response, jsonify, request
-from models.user import CreateUserRequest
+from models.user import CreateUserRequest, LoginUserRequest
 from services.user import UserService
 
 
@@ -12,6 +12,13 @@ def register_users_routes(
     user_service: UserService,
 ) -> None:
     """Registra as rotas dos usuários na aplicação Flask."""
+
+    @app.post("/api/dispatcher-system/login")
+    def login() -> Response:
+        """Logar"""
+        body = LoginUserRequest.model_validate(request.get_json())
+        user = user_service.get_user_by_email_and_password(body)
+        return jsonify(user), 200
 
     @app.get("/api/dispatcher-system/user")
     def list_user() -> Response:
