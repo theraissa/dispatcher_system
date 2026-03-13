@@ -38,25 +38,25 @@ const Text = styled.p`
 
 export default function CarouselSection() {
   return (
-    <Section>
-        <Container>
-            <Card>
-                <Title>1. Busca e Solicitação de Serviços</Title>
-                <Text>Clientes podem pesquisar despachantes por nome ou município, acessar seus perfis, visualizar os serviços oferecidos e solicitar diretamente o atendimento desejado, com orientações claras sobre a documentação necessária.</Text>
-            </Card>
-            <Card>
-                <Title>2. Gestão de Perfil e Serviços</Title>
-                <Text>Despachantes têm controle total sobre seus perfis e serviços: podem cadastrar, editar e excluir atividades prestadas, informar documentos exigidos e acompanhar em tempo real os chamados recebidos, com acesso a uma agenda organizada por data e horário.</Text>
-            </Card>
-            <Card>
-                <Title>3. Acompanhamento Chamados</Title>
-                <Text>Tanto clientes quanto despachantes podem consultar o histórico e o status atual de cada solicitação — desde “Documentação Pendente” até “Serviço Completo” — garantindo transparência e comunicação eficiente durante todo o processo.</Text>
-            </Card>
-            <Card>
-                <Title>4. Segurança e Validação</Title>
-                <Text>O sistema valida a identidade de todos os usuários (clientes e despachantes) e exige autenticação em dois fatores no login, além de verificar periodicamente o registro profissional dos despachantes no CRDD. Todas as interações são protegidas por criptografia e notificações automáticas por e-mail.</Text>
-            </Card>
-        </Container>
+    <Section id="carousel-section">
+      <Container>
+        <Card>
+          <Title>1. Busca e Solicitação de Serviços</Title>
+          <Text>Clientes podem pesquisar despachantes por nome ou município, acessar seus perfis, visualizar os serviços oferecidos e solicitar diretamente o atendimento desejado, com orientações claras sobre a documentação necessária.</Text>
+        </Card>
+        <Card>
+          <Title>2. Gestão de Perfil e Serviços</Title>
+          <Text>Despachantes têm controle total sobre seus perfis e serviços: podem cadastrar, editar e excluir atividades prestadas, informar documentos exigidos e acompanhar em tempo real os chamados recebidos, com acesso a uma agenda organizada por data e horário.</Text>
+        </Card>
+        <Card>
+          <Title>3. Acompanhamento Chamados</Title>
+          <Text>Tanto clientes quanto despachantes podem consultar o histórico e o status atual de cada solicitação — desde “Documentação Pendente” até “Serviço Completo” — garantindo transparência e comunicação eficiente durante todo o processo.</Text>
+        </Card>
+        <Card>
+          <Title>4. Segurança e Validação</Title>
+          <Text>O sistema valida a identidade de todos os usuários (clientes e despachantes) e exige autenticação em dois fatores no login, além de verificar periodicamente o registro profissional dos despachantes no CRDD. Todas as interações são protegidas por criptografia e notificações automáticas por e-mail.</Text>
+        </Card>
+      </Container>
     </Section>
   );
 }

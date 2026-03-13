@@ -18,11 +18,11 @@ const Title = styled.h1`
   font-size: 30px;
 `
 
-export default function HeaderClient() {
+export default function Navbar({ title }) {
   return (
     <Header>
       <Nav>
-        <Title>Olá, Cliente</Title>
+        <Title>{title}</Title>
       </Nav>
     </Header>
   )

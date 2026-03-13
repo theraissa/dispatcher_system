@@ -1,4 +1,4 @@
-import {Section,Title, Input, Label, Button, InlineFields, InlineField} from "./form-dispatcher.styles"
+import { Section, Title, Input, Label, Button, InlineFields, InlineField } from "./form-dispatcher.styles"
 
 
 export default function FormPersonal({ user, onChange }) {
@@ -36,34 +36,34 @@ export default function FormPersonal({ user, onChange }) {
 
         <InlineField>
           <Label>RG</Label>
-          <Input 
-            type="text" 
-            name="rg"  
-            value={user.rg} 
-            onChange={handleUserChange} 
+          <Input
+            type="text"
+            name="rg"
+            value={user.rg}
+            onChange={handleUserChange}
             placeholder="Digite seu RG"
           />
         </InlineField>
       </InlineFields>
-      
+
       <InlineFields>
         <InlineField>
           <Label>Data de Nascimento</Label>
-          <Input 
-            type="date" 
-            name="date_birth"  
-            value={user.date_birth} 
-            onChange={handleUserChange} 
+          <Input
+            type="date"
+            name="date_birth"
+            value={user.date_birth}
+            onChange={handleUserChange}
           />
         </InlineField>
 
         <InlineField>
           <Label>Telefone Pessoal</Label>
-          <Input 
-            type="text" 
+          <Input
+            type="text"
             name="contact"
-            value={user.contact} 
-            onChange={handleUserChange} 
+            value={user.contact}
+            onChange={handleUserChange}
           />
         </InlineField>
       </InlineFields>
@@ -72,31 +72,31 @@ export default function FormPersonal({ user, onChange }) {
       <Title>Informações de Login</Title>
 
       <Label>Email</Label>
-      <Input 
-        type="email" 
+      <Input
+        type="email"
         name="email"
-        value={user.email} 
-        onChange={handleUserChange} 
+        value={user.email}
+        onChange={handleUserChange}
       />
 
       <InlineFields>
         <InlineField>
           <Label>Senha</Label>
-          <Input 
-            type="password" 
+          <Input
+            type="password"
             name="password"
-            value={user.password} 
-            onChange={handleUserChange} 
+            value={user.password}
+            onChange={handleUserChange}
           />
         </InlineField>
 
         <InlineField>
           <Label>Confirmar Senha</Label>
-          <Input 
-            type="password" 
+          <Input
+            type="password"
             name="confirm_password"
-            value={user.confirm_password} 
-            onChange={handleUserChange} 
+            value={user.confirm_password}
+            onChange={handleUserChange}
           />
         </InlineField>
       </InlineFields>

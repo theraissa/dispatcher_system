@@ -1,6 +1,6 @@
 import styled from "styled-components"
 import CardDispatcher from "../../components/client/initial-search-disp/card"
-import Navbar from "../../components/client/initial-search-disp/navbar"
+import Navbar from "../../components/client/ui/navbar"
 import Search from "../../components/client/initial-search-disp/search"
 
 const Main = styled.main`
