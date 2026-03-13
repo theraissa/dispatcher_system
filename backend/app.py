@@ -18,9 +18,7 @@ def create_app():
     app = Flask(__name__)
 
     # ========= Configurações do banco de dados ==========
-    app.config["SQLALCHEMY_DATABASE_URI"] = (
-        "postgresql://admin:admin@database:5432/db-system"
-    )
+    app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://admin:admin@database:5432/db-system"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     # ========= Necessário para que as rotas possam usar db.session ==========
