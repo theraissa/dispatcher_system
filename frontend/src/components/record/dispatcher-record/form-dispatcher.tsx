@@ -1,8 +1,19 @@
-import { Main, Form, Container, SubmitButton } from "./form-dispatcher/form-dispatcher.styles"
-import FormCommercial from "./form-dispatcher/form-commercial"
-import FormPersonal from "./form-dispatcher/form-personal"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import FormCommercial from "./form-dispatcher/form-commercial"
+import FormPersonal from "./form-dispatcher/form-personal"
+import FormSubmit from "../../layout/form-submit"
+import ButtonSubmitForm from "../../ui/button-submit-form"
+import styled from "styled-components"
+
+const FormsContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 40px;
+  margin-top: 50px;
+  flex-wrap: wrap;
+`
 
 export default function FormDispatcher() {
 
@@ -84,26 +95,25 @@ export default function FormDispatcher() {
   }
 
   return (
-    <Main>
-      <Form onSubmit={handleSubmit}>
-        <Container>
 
-          <FormPersonal
-            user={formData.user}
-            onChange={handleChange}
-          />
+    <FormSubmit onSubmit={handleSubmit}>
+      <FormsContainer>
 
-          <FormCommercial
-            dispatcher={formData.dispatcher}
-            office={formData.office}
-            onChange={handleChange}
-          />
+        <FormPersonal
+          user={formData.user}
+          onChange={handleChange}
+        />
 
-        </Container>
+        <FormCommercial
+          dispatcher={formData.dispatcher}
+          office={formData.office}
+          onChange={handleChange}
+        />
+      </ FormsContainer>
 
-        <SubmitButton type="submit">Enviar</SubmitButton>
+      <ButtonSubmitForm title="Cadastrar" />
 
-      </Form>
-    </Main>
+    </FormSubmit>
+
   )
 }

@@ -1,9 +1,10 @@
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
 import LabelForm from "../../ui/label-form"
-import ButtonForm from "../../ui/button-form"
+import ButtonSubmitForm from "../../ui/button-submit-form"
 import InputForm from "../../ui/input-form"
-import SectionForm from "../../ui/section-form"
+import SectionForm from "../../layout/section-form"
+import FormSubmit from "../../layout/form-submit"
 
 
 export default function FormClient() {
@@ -62,53 +63,56 @@ export default function FormClient() {
   }
 
   return (
-    <SectionForm onSubmit={handleSubmit}>
-      <LabelForm title="Nome Completo" />
-      <InputForm
-        type="text"
-        name="name"
-        value={formData.name}
-        onChange={handleChange}
-        placeholder="Digite seu nome completo"
-      />
+    <SectionForm>
+      <FormSubmit onSubmit={handleSubmit}>
 
-      <LabelForm title="CPF" />
-      <InputForm
-        type="text"
-        name="cpf"
-        value={formData.cpf}
-        onChange={handleChange}
-        placeholder="Digite seu CPF"
-      />
+        <LabelForm title="Nome Completo" />
+        <InputForm
+          type="text"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          placeholder="Digite seu nome completo"
+        />
 
-      <LabelForm title="Email" />
-      <InputForm
-        type="email"
-        name="email"
-        value={formData.email}
-        onChange={handleChange}
-        placeholder="Digite seu email"
-      />
+        <LabelForm title="CPF" />
+        <InputForm
+          type="text"
+          name="cpf"
+          value={formData.cpf}
+          onChange={handleChange}
+          placeholder="Digite seu CPF"
+        />
 
-      <LabelForm title="Senha" />
-      <InputForm
-        type="password"
-        name="password"
-        value={formData.password}
-        onChange={handleChange}
-        placeholder="Digite sua senha"
-      />
+        <LabelForm title="Email" />
+        <InputForm
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          placeholder="Digite seu email"
+        />
 
-      <LabelForm title="Confirmar Senha" />
-      <InputForm
-        type="password"
-        name="confirmar_senha"
-        value={formData.confirmar_senha}
-        onChange={handleChange}
-        placeholder="Digite sua senha"
-      />
+        <LabelForm title="Senha" />
+        <InputForm
+          type="password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          placeholder="Digite sua senha"
+        />
 
-      <ButtonForm title="Cadastrar" />
+        <LabelForm title="Confirmar Senha" />
+        <InputForm
+          type="password"
+          name="confirmar_senha"
+          value={formData.confirmar_senha}
+          onChange={handleChange}
+          placeholder="Digite sua senha"
+        />
+
+        <ButtonSubmitForm title="Cadastrar" />
+      </FormSubmit>
     </SectionForm>
   )
 }

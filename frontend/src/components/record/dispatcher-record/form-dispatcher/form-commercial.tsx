@@ -1,4 +1,11 @@
-import {Section, Title, Input, Label, Button, InlineFields, InlineField} from "./form-dispatcher.styles"
+import { InlineFields } from "../../../layout/inline-fields-form"
+import { InlineField } from "../../../layout/inline-field-form"
+import InputForm from "../../../ui/input-form"
+import LabelForm from "../../../ui/label-form"
+import SectionForm from "../../../layout/section-form"
+import TitleForm from "../../../ui/title-form"
+import ButtonAppendForm from "../../../ui/button-append-form"
+import FormSubmit from "../../../layout/form-submit"
 
 
 export default function FormCommercial({ dispatcher, office, onChange }) {
@@ -14,104 +21,120 @@ export default function FormCommercial({ dispatcher, office, onChange }) {
   }
 
   return (
-    <Section>
-      <Title>Informações Despachante</Title>
+    <SectionForm>
+      <FormSubmit>
+        <TitleForm title="Informações Despachante" />
 
-      <Label>Registro CRDD</Label>
-      <Input
-        type="text"
-        name="regis_crdd"
-        value={dispatcher.regis_crdd}
-        onChange={handleDispatcherChange}
-      />
-      
-      <InlineFields>
-        <InlineField>
-          <Label>Data Expiração</Label>
-          <Input
-            type="date"
-            name="date_exp_regis"
-            value={dispatcher.date_exp_regis}
-            onChange={handleDispatcherChange}
-          />
-        </InlineField>
-        <InlineField>
-        <Label>Telefone Comercial</Label>
-        <Input 
-          type="text" 
-          name="contact"
-          value={office.contact} 
-          onChange={handleOfficeChange} 
+        <LabelForm title={"Registro CRDD"} />
+        <InputForm
+          type="text"
+          name="regis_crdd"
+          value={dispatcher.regis_crdd}
+          onChange={handleDispatcherChange}
+          placeholder={"CRDD/[Estado] nº XXXXX"}
         />
-        </InlineField>
-      </InlineFields>
-      <Button type="button">Anexar Registro</Button>
 
-      <Title>Endereço do Comércio</Title>
+        <InlineFields>
 
-      <InlineFields>
-        <InlineField>
-         <Label>Endereço</Label>
-          <Input
-            type="text"
-            name="address"
-            value={office.address}
-            onChange={handleOfficeChange}
-          />
-        </InlineField>
+          <InlineField>
+            <LabelForm title={"Data Expiração"} />
+            <InputForm
+              type="date"
+              name="date_exp_regis"
+              value={dispatcher.date_exp_regis}
+              onChange={handleDispatcherChange}
+              placeholder={"dd/mm/yyyy"}
+            />
+          </InlineField>
 
-        <InlineField>
-          <Label>Número</Label>
-          <Input
-            type="number"
-            name="number"
-            value={office.number}
-            onChange={handleOfficeChange}
-          />
-        </InlineField>
-      </InlineFields>
+          <InlineField>
+            <LabelForm title={"Telefone Comercial"} />
+            <InputForm
+              type="text"
+              name="contact"
+              value={office.contact}
+              onChange={handleOfficeChange}
+              placeholder={"(55) 9 9999-9999"}
+            />
+          </InlineField>
 
-      <InlineFields>
-        <InlineField>
-          <Label>Bairro</Label>
-          <Input
-            type="text"
-            name="neighborhood"
-            value={office.neighborhood}
-            onChange={handleOfficeChange}
-          />
-        </InlineField>
-        <InlineField>
-          <Label>CEP</Label>
-          <Input
-            type="text"
-            name="zip_code"
-            value={office.zip_code}
-            onChange={handleOfficeChange}
-          />
-        </InlineField>
-      </InlineFields>
+        </InlineFields>
 
-      <InlineFields>
-        <InlineField>
-        <Label>Cidade</Label>
-          <Input
-            type="text"
-            name="city"
-            value={office.city}
-            onChange={handleOfficeChange}
-          />
-        </InlineField>
-        <InlineField>
-          <Label>Estado</Label>
-          <Input
-            type="text"
-            name="state"
-            value={office.state}
-            onChange={handleOfficeChange}
-          />
-        </InlineField>
-      </InlineFields>
-    </Section>
+        <ButtonAppendForm title="Anexar Registro" />
+
+        <TitleForm title="Endereço do Comércio" />
+
+        <InlineFields>
+          <InlineField>
+            <LabelForm title={"Endereço"} />
+            <InputForm
+              type="text"
+              name="address"
+              value={office.address}
+              onChange={handleOfficeChange}
+              placeholder={""}
+            />
+          </InlineField>
+
+          <InlineField>
+            <LabelForm title={"Número"} />
+            <InputForm
+              type="number"
+              name="number"
+              value={office.number}
+              onChange={handleOfficeChange}
+              placeholder={""}
+            />
+          </InlineField>
+        </InlineFields>
+
+        <InlineFields>
+          <InlineField>
+            <LabelForm title={"Bairro"} />
+            <InputForm
+              type="text"
+              name="neighborhood"
+              value={office.neighborhood}
+              onChange={handleOfficeChange}
+              placeholder={""}
+            />
+          </InlineField>
+          <InlineField>
+            <LabelForm title={"CEP"} />
+            <InputForm
+              type="text"
+              name="zip_code"
+              value={office.zip_code}
+              onChange={handleOfficeChange}
+              placeholder={""}
+            />
+          </InlineField>
+        </InlineFields>
+
+        <InlineFields>
+          <InlineField>
+            <LabelForm title={"Cidade"} />
+            <InputForm
+              type="text"
+              name="city"
+              value={office.city}
+              onChange={handleOfficeChange}
+              placeholder={""}
+
+            />
+          </InlineField>
+          <InlineField>
+            <LabelForm title={"Estado"} />
+            <InputForm
+              type="text"
+              name="state"
+              value={office.state}
+              onChange={handleOfficeChange}
+              placeholder={""}
+            />
+          </InlineField>
+        </InlineFields>
+      </FormSubmit>
+    </SectionForm>
   )
 }

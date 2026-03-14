@@ -1,7 +1,9 @@
 import styled from "styled-components"
 
 const Label = styled.label`
-  font-size: 18px;
+  display: block;
+  font-size: 16px;
+  text-align: left;
   margin-top: 20px;
   font-weight: bold;
 `

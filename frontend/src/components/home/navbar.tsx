@@ -12,13 +12,6 @@ const Header = styled.header`
   color: white;
 `
 
-const Nav = styled.nav``
-
-const List = styled.ul`
-  list-style: none;
-  margin-right: 80px;
-`
-
 const Item = styled.li`
   display: inline;
   margin-right: 10px;
@@ -28,8 +21,9 @@ const BaseButton = `
   color: white;
   font-size: 18px;
   text-decoration: none;
-  padding: 7px 18px;
+  padding: 5px 15px;
   border-radius: 10px;
+  cursor: pointer;
 
   &:hover {
     background-color: #3E5879;
@@ -55,12 +49,7 @@ const LoginButton = styled(BaseButtonWithLink)`
 `
 
 const CadastroButton = styled(BaseButtonWithLink)`
-  color: white;
-  font-size: 18px;
-  text-decoration: none;
-  padding: 7px 18px;
   background-color: #3E5879;
-  border-radius: 10px;
 
   &:hover {
     background-color: white;
@@ -82,18 +71,15 @@ const handleScroll = (id: string) => {
 export default function Navbar() {
   return (
     <Header>
-      <Nav>
-        <List>
-          <Item>
-            <BaseButtonWithoutLink onClick={() => handleScroll("carousel-section")}>Funcionalidades</BaseButtonWithoutLink>
-          </Item>
-          <Item>
-            <BaseButtonWithoutLink onClick={() => handleScroll("about-section")}>Sobre</BaseButtonWithoutLink>
-          </Item>
-          <Item><LoginButton to="/login">Login</LoginButton></Item>
-          <Item><CadastroButton to="/register/client">Cadastrar</CadastroButton></Item>
-        </List>
-      </Nav>
+      <Item>
+        <BaseButtonWithoutLink onClick={() => handleScroll("carousel-section")}>Funcionalidades</BaseButtonWithoutLink>
+      </Item>
+      <Item>
+        <BaseButtonWithoutLink onClick={() => handleScroll("about-section")}>Sobre</BaseButtonWithoutLink>
+      </Item>
+
+      <Item><LoginButton to="/login">Login</LoginButton></Item>
+      <Item><CadastroButton to="/register/client">Cadastrar</CadastroButton></Item>
     </Header>
   )
 }

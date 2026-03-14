@@ -1,4 +1,11 @@
-import { Section, Title, Input, Label, Button, InlineFields, InlineField } from "./form-dispatcher.styles"
+import { InlineFields } from "../../../layout/inline-fields-form"
+import { InlineField } from "../../../layout/inline-field-form"
+import SectionForm from "../../../layout/section-form"
+import LabelForm from "../../../ui/label-form"
+import InputForm from "../../../ui/input-form"
+import TitleForm from "../../../ui/title-form"
+import ButtonAppendForm from "../../../ui/button-append-form"
+import FormSubmit from "../../../layout/form-submit"
 
 
 export default function FormPersonal({ user, onChange }) {
@@ -9,98 +16,104 @@ export default function FormPersonal({ user, onChange }) {
   }
 
   return (
-    <Section>
+    <SectionForm>
+      <FormSubmit>
+        <TitleForm title="Informações Pessoais" />
 
-      <Title>Informações Pessoais</Title>
+        <LabelForm title={"Nome Completo"} />
+        <InputForm
+          type="text"
+          name="name"
+          value={user.name}
+          onChange={handleUserChange}
+          placeholder="Digite seu nome completo"
+        />
 
-      <Label>Nome Completo</Label>
-      <Input
-        type="text"
-        name="name"
-        value={user.name}
-        onChange={handleUserChange}
-        placeholder="Digite seu nome completo"
-      />
+        <InlineFields>
+          <InlineField>
+            <LabelForm title={"CPF"} />
+            <InputForm
+              type="text"
+              name="cpf"
+              value={user.cpf}
+              onChange={handleUserChange}
+              placeholder="00000000000"
+            />
+          </InlineField>
 
-      <InlineFields>
-        <InlineField>
-          <Label>CPF</Label>
-          <Input
-            type="text"
-            name="cpf"
-            value={user.cpf}
-            onChange={handleUserChange}
-            placeholder="00000000000"
-          />
-        </InlineField>
+          <InlineField>
+            <LabelForm title={"RG"} />
+            <InputForm
+              type="text"
+              name="rg"
+              value={user.rg}
+              onChange={handleUserChange}
+              placeholder="Digite seu RG"
+            />
+          </InlineField>
+        </InlineFields>
 
-        <InlineField>
-          <Label>RG</Label>
-          <Input
-            type="text"
-            name="rg"
-            value={user.rg}
-            onChange={handleUserChange}
-            placeholder="Digite seu RG"
-          />
-        </InlineField>
-      </InlineFields>
+        <InlineFields>
+          <InlineField>
+            <LabelForm title={"Data de Nascimento"} />
+            <InputForm
+              type="date"
+              name="date_birth"
+              value={user.date_birth}
+              onChange={handleUserChange}
+              placeholder="dd/mm/yyyy"
+            />
+          </InlineField>
 
-      <InlineFields>
-        <InlineField>
-          <Label>Data de Nascimento</Label>
-          <Input
-            type="date"
-            name="date_birth"
-            value={user.date_birth}
-            onChange={handleUserChange}
-          />
-        </InlineField>
+          <InlineField>
+            <LabelForm title={"Telefone Pessoal"} />
+            <InputForm
+              type="text"
+              name="contact"
+              value={user.contact}
+              onChange={handleUserChange}
+              placeholder="(55) 9 9999-9999"
+            />
+          </InlineField>
+        </InlineFields>
 
-        <InlineField>
-          <Label>Telefone Pessoal</Label>
-          <Input
-            type="text"
-            name="contact"
-            value={user.contact}
-            onChange={handleUserChange}
-          />
-        </InlineField>
-      </InlineFields>
-      <Button type="button">Anexar Identidade</Button>
+        <ButtonAppendForm title="Anexar Identidade" />
 
-      <Title>Informações de Login</Title>
+        <TitleForm title="Informações de Login" />
 
-      <Label>Email</Label>
-      <Input
-        type="email"
-        name="email"
-        value={user.email}
-        onChange={handleUserChange}
-      />
+        <LabelForm title={"Email"} />
+        <InputForm
+          type="email"
+          name="email"
+          value={user.email}
+          onChange={handleUserChange}
+          placeholder=""
+        />
 
-      <InlineFields>
-        <InlineField>
-          <Label>Senha</Label>
-          <Input
-            type="password"
-            name="password"
-            value={user.password}
-            onChange={handleUserChange}
-          />
-        </InlineField>
+        <InlineFields>
+          <InlineField>
+            <LabelForm title={"Senha"} />
+            <InputForm
+              type="password"
+              name="password"
+              value={user.password}
+              onChange={handleUserChange}
+              placeholder=""
+            />
+          </InlineField>
 
-        <InlineField>
-          <Label>Confirmar Senha</Label>
-          <Input
-            type="password"
-            name="confirm_password"
-            value={user.confirm_password}
-            onChange={handleUserChange}
-          />
-        </InlineField>
-      </InlineFields>
-
-    </Section>
+          <InlineField>
+            <LabelForm title={"Confirmar Senha"} />
+            <InputForm
+              type="password"
+              name="confirm_password"
+              value={user.confirm_password}
+              onChange={handleUserChange}
+              placeholder=""
+            />
+          </InlineField>
+        </InlineFields>
+      </FormSubmit>
+    </SectionForm>
   )
 }

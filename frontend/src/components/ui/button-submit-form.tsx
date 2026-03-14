@@ -1,7 +1,9 @@
 import styled from "styled-components"
 
+
 const Button = styled.button`
-  margin-top: 20px;
+  width: 500px;
+  margin: 20px auto 0 auto;
   padding: 8px;
   background-color: #333;
   color: white;
@@ -15,10 +17,10 @@ const Button = styled.button`
   }
 `
 
-export default function ButtonForm({ title }) {
-    return (
-        <>
-            <Button type="submit">{title}</Button>
-        </>
-    )
+export default function ButtonSubmitForm({ title }) {
+  return (
+    <>
+      <Button type="submit">{title}</Button>
+    </>
+  )
 }
