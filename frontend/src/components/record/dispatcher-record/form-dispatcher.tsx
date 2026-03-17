@@ -1,19 +1,12 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+
 import FormCommercial from "./form-dispatcher/form-commercial"
 import FormPersonal from "./form-dispatcher/form-personal"
 import FormSubmit from "../../layout/form-submit"
 import ButtonSubmitForm from "../../ui/button-submit-form"
-import styled from "styled-components"
+import FormsContainer from "../../layout/form-container"
 
-const FormsContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 40px;
-  margin-top: 50px;
-  flex-wrap: wrap;
-`
 
 export default function FormDispatcher() {
 
@@ -88,7 +81,7 @@ export default function FormDispatcher() {
 
     if (response.ok) {
       alert("Despachante criado!")
-      navigate("/")
+      navigate("/initial/service")
     } else {
       alert("Erro ao criar despachante")
     }

@@ -1,10 +1,10 @@
 import FormProfile from "../../components/client/profile/form"
-import Navbar from "../../components/client/ui/navbar"
+import NavbarPage from "../../components/ui/navbar-page"
 
 export default function InitialSearchDisp() {
     return (
         <>
-            <Navbar />
+            <NavbarPage />
             <FormProfile />
         </>
     )

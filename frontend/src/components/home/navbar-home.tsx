@@ -68,7 +68,7 @@ const handleScroll = (id: string) => {
   }
 }
 
-export default function Navbar() {
+export default function NavbarHome() {
   return (
     <Header>
       <Item>

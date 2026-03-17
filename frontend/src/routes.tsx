@@ -4,6 +4,7 @@ import ClientRecord from "./pages/record/client-record.tsx";
 import InitialSearchDisp from './pages/client/initial-search-disp.tsx';
 import DispatcherRecord from './pages/record/dispatcher-record.tsx';
 import Login from './pages/login/login.tsx';
+import ProfilePage from './pages/dispatcher/profile.tsx';
 
 export default function FrontendRoutes() {
   return (
@@ -14,6 +15,7 @@ export default function FrontendRoutes() {
         <Route path="/register/client" element={<ClientRecord />} />
         <Route path="/register/dispatcher" element={<DispatcherRecord />} />
         <Route path="/initial/search-dispatcher" element={<InitialSearchDisp />} />
+        <Route path="/initial/profile" element={<ProfilePage />} />
       </Routes>
     </Router>
   );

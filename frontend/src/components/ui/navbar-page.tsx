@@ -4,6 +4,11 @@ const Header = styled.header`
   width: 100%;
   background-color: #213555;
   color: white;
+  height: 70px;
+  padding: 10px;
+  display: flex;
+  justify-content: end;
+  align-items: center;
 `
 
 const Nav = styled.nav`
@@ -11,10 +16,6 @@ const Nav = styled.nav`
   justify-content: space-between;
   align-items: center;
   padding: 15px 40px;
-`
-
-const Title = styled.h1`
-  font-size: 24px;
 `
 
 const Buttons = styled.div`
@@ -28,6 +29,7 @@ const Button = styled.a`
   color: white;
   text-decoration: none;
   border-radius: 10px;
+  cursor: pointer;
 
   &:hover {
     background-color: white;
@@ -35,13 +37,11 @@ const Button = styled.a`
   }
 `
 
-export default function Navbar() {
+export default function NavbarPage() {
   return (
     <Header>
       <Nav>
-        <Title>Despachantes e Serviços</Title>
         <Buttons>
-          <Button>Despachantes</Button>
           <Button>Chamados</Button>
           <Button>Seu Perfil</Button>
         </Buttons>
