@@ -1,7 +1,7 @@
 import styled from "styled-components"
 import CardInfo from "../../components/record/client-record/card-info"
 import FormClient from "../../components/record/client-record/form-client"
-import Navbar from "../../components/ui/navbar-with-title"
+import Navbar from "../../components/record/ui/navbar-with-title"
 
 
 const Main = styled.main`
