@@ -79,6 +79,30 @@ class DispatcherService:
 
         return DispatcherResponse.model_validate(dispatcher).model_dump()
 
+    def get_dispatcher_by_id(self, dispatcher_id: str) -> dict:
+        """
+        Recupera um despachante a partir do ID do usuário associado.
+
+        Args:
+            dispatcher_id (str): ID do usuário vinculado ao despachante.
+        Returns:
+            dict: Dados serializados do despachante encontrado.
+        """
+        dispatcher = (
+            self.db.session.query(DispatcherDB).filter(DispatcherDB.user_id == dispatcher_id, DispatcherDB.deleted_at.is_(None)).first()
+        )
+        if not dispatcher:
+            abort(404, description="Dispatcher with ID {dispatcher_id} not found")
+
+        user = self.db.session.query(UserDB).filter(UserDB.id == dispatcher.user_id).first()
+        office = self.db.session.query(OfficeDB).filter(OfficeDB.dispatcher_id == dispatcher.id).first()
+
+        return CreateDispatcherFullResponse(
+            user=UserResponse.model_validate(user),
+            dispatcher=DispatcherResponse.model_validate(dispatcher),
+            office=OfficeResponse.model_validate(office) if office else None,
+        ).model_dump()
+
     def create_dispatcher(self, dispatcher_data: CreateDispatcherFullRequest) -> dict[str, Any]:
         """
         Cria um novo despachante.

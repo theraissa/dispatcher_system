@@ -7,7 +7,7 @@ from datetime import datetime
 
 from flask_sqlalchemy import SQLAlchemy
 from database.tables import UserDB
-from models.user import CreateUserRequest, UserResponse, ListUserResponse, LoginUserRequest
+from models.user import CreateUserRequest, UserResponse, ListUserResponse
 from flask import abort
 
 
@@ -47,27 +47,6 @@ class UserService:
 
         if not user:
             abort(404, description=f"User with CPF '{user_cpf}' not found.")
-
-        return UserResponse.model_validate(user).model_dump()
-
-    def get_user_by_email_and_password(self, user_data: LoginUserRequest) -> dict[str, Any]:
-        """
-        Recupera um usuário a partir do email e senha.
-
-        Args:
-            user_email (str): email do usuário.
-            user_password (str): senha do usuário.
-        Returns:
-            dict: Dados serializados do usuário encontrado.
-        """
-        user = UserDB.query.filter(
-            UserDB.email == user_data.email,
-            UserDB.password == user_data.password,
-            UserDB.deleted_at.is_(None),
-        ).first()
-
-        if not user:
-            abort(404, description="User not found.")
 
         return UserResponse.model_validate(user).model_dump()
 

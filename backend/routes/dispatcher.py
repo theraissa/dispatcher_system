@@ -16,8 +16,14 @@ def register_dispatcher_routes(
     @app.get("/api/dispatcher-system/dispatcher")
     def list_dispatcher() -> Response:
         """Listar despachantes no banco de dados"""
-        list_dispatcher = dispatcher_service.list_dispatcher()
-        return jsonify(list_dispatcher), 200
+        dispatchers = dispatcher_service.list_dispatcher()
+        return jsonify(dispatchers), 200
+
+    @app.get("/api/dispatcher-system/dispatcher/<dispatcher_id>")
+    def get_dispatcher_by_id(dispatcher_id) -> Response:
+        """Obter despachantes no banco de dados pelo seu identificador"""
+        dispatcher = dispatcher_service.get_dispatcher_by_id(dispatcher_id)
+        return jsonify(dispatcher), 200
 
     @app.post("/api/dispatcher-system/dispatcher")
     def create_dispatcher() -> Response:

@@ -1,15 +1,22 @@
 """Módulo principal do backend"""
 
-# pylint: disable=redefined-outer-name
-
-from database import db, migrate
-from flask import Flask
+from flask import Flask, Response, jsonify, request
 from flask_cors import CORS
 from flask_migrate import upgrade
+
+from database import db, migrate
+from routes.admin import register_admin_routes
 from routes.dispatcher import register_dispatcher_routes
 from routes.user import register_users_routes
+from routes.service import register_service_routes
 from services.dispatcher import DispatcherService
 from services.user import UserService
+from services.auth import AuthService
+from services.service import Service
+from models.user import LoginUserRequest
+from seed import seed
+from admin.admin import AdminService
+from werkzeug.exceptions import HTTPException
 
 
 def create_app():
@@ -17,33 +24,58 @@ def create_app():
 
     app = Flask(__name__)
 
-    # ========= Configurações do banco de dados ==========
+    # ========= Configuração do banco ==========
     app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://admin:admin@database:5432/db-system"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-    # ========= Necessário para que as rotas possam usar db.session ==========
+    # ========= Inicialização das extensões ==========
     db.init_app(app)
     migrate.init_app(app, db)
 
-    # ========= Aplica as Migrações ==========
-    with app.app_context():
-        upgrade()
-
-    # ========= Configurações de CORS ==========
+    # ========= CORS ==========
     CORS(app)
 
-    # ================= Rotas de healthcheck ====================
-    @app.get("/")
-    def is_alive() -> str:
-        return "I'm alive!"
+    # ========= Migrações ==========
+    with app.app_context():
+        upgrade()
+        seed()
 
-    # ========= Injeção de dependências ==========
+    # ========= Serviços ==========
+    admin_service = AdminService(db)
     user_service = UserService(db)
     dispatcher_service = DispatcherService(db)
+    auth_service = AuthService(db)
+    service = Service(db)
 
-    # ================= Rotas do sistema ====================
+    # ========= Rotas ==========
+    register_admin_routes(app, admin_service)
     register_users_routes(app, user_service)
     register_dispatcher_routes(app, dispatcher_service)
+    register_service_routes(app, service)
+
+    # ========= Healthcheck e Login==========
+    @app.get("/")
+    def is_alive():
+        return "I'm alive!"
+
+    @app.errorhandler(HTTPException)
+    def handle_exception(e):
+        return (
+            jsonify(
+                {
+                    "error": e.name,
+                    "description": e.description,
+                }
+            ),
+            e.code,
+        )
+
+    @app.post("/api/dispatcher-system/login")
+    def login() -> Response:
+        """Logar"""
+        body = LoginUserRequest.model_validate(request.get_json())
+        user = auth_service.login(body)
+        return jsonify(user), 200
 
     return app
 
@@ -51,5 +83,4 @@ def create_app():
 app = create_app()
 
 if __name__ == "__main__":
-    # O host "0.0.0.0" é essencial no Docker para o app ser acessível fora do container
     app.run(host="0.0.0.0", port=5000, debug=True)
