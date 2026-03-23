@@ -2,10 +2,10 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useLocation } from "react-router-dom"
 import styled from "styled-components"
-import Navbar from "../../components/ui/navbar-with-title"
-import LabelForm from "../../components/ui/label-form"
-import ButtonSubmitForm from "../../components/ui/button-submit-form"
-import InputForm from "../../components/ui/input-form"
+import Navbar from "../../components/record/ui/navbar-with-title"
+import LabelForm from "../../components/record/ui/label-form"
+import ButtonSubmitForm from "../../components/record/ui/button-submit-form"
+import InputForm from "../../components/record/ui/input-form"
 import SectionForm from "../../components/layout/section-form"
 import FormSubmit from "../../components/layout/form-submit"
 
@@ -20,6 +20,7 @@ export default function Login() {
 
     const navigate = useNavigate()
     const location = useLocation()
+    const [errorMessage, setErrorMessage] = useState("")
 
     const [formData, setFormData] = useState({
         email: location.state?.email || "",
@@ -38,34 +39,49 @@ export default function Login() {
     async function handleSubmit(event) {
         event.preventDefault()
 
-        const dadosParaEnviar = {
-            email: formData.email,
-            password: formData.password
-        }
+        try {
+            const response = await fetch(
+                "http://localhost:5000/api/dispatcher-system/login",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(formData)
+                }
+            )
 
-        const response = await fetch(
-            "http://localhost:5000/api/dispatcher-system/login",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(dadosParaEnviar)
+            const data = await response.json()
+
+            if (!response.ok) {
+                // pega mensagem correta do backend
+                const message =
+                    data.description ||
+                    data.message ||
+                    "Erro ao fazer login"
+
+                throw new Error(message)
             }
-        )
 
-        if (response.ok) {
-            navigate("/initial/search-dispatcher")
-        } else {
-            alert("Erro ao acessar o perfil usuário")
+            localStorage.setItem("user", JSON.stringify(data))
+
+            if (data.role === "dispatcher") {
+                navigate("/initial/dispatcher/profile")
+            } else {
+                navigate("/initial/search-dispatcher")
+            }
+
+        } catch (error) {
+            console.error(error)
+            setErrorMessage(error.message)
         }
     }
-
     return (
         <>
             <Navbar title="Login" />
             <Main>
                 <SectionForm>
+                    {errorMessage && <span style={{ color: "red" }}>{errorMessage}</span>}
                     <FormSubmit onSubmit={handleSubmit}>
                         <LabelForm title="Email" />
                         <InputForm
@@ -74,6 +90,7 @@ export default function Login() {
                             value={formData.email}
                             onChange={handleChange}
                             placeholder="Digite seu email"
+                            readOnly={false}
                         />
 
                         <LabelForm title="Senha" />
@@ -83,6 +100,7 @@ export default function Login() {
                             value={formData.password}
                             onChange={handleChange}
                             placeholder="Digite sua senha"
+                            readOnly={false}
                         />
                         <ButtonSubmitForm title="Acessar" />
                     </FormSubmit>
