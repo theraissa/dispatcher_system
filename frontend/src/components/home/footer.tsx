@@ -48,44 +48,41 @@ const Bottom = styled.div`
 `
 
 export default function Footer() {
-    return (
+  return (
     <FooterContainer>
-        <Grid>
-            <Column>
-                <Title>Despachante</Title>
-                <List>
-                    <Item><LinkItem to="/register/dispatcher">Crie seu Usuário</LinkItem></Item>
-                </List>
-            </Column>
-            <Column>
-                <Title>Explore</Title>
-                <List>
-                    <Item><LinkItem to="">UI design</LinkItem></Item>
-                    <Item><LinkItem to="">UX design</LinkItem></Item>
-                    <Item><LinkItem to="">Wireframing</LinkItem></Item>
-                    <Item><LinkItem to="">Diagramming</LinkItem></Item>
-                </List>
-            </Column>
-            <Column>
-                <Title>Resources</Title>
-                <List>
-                    <Item><LinkItem to="">UI design</LinkItem></Item>
-                    <Item><LinkItem to="">UX design</LinkItem></Item>
-                    <Item><LinkItem to="">Wireframing</LinkItem></Item>
-                    <Item><LinkItem to="">Diagramming</LinkItem></Item>
-                </List>
-            </Column>
-            <Column>
-                <Title>Contact</Title>
-                <List>
-                    <Item><LinkItem to="">Email: info@seudominio.com</LinkItem></Item>
-                    <Item><LinkItem to="">Phone: (XX) XXXX-XXXX</LinkItem></Item>
-                </List>
-            </Column>
-        </Grid>
-        <Bottom>
-            © 2025 Seu Domínio. Todos os direitos reservados.
-        </Bottom>
+      <Grid>
+        <Column>
+          <Title>Despachante</Title>
+          <List>
+            <Item><LinkItem to="/register/dispatcher">Crie seu Usuário</LinkItem></Item>
+          </List>
+        </Column>
+        <Column>
+          <Title>Admin</Title>
+          <List>
+            <Item><LinkItem to="/admin">Acessar Perfil Admin</LinkItem></Item>
+          </List>
+        </Column>
+        <Column>
+          <Title>Resources</Title>
+          <List>
+            <Item><LinkItem to="">UI design</LinkItem></Item>
+            <Item><LinkItem to="">UX design</LinkItem></Item>
+            <Item><LinkItem to="">Wireframing</LinkItem></Item>
+            <Item><LinkItem to="">Diagramming</LinkItem></Item>
+          </List>
+        </Column>
+        <Column>
+          <Title>Contact</Title>
+          <List>
+            <Item><LinkItem to="">Email: info@seudominio.com</LinkItem></Item>
+            <Item><LinkItem to="">Phone: (XX) XXXX-XXXX</LinkItem></Item>
+          </List>
+        </Column>
+      </Grid>
+      <Bottom>
+        © 2025 Seu Domínio. Todos os direitos reservados.
+      </Bottom>
     </FooterContainer>
-    );
+  );
 }

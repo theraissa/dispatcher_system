@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom"
 import FormCommercial from "./form-dispatcher/form-commercial"
 import FormPersonal from "./form-dispatcher/form-personal"
 import FormSubmit from "../../layout/form-submit"
-import ButtonSubmitForm from "../../ui/button-submit-form"
+import ButtonSubmitForm from "../ui/button-submit-form"
 import FormsContainer from "../../layout/form-container"
 
 
@@ -81,7 +81,7 @@ export default function FormDispatcher() {
 
     if (response.ok) {
       alert("Despachante criado!")
-      navigate("/initial/service")
+      navigate("/initial/dispatcher/profile")
     } else {
       alert("Erro ao criar despachante")
     }
@@ -95,17 +95,18 @@ export default function FormDispatcher() {
         <FormPersonal
           user={formData.user}
           onChange={handleChange}
+          readOnly={false}
         />
 
         <FormCommercial
           dispatcher={formData.dispatcher}
           office={formData.office}
           onChange={handleChange}
+          readOnly={false}
         />
       </ FormsContainer>
 
       <ButtonSubmitForm title="Cadastrar" />
-
     </FormSubmit>
 
   )

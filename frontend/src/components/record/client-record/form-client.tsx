@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
-import LabelForm from "../../ui/label-form"
-import ButtonSubmitForm from "../../ui/button-submit-form"
-import InputForm from "../../ui/input-form"
+import LabelForm from "../ui/label-form"
+import ButtonSubmitForm from "../ui/button-submit-form"
+import InputForm from "../ui/input-form"
 import SectionForm from "../../layout/section-form"
 import FormSubmit from "../../layout/form-submit"
 
@@ -73,6 +73,7 @@ export default function FormClient() {
           value={formData.name}
           onChange={handleChange}
           placeholder="Digite seu nome completo"
+          readOnly={false}
         />
 
         <LabelForm title="CPF" />
@@ -82,6 +83,7 @@ export default function FormClient() {
           value={formData.cpf}
           onChange={handleChange}
           placeholder="Digite seu CPF"
+          readOnly={false}
         />
 
         <LabelForm title="Email" />
@@ -91,6 +93,7 @@ export default function FormClient() {
           value={formData.email}
           onChange={handleChange}
           placeholder="Digite seu email"
+          readOnly={false}
         />
 
         <LabelForm title="Senha" />
@@ -100,6 +103,7 @@ export default function FormClient() {
           value={formData.password}
           onChange={handleChange}
           placeholder="Digite sua senha"
+          readOnly={false}
         />
 
         <LabelForm title="Confirmar Senha" />
@@ -109,6 +113,7 @@ export default function FormClient() {
           value={formData.confirmar_senha}
           onChange={handleChange}
           placeholder="Digite sua senha"
+          readOnly={false}
         />
 
         <ButtonSubmitForm title="Cadastrar" />

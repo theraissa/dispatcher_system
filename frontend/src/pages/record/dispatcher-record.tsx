@@ -1,5 +1,5 @@
 import FormDispatcher from "../../components/record/dispatcher-record/form-dispatcher.tsx"
-import Navbar from "../../components/ui/navbar-with-title.tsx";
+import Navbar from "../../components/record/ui/navbar-with-title.tsx";
 
 
 export default function DispatcherRecord() {

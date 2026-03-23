@@ -7,7 +7,7 @@ export const Title = styled.h3`
   padding: 15px;
 `
 
-export default function TitleForm({ title }) {
+export default function TitleTemplate({ title }) {
 
     return (
         <Title>{title}</Title>
