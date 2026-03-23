@@ -1,6 +1,6 @@
 import { useState } from "react"
 import styled from "styled-components"
-import NavbarPage from "../../components/ui/navbar-page"
+import NavbarPage from "../../components/record/ui/navbar-page"
 import ProfileInfo from "../../components/dispatcher/profile/profile-info"
 import ProfileServices from "../../components/dispatcher/profile/profile-services"
 
@@ -35,7 +35,7 @@ const SideMenu = styled.div`
   top: 20px;
 `
 
-const MenuButton = styled.button<{ active: boolean }>`
+const MenuButton = styled.button<{ $active: boolean }>`
   padding: 10px;
   border-radius: 8px;
   border: none;
@@ -44,13 +44,13 @@ const MenuButton = styled.button<{ active: boolean }>`
   font-size: 15px;
   font-weight: bold;
 
-  background-color: ${({ active }) => (active ? "#213555" : "#f2f2f2")};
-  color: ${({ active }) => (active ? "white" : "#213555")};
+  background-color: ${({ $active }) => ($active ? "#213555" : "#f2f2f2")};
+  color: ${({ $active }) => ($active ? "white" : "#213555")};
 
   transition: 0.2s;
 
   &:hover {
-    background-color: ${({ active }) => (active ? "#213555" : "#e6e6e6")};
+    background-color: ${({ $active }) => ($active ? "#213555" : "#e6e6e6")};
   }
 `
 
@@ -74,13 +74,14 @@ export default function ProfilePage() {
           <SideMenu>
 
             <MenuButton
-              active={tab === "info"}
+              $active={tab === "info"}
               onClick={() => setTab("info")}
             >
               Informações
             </MenuButton>
+
             <MenuButton
-              active={tab === "services"}
+              $active={tab === "services"}
               onClick={() => setTab("services")}
             >
               Serviços

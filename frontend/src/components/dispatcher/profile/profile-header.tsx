@@ -68,34 +68,30 @@ const EditButton = styled.button`
 `
 
 
-export default function ProfileHeader({ user }) {
+export default function ProfileHeader({ user, setIsEditing, isEditing }) {
 
-    function handleEdit() {
-        console.log("abrir edição")
-    }
+  return (
+    <Container>
+      <Card>
 
-    return (
-        <Container>
-            <Card>
+        <EditButton onClick={() => setIsEditing(prev => !prev)}>
+          {isEditing ? "Salvar" : "Editar"}
+        </EditButton>
 
-                <EditButton onClick={handleEdit}>
-                    Editar
-                </EditButton>
+        <Photo />
 
-                <Photo />
+        <Info>
+          <Name>{user.name || "Nome do Despachante"}</Name>
+          <span>{user.contact}</span>
 
-                <Info>
-                    <Name>{user.name || "Nome do Despachante"}</Name>
-                    <span>{user.contact}</span>
+          <Socials>
+            <Social href="#">Instagram</Social>
+            <Social href="#">WhatsApp</Social>
+            <Social href="#">Website</Social>
+          </Socials>
+        </Info>
 
-                    <Socials>
-                        <Social href="#">Instagram</Social>
-                        <Social href="#">WhatsApp</Social>
-                        <Social href="#">Website</Social>
-                    </Socials>
-                </Info>
-
-            </Card>
-        </Container>
-    )
+      </Card>
+    </Container>
+  )
 }
