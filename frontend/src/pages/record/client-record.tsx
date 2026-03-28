@@ -1,24 +1,17 @@
-import styled from "styled-components"
 import CardInfo from "../../components/record/client-record/card-info"
-import FormClient from "../../components/record/client-record/form-client"
 import Navbar from "../../components/record/ui/navbar-with-title"
-
-
-const Main = styled.main`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 100px;
-`
+import { FormClient } from "../../components/record/client-record/form-client"
 
 export default function ClientRecord() {
   return (
-    <>
-      <Navbar title={"Olá, Cliente."} />
-      <Main>
+    <div className="min-h-screen flex flex-col bg-[#F3EDE2]">
+      <Navbar title="Olá, Cliente." />
+
+      {/* Container principal com espaçamento responsivo */}
+      <main className="flex-1 flex flex-col lg:flex-row items-center justify-center px-8 lg:px-20 py-12 gap-16 lg:gap-32">
         <CardInfo />
         <FormClient />
-      </Main>
-    </>
+      </main>
+    </div>
   )
 }

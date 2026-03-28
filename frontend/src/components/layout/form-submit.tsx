@@ -1,14 +1,12 @@
-import styled from "styled-components"
+interface FormSubmitProps {
+    onSubmit?: (event: React.FormEvent) => void;
+    children: React.ReactNode;
+}
 
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-`
-
-export default function FormSubmit({ onSubmit = undefined, children }) {
+export default function FormSubmit({ onSubmit, children }: FormSubmitProps) {
     return (
-        <Form onSubmit={onSubmit}>
+        <form onSubmit={onSubmit} className="flex flex-col w-full">
             {children}
-        </Form>
+        </form>
     )
 }

@@ -1,18 +1,19 @@
-import styled from "styled-components"
+import { cn } from "@/lib/utils";
 
-const Label = styled.label`
-  display: block;
-  font-size: 16px;
-  text-align: left;
-  margin-top: 20px;
-  font-weight: bold;
-`
+interface LabelFormProps extends React.LabelHTMLAttributes<HTMLLabelElement> {
+    title: string;
+}
 
-export default function LabelForm({ title }) {
-
+export default function LabelForm({ title, className, ...props }: LabelFormProps) {
     return (
-        <>
-            <Label>{title}</Label>
-        </>
-    )
+        <label
+            className={cn(
+                "block text-base text-left font-bold mt-5 ml-1 font-sans",
+                className
+            )}
+            {...props}
+        >
+            {title}
+        </label>
+    );
 }

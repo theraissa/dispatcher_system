@@ -1,12 +1,7 @@
-import styled from "styled-components"
-
-export const InlineField = styled.div`
-  flex: 1;
-`
-export default function InlineFieldForm({ children }) {
+export default function InlineField({ children }: { children: React.ReactNode }) {
     return (
-        <InlineField>
+        <div className="flex-1 w-full">
             {children}
-        </InlineField>
-    )
+        </div>
+    );
 }

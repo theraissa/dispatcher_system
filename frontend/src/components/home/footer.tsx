@@ -1,88 +1,66 @@
-import styled from "styled-components"
-import { Link } from "react-router-dom"
-
-const FooterContainer = styled.footer`
-  background-color: #f9f9f9;
-  padding: 100px 50px 30px 100px;
-  border-top: 1px solid #eee;
-`
-
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
-  gap: 10px;
-`
-
-const Column = styled.div``
-
-const Title = styled.h4`
-  color: #333;
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 15px;
-`
-
-const List = styled.ul`
-  list-style: none;
-`
-
-const Item = styled.li`
-  margin-bottom: 8px;
-`
-
-const LinkItem = styled(Link)`
-  color: #777;
-  text-decoration: none;
-  font-size: 16px;
-
-  &:hover{
-    color:#213555;
-  }
-`
-
-const Bottom = styled.div`
-  text-align: center;
-  font-size: 15px;
-  color: #999;
-  margin-top: 100px;
-`
+import { Link } from "react-router-dom";
 
 export default function Footer() {
+  const linkStyles = "text-zinc-500 hover:text-[#21314D] transition-colors text-sm";
+  const titleStyles = "text-[#1E1E1E] text-sm font-bold uppercase tracking-wider mb-4";
+
   return (
-    <FooterContainer>
-      <Grid>
-        <Column>
-          <Title>Despachante</Title>
-          <List>
-            <Item><LinkItem to="/register/dispatcher">Crie seu Usuário</LinkItem></Item>
-          </List>
-        </Column>
-        <Column>
-          <Title>Admin</Title>
-          <List>
-            <Item><LinkItem to="/admin">Acessar Perfil Admin</LinkItem></Item>
-          </List>
-        </Column>
-        <Column>
-          <Title>Resources</Title>
-          <List>
-            <Item><LinkItem to="">UI design</LinkItem></Item>
-            <Item><LinkItem to="">UX design</LinkItem></Item>
-            <Item><LinkItem to="">Wireframing</LinkItem></Item>
-            <Item><LinkItem to="">Diagramming</LinkItem></Item>
-          </List>
-        </Column>
-        <Column>
-          <Title>Contact</Title>
-          <List>
-            <Item><LinkItem to="">Email: info@seudominio.com</LinkItem></Item>
-            <Item><LinkItem to="">Phone: (XX) XXXX-XXXX</LinkItem></Item>
-          </List>
-        </Column>
-      </Grid>
-      <Bottom>
-        © 2025 Seu Domínio. Todos os direitos reservados.
-      </Bottom>
-    </FooterContainer>
+    <footer className="bg-zinc-50 border-t border-zinc-200 pt-16 pb-8 px-6 md:px-20">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
+
+          {/* Coluna 1: Despachante */}
+          <div className="flex flex-col">
+            <h4 className={titleStyles}>Despachante</h4>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/register/dispatcher" className={linkStyles}>
+                  Crie seu Usuário
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Coluna 2: Admin */}
+          <div className="flex flex-col">
+            <h4 className={titleStyles}>Gestão</h4>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/admin" className={linkStyles}>
+                  Acessar Painel Admin
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Coluna 3: Recursos (Opcional - mantive para preencher o grid) */}
+          <div className="flex flex-col">
+            <h4 className={titleStyles}>Suporte</h4>
+            <ul className="space-y-2">
+              <li><Link to="#" className={linkStyles}>Guia de Uso</Link></li>
+              <li><Link to="#" className={linkStyles}>Documentação</Link></li>
+              <li><Link to="#" className={linkStyles}>Privacidade</Link></li>
+            </ul>
+          </div>
+
+          {/* Coluna 4: Contato */}
+          <div className="flex flex-col">
+            <h4 className={titleStyles}>Contato</h4>
+            <ul className="space-y-1">
+              <li className="text-zinc-500 text-sm">info@dispatcher.com</li>
+              <li className="text-zinc-500 text-sm">(51) 99999-9999</li>
+            </ul>
+          </div>
+
+        </div>
+
+        {/* Linha Inferior */}
+        <div className="mt-16 pt-8 border-t border-zinc-200 text-center">
+          <p className="text-xs text-zinc-400 font-medium">
+            © {new Date().getFullYear()} Dispatcher System. Desenvolvido para o IFRS.
+          </p>
+        </div>
+      </div>
+    </footer>
   );
 }

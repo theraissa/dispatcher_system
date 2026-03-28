@@ -1,63 +1,65 @@
-import styled from "styled-components"
-
-const Section = styled.section`
-  padding: 100px;
-  background-color: #F5EFE7;
-`
-
-const Container = styled.div`
-  display: flex;
-  gap: 20px;
-`
-
-const Card = styled.div`
-  flex: 0 0 450px;
-  height: 500px;
-  padding: 40px;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  transition: transform 0.3s ease;
-
-  &:hover {
-    transform: scale(1.05);
-  }
-`
-
-const Title = styled.h1`
-  font-size: 25px;
-  color: #333;
-  margin-bottom: 30px;
-`
-
-const Text = styled.p`
-  font-size: 18px;
-  line-height: 1.6;
-  color: #666;
-`
+import { cn } from "@/lib/utils";
+import { Search, LayoutDashboard, MessageSquare, ShieldCheck } from "lucide-react";
 
 export default function CarouselSection() {
+  const cards = [
+    {
+      title: "1. Busca e Solicitação",
+      icon: <Search className="w-6 h-6 text-[#21314D]" />,
+      text: "Clientes pesquisam despachantes por nome ou município, acessam perfis e solicitam serviços com orientações claras sobre documentos.",
+    },
+    {
+      title: "2. Gestão de Perfil",
+      icon: <LayoutDashboard className="w-6 h-6 text-[#21314D]" />,
+      text: "Despachantes controlam seus serviços: cadastram, editam atividades e acompanham chamados em tempo real com agenda organizada.",
+    },
+    {
+      title: "3. Acompanhamento",
+      icon: <MessageSquare className="w-6 h-6 text-[#21314D]" />,
+      text: "Histórico e status atual de cada solicitação — de 'Pendente' a 'Completo' — garantindo transparência e comunicação eficiente.",
+    },
+    {
+      title: "4. Segurança e Validação",
+      icon: <ShieldCheck className="w-6 h-6 text-[#21314D]" />,
+      text: "Validação de identidade, autenticação em dois fatores e verificação periódica do CRDD. Interações protegidas por criptografia.",
+    },
+  ];
+
   return (
-    <Section id="carousel-section">
-      <Container>
-        <Card>
-          <Title>1. Busca e Solicitação de Serviços</Title>
-          <Text>Clientes podem pesquisar despachantes por nome ou município, acessar seus perfis, visualizar os serviços oferecidos e solicitar diretamente o atendimento desejado, com orientações claras sobre a documentação necessária.</Text>
-        </Card>
-        <Card>
-          <Title>2. Gestão de Perfil e Serviços</Title>
-          <Text>Despachantes têm controle total sobre seus perfis e serviços: podem cadastrar, editar e excluir atividades prestadas, informar documentos exigidos e acompanhar em tempo real os chamados recebidos, com acesso a uma agenda organizada por data e horário.</Text>
-        </Card>
-        <Card>
-          <Title>3. Acompanhamento Chamados</Title>
-          <Text>Tanto clientes quanto despachantes podem consultar o histórico e o status atual de cada solicitação — desde “Documentação Pendente” até “Serviço Completo” — garantindo transparência e comunicação eficiente durante todo o processo.</Text>
-        </Card>
-        <Card>
-          <Title>4. Segurança e Validação</Title>
-          <Text>O sistema valida a identidade de todos os usuários (clientes e despachantes) e exige autenticação em dois fatores no login, além de verificar periodicamente o registro profissional dos despachantes no CRDD. Todas as interações são protegidas por criptografia e notificações automáticas por e-mail.</Text>
-        </Card>
-      </Container>
-    </Section>
+    <section id="carousel-section" className="py-20 px-6 bg-[#F5EFE7]">
+      <div className="max-w-7xl mx-auto">
+        {/* Título da Seção (Opcional, mas ajuda no contexto) */}
+        <div className="mb-12 text-center md:text-left">
+          <h2 className="text-3xl font-bold text-[#1E1E1E] tracking-tight">Funcionalidades do Sistema</h2>
+          <p className="text-zinc-600 mt-2">Tudo o que você precisa para gerenciar seus processos de trânsito.</p>
+        </div>
+
+        {/* Grid de Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {cards.map((card, index) => (
+            <div
+              key={index}
+              className={cn(
+                "bg-white p-8 rounded-[32px] shadow-sm border border-zinc-100",
+                "transition-all duration-300 hover:shadow-xl hover:-translate-y-2 cursor-default",
+                "flex flex-col h-full"
+              )}
+            >
+              <div className="mb-6 w-12 h-12 bg-[#21314D]/5 rounded-2xl flex items-center justify-center">
+                {card.icon}
+              </div>
+
+              <h3 className="text-xl font-bold text-[#333] mb-4 leading-tight">
+                {card.title}
+              </h3>
+
+              <p className="text-zinc-600 leading-relaxed text-sm">
+                {card.text}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
-

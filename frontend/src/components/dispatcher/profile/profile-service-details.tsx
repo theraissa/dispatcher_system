@@ -77,56 +77,69 @@ const SaveButton = styled.button`
   }
 `;
 
-export default function ServiceDetails({ service, onBack, onSave }) {
-    const [price, setPrice] = useState(service.price || "");
 
-    const storedUser = JSON.parse(localStorage.getItem("user") || "null");
+type Service = {
+  id: number;
+  name: string;
+  price?: number;
+};
 
-    async function handleSave() {
-        await fetch(
-            `http://localhost:5000/api/dispatcher-system/dispatcher/${storedUser.id}/service/${service.service_id}`,
-            {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ price }),
-            }
-        );
+type Props = {
+  service: Service;
+  onBack: () => void;
+  onSave: (serviceId: number, price: number) => Promise<void>;
+};
 
-        onSave({ ...service, price });
+export default function ServiceDetails({
+  service,
+  onBack,
+  onSave
+}: Props) {
+  const [price, setPrice] = useState(service.price || "");
+  const [loading, setLoading] = useState(false);
+
+  async function handleSave() {
+    try {
+      setLoading(true);
+      await onSave(service.id, Number(price));
+      onBack();
+    } finally {
+      setLoading(false);
     }
+  }
 
-    return (
-        <ProfileContainer>
-            <ProfileCard>
+  return (
+    <ProfileContainer>
+      <ProfileCard>
 
-                <TitleTemplate title={`Editar serviço`} />
-                <p style={{ color: "#667085", marginTop: 4 }}>
-                    {service.name}
-                </p>
+        <TitleTemplate title="Editar serviço" />
+        <p style={{ color: "#667085", marginTop: 4 }}>
+          {service.name}
+        </p>
 
-                <Content>
-                    <Field>
-                        <Label>Valor do serviço</Label>
-                        <Input
-                            type="number"
-                            placeholder="Ex: 150.00"
-                            value={price}
-                            onChange={(e) => setPrice(e.target.value)}
-                        />
-                    </Field>
-                </Content>
+        <Content>
+          <Field>
+            <Label>Valor do serviço</Label>
+            <Input
+              type="number"
+              placeholder="Ex: 150.00"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+            />
+          </Field>
+        </Content>
 
-                <Footer>
-                    <BackButton onClick={onBack}>
-                        Voltar
-                    </BackButton>
+        <Footer>
+          <BackButton onClick={onBack}>
+            Voltar
+          </BackButton>
 
-                    <SaveButton onClick={handleSave}>
-                        Salvar alterações
-                    </SaveButton>
-                </Footer>
+          <SaveButton onClick={handleSave} disabled={loading}>
+            {loading ? "Salvando..." : "Salvar alterações"}
+          </SaveButton>
+        </Footer>
 
-            </ProfileCard>
-        </ProfileContainer>
-    );
+      </ProfileCard>
+    </ProfileContainer>
+  );
 }

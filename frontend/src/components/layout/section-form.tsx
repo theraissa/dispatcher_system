@@ -1,18 +1,19 @@
-import styled from "styled-components"
+import { cn } from "@/lib/utils";
 
-const Section = styled.section`
-  width: 700px;
-  max-width: 100%;
-  background-color: white;
-  padding: 50px;
-  border-radius: 15px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-`
+interface SectionFormProps {
+    children: React.ReactNode;
+    className?: string;
+}
 
-export default function SectionForm({ children }) {
+export default function SectionForm({ children, className }: SectionFormProps) {
     return (
-        <Section>
+        <section className={cn(
+            "w-full max-w-[700px] bg-white p-8 lg:p-12",
+            "rounded-[40px] shadow-sm border-none",
+            "transition-all duration-300",
+            className
+        )}>
             {children}
-        </Section>
-    )
+        </section>
+    );
 }

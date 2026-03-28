@@ -1,96 +1,62 @@
 import { useState } from "react"
-import styled from "styled-components"
 import NavbarPage from "../../components/record/ui/navbar-page"
 import ProfileInfo from "../../components/dispatcher/profile/profile-info"
 import ProfileServices from "../../components/dispatcher/profile/profile-services"
-
-
-const Container = styled.div`
-  padding: 40px;
-`
-
-const Layout = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  align-items: flex-start;
-`
-
-const Content = styled.div`
-  flex: 1;
-`
-
-const SideMenu = styled.div`
-  width: 250px;
-  background: white;
-  padding: 18px;
-  border-radius: 15px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.08);
-
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-
-  position: sticky;
-  top: 20px;
-`
-
-const MenuButton = styled.button<{ $active: boolean }>`
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  text-align: left;
-  font-size: 15px;
-  font-weight: bold;
-
-  background-color: ${({ $active }) => ($active ? "#213555" : "#f2f2f2")};
-  color: ${({ $active }) => ($active ? "white" : "#213555")};
-
-  transition: 0.2s;
-
-  &:hover {
-    background-color: ${({ $active }) => ($active ? "#213555" : "#e6e6e6")};
-  }
-`
+import { cn } from "@/lib/utils"
+import { UserCircle, Briefcase } from "lucide-react"
 
 
 export default function ProfilePage() {
-
   const [tab, setTab] = useState<"info" | "services">("info")
 
+  // Estilo base para os botões do menu
+  const menuButtonStyles = (isActive: boolean) => cn(
+    "flex items-center gap-3 w-full p-3 rounded-xl text-sm font-bold transition-all duration-200",
+    isActive
+      ? "bg-[#21314D] text-white shadow-md scale-[1.02]"
+      : "bg-white text-zinc-500 hover:bg-zinc-50 hover:text-[#21314D]"
+  );
+
   return (
-    <>
+    <div className="min-h-screen bg-[#F3EDE2]">
       <NavbarPage />
 
-      <Container>
-        <Layout>
+      <main className="max-w-7xl mx-auto px-6 py-10">
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
 
-          <Content>
+          {/* Conteúdo Principal (Esquerda) */}
+          <div className="flex-1 w-full order-2 lg:order-1">
             {tab === "info" && <ProfileInfo />}
             {tab === "services" && <ProfileServices />}
-          </Content>
+          </div>
 
-          <SideMenu>
+          {/* Menu Lateral (Direita) - Stick à tela */}
+          <aside className="w-full lg:w-[220px] bg-white/50 backdrop-blur-sm p-4 rounded-[32px] shadow-sm border border-white/20 sticky top-6 order-1 lg:order-2">
+            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-3 mb-4">
+              Menu Perfil
+            </p>
 
-            <MenuButton
-              $active={tab === "info"}
-              onClick={() => setTab("info")}
-            >
-              Informações
-            </MenuButton>
+            <div className="flex flex-row lg:flex-col gap-2">
+              <button
+                onClick={() => setTab("info")}
+                className={menuButtonStyles(tab === "info")}
+              >
+                <UserCircle size={18} />
+                Informações
+              </button>
 
-            <MenuButton
-              $active={tab === "services"}
-              onClick={() => setTab("services")}
-            >
-              Serviços
-            </MenuButton>
+              <button
+                onClick={() => setTab("services")}
+                className={menuButtonStyles(tab === "services")}
+              >
+                <Briefcase size={18} />
+                Serviços
+              </button>
+            </div>
+          </aside>
 
-          </SideMenu>
-
-        </Layout>
-      </Container>
-    </>
+        </div>
+      </main>
+    </div>
   )
 }

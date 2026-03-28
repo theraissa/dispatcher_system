@@ -1,19 +1,15 @@
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
-
 import FormCommercial from "./form-dispatcher/form-commercial"
 import FormPersonal from "./form-dispatcher/form-personal"
 import FormSubmit from "../../layout/form-submit"
 import ButtonSubmitForm from "../ui/button-submit-form"
 import FormsContainer from "../../layout/form-container"
-
+import { useRegisterDispatcher } from "../../../hooks/use-register-dispatcher"
 
 export default function FormDispatcher() {
-
-  const navigate = useNavigate()
+  const { register, error, loading } = useRegisterDispatcher()
 
   const [formData, setFormData] = useState({
-
     user: {
       name: "",
       cpf: "",
@@ -24,12 +20,10 @@ export default function FormDispatcher() {
       password: "",
       confirm_password: ""
     },
-
     dispatcher: {
       regis_crdd: "",
       date_exp_regis: ""
     },
-
     office: {
       address: "",
       number: "",
@@ -39,10 +33,9 @@ export default function FormDispatcher() {
       state: "",
       contact: ""
     }
-
   })
 
-  function handleChange(section: string, field: string, value: any) {
+  function handleChange(section: string, field: string, value: string) {
     setFormData(prev => ({
       ...prev,
       [section]: {
@@ -52,62 +45,37 @@ export default function FormDispatcher() {
     }))
   }
 
-  async function handleSubmit(event: any) {
+  function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
-
-    if (formData.user.password !== formData.user.confirm_password) {
-      alert("As senhas não coincidem!")
-      return
-    }
-
-
-    const { confirm_password, ...userWithoutConfirm } = formData.user
-
-    const dataToSend = {
-      ...formData,
-      user: userWithoutConfirm
-    }
-
-    const response = await fetch(
-      "http://localhost:5000/api/dispatcher-system/dispatcher",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(dataToSend)
-      }
-    )
-
-    if (response.ok) {
-      alert("Despachante criado!")
-      navigate("/initial/dispatcher/profile")
-    } else {
-      alert("Erro ao criar despachante")
-    }
+    register(formData)
   }
 
   return (
+    <div className="min-h-screen flex flex-col bg-[#F3EDE2]">
 
-    <FormSubmit onSubmit={handleSubmit}>
-      <FormsContainer>
+      <FormSubmit onSubmit={handleSubmit}>
+        {error && <span style={{ color: "red" }}>{error}</span>}
 
-        <FormPersonal
-          user={formData.user}
-          onChange={handleChange}
-          readOnly={false}
+        <FormsContainer>
+          <FormPersonal
+            user={formData.user}
+            onChange={handleChange}
+            readOnly={false}
+          />
+
+          <FormCommercial
+            dispatcher={formData.dispatcher}
+            office={formData.office}
+            onChange={handleChange}
+            readOnly={false}
+          />
+        </FormsContainer>
+
+        <ButtonSubmitForm
+          title={loading ? "Cadastrando..." : "Cadastrar"}
         />
-
-        <FormCommercial
-          dispatcher={formData.dispatcher}
-          office={formData.office}
-          onChange={handleChange}
-          readOnly={false}
-        />
-      </ FormsContainer>
-
-      <ButtonSubmitForm title="Cadastrar" />
-    </FormSubmit>
+      </FormSubmit>
+    </div>
 
   )
 }

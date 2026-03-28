@@ -1,20 +1,7 @@
-import styled from "styled-components"
-
-
-const Form = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 40px;
-  margin-top: 50px;
-  flex-wrap: wrap;
-`
-
-export default function FormsContainer({ children }) {
-
+export default function FormsContainer({ children }: { children: React.ReactNode }) {
     return (
-        <Form>
+        <div className="flex flex-col lg:flex-row justify-center items-start gap-10 mt-12 flex-wrap w-full px-4">
             {children}
-        </Form>
+        </div>
     )
 }

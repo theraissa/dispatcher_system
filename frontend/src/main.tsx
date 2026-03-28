@@ -1,10 +1,10 @@
+import { MainRoutes } from './routes/main-routes'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import FrontendRoutes from './routes.tsx'
-import "./styles/global.css"
+import "./index.css"
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <FrontendRoutes />
+    <MainRoutes/>
   </React.StrictMode>,
 )

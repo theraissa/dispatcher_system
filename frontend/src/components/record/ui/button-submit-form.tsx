@@ -1,26 +1,38 @@
-import styled from "styled-components"
+import { cn } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 
+interface ButtonSubmitFormProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  title: string;
+  loading?: boolean;
+}
 
-const Button = styled.button`
-  width: 500px;
-  margin: 20px auto 0 auto;
-  padding: 8px;
-  background-color: #333;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 18px;
-
-  &:hover {
-    background-color: #555;
-  }
-`
-
-export default function ButtonSubmitForm({ title }) {
+export default function ButtonSubmitForm({
+  title,
+  loading,
+  className,
+  ...props
+}: ButtonSubmitFormProps) {
   return (
-    <>
-      <Button type="submit">{title}</Button>
-    </>
-  )
+    <button
+      type="submit"
+      disabled={loading}
+      className={cn(
+        "w-full max-w-[500px] h-12 mt-6 px-4 py-2 flex items-center justify-center mx-auto",
+        "bg-[#2D2D2D] text-white text-lg font-semibold rounded-xl transition-all",
+        "hover:bg-[#1A1A1A] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed",
+        "shadow-sm font-sans",
+        className
+      )}
+      {...props}
+    >
+      {loading ? (
+        <>
+          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+          Carregando...
+        </>
+      ) : (
+        title
+      )}
+    </button>
+  );
 }

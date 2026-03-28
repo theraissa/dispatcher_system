@@ -1,15 +1,17 @@
-import styled from "styled-components"
+import { cn } from "@/lib/utils";
 
+interface TitleTemplateProps {
+    title: string;
+    className?: string;
+}
 
-export const Title = styled.h3`
-  font-size: 25px;
-  text-align: center;
-  padding: 15px;
-`
-
-export default function TitleTemplate({ title }) {
-
+export default function TitleTemplate({ title, className }: TitleTemplateProps) {
     return (
-        <Title>{title}</Title>
-    )
+        <h3 className={cn(
+            "text-2xl font-bold text-center py-4 text-[#1E1E1E] font-sans tracking-tight",
+            className
+        )}>
+            {title}
+        </h3>
+    );
 }

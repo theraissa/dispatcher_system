@@ -1,51 +1,49 @@
-import styled from "styled-components"
-
-const Header = styled.header`
-  width: 100%;
-  background-color: #213555;
-  color: white;
-  height: 70px;
-  padding: 10px;
-  display: flex;
-  justify-content: end;
-  align-items: center;
-`
-
-const Nav = styled.nav`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 40px;
-`
-
-const Buttons = styled.div`
-  display: flex;
-  gap: 10px;
-`
-
-const Button = styled.a`
-  padding: 7px 18px;
-  background-color: #3E5879;
-  color: white;
-  text-decoration: none;
-  border-radius: 10px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: white;
-    color: #213555;
-  }
-`
+import { Link, useLocation } from "react-router-dom";
+import { cn } from "@/lib/utils";
+import { ClipboardList, User } from "lucide-react";
 
 export default function NavbarPage() {
+  const location = useLocation();
+
+  // Estilo base para os botões da Navbar
+  const buttonStyles = (isActive: boolean) => cn(
+    "flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-200",
+    isActive
+      ? "bg-white text-[#21314D] shadow-sm"
+      : "text-white/80 hover:bg-white/10 hover:text-white"
+  );
+
   return (
-    <Header>
-      <Nav>
-        <Buttons>
-          <Button>Chamados</Button>
-          <Button>Seu Perfil</Button>
-        </Buttons>
-      </Nav>
-    </Header>
-  )
+    <header className="w-full h-[60px] bg-[#21314D] text-white flex items-center justify-between px-6 shadow-md sticky top-0 z-50">
+
+      {/* Lado Esquerdo: Identificação rápida da área logada */}
+      <div className="flex items-center gap-3">
+        <div className="w-7 h-7 bg-white/10 rounded-md flex items-center justify-center font-bold text-sm">
+          P
+        </div>
+        <span className="text-sm font-semibold tracking-wide hidden sm:block">
+          Painel do Despachante
+        </span>
+      </div>
+
+      {/* Lado Direito: Navegação Principal */}
+      <nav className="flex items-center gap-2">
+        <Link
+          to="/dashboard"
+          className={buttonStyles(location.pathname === "/dashboard")}
+        >
+          <ClipboardList size={16} />
+          Chamados
+        </Link>
+
+        <Link
+          to="/profile"
+          className={buttonStyles(location.pathname === "/profile")}
+        >
+          <User size={16} />
+          Seu Perfil
+        </Link>
+      </nav>
+    </header>
+  );
 }

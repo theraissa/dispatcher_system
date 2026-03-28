@@ -1,30 +1,14 @@
-import styled from "styled-components"
-
-const Section = styled.section`
-  width: 40%;
-`
-
-const Title = styled.h2`
-  font-size: 75px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  color: #1E1E1E;
-`
-
-const Text = styled.p`
-  font-size: 20px;
-  color: #1E1E1E;
-`
-
 export default function CardInfo() {
   return (
-    <Section>
-      <Title>Complete as Lacunas</Title>
-      <Text>
+    <section className="w-full lg:w-[45%] space-y-6">
+      <h2 className="text-6xl lg:text-7xl font-bold text-[#1E1E1E] leading-[1.1] tracking-tighter">
+        Complete as <br /> Lacunas
+      </h2>
+      <p className="text-xl text-zinc-600 leading-relaxed max-w-md">
         De início solicitamos poucas informações, apenas para conseguir acessar
         o sistema, mas quando desejar solicitar algum serviço será necessário
         completar o perfil.
-      </Text>
-    </Section>
+      </p>
+    </section>
   )
 }

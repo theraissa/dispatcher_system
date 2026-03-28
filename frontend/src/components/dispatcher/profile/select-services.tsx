@@ -5,45 +5,9 @@ import ProfileCard from "./layout/profile-card"
 import TitleTemplate from "../../ui/title"
 import ProfileSearchInput from "./ui/profile-search-input"
 import ProfileEmptyState from "./layout/profile-empty-state"
+import { ServiceItemAdd, ServiceList } from "./ui/profile-service"
 
 
-const ServiceList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  max-height: 380px; /* Evita que o card fique gigante */
-  overflow-y: auto;
-  padding-right: 6px;
-
-  /* Custom Scrollbar */
-  &::-webkit-scrollbar { width: 6px; }
-  &::-webkit-scrollbar-thumb { background: #d0d5dd; border-radius: 10px; }
-`
-
-const ServiceItem = styled.div<{ selected: boolean }>`
-  padding: 14px 18px;
-  border-radius: 12px;
-  border: 2px solid ${({ selected }) => selected ? "#213555" : "#eaecf0"};
-  background: ${({ selected }) => selected ? "#f8fafc" : "#fff"};
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-  transition: all 0.2s;
-
-  &:hover {
-    border-color: #213555;
-    background: #f8fafc;
-  }
-
-  /* Indicador visual de seleção */
-  &::after {
-    content: '${({ selected }) => selected ? "✓" : "+"}';
-    font-weight: bold;
-    font-size: 18px;
-    color: ${({ selected }) => selected ? "#213555" : "#d0d5dd"};
-  }
-`
 
 const Footer = styled.div`
   display: flex;
@@ -142,7 +106,7 @@ export default function SelectServices({
             const isSelected = selectedServices.some(s => s.id === service.id)
 
             return (
-              <ServiceItem
+              <ServiceItemAdd
                 key={service.id}
                 selected={isSelected}
                 onClick={() => toggleService(service)}
@@ -150,7 +114,7 @@ export default function SelectServices({
                 <span style={{ fontWeight: 500 }}>
                   {service.name}
                 </span>
-              </ServiceItem>
+              </ServiceItemAdd>
             )
           })}
 

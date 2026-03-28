@@ -68,7 +68,7 @@ const EditButton = styled.button`
 `
 
 
-export default function ProfileHeader({ user, setIsEditing, isEditing }) {
+export default function ProfileHeader({ user, profile, setIsEditing, isEditing }) {
 
   return (
     <Container>
@@ -78,16 +78,21 @@ export default function ProfileHeader({ user, setIsEditing, isEditing }) {
           {isEditing ? "Salvar" : "Editar"}
         </EditButton>
 
-        <Photo />
+        {/* Foto de Perfil do Despachante */}
+        <Photo style={{
+          backgroundImage: `url(${user.photo_url || ""})`,
+          backgroundSize: "cover"
+        }} />
 
+        {/* Nome do Despachante e Link com as Redes Sociais */}
         <Info>
           <Name>{user.name || "Nome do Despachante"}</Name>
           <span>{user.contact}</span>
 
           <Socials>
-            <Social href="#">Instagram</Social>
-            <Social href="#">WhatsApp</Social>
-            <Social href="#">Website</Social>
+            {profile.instagram && <Social href={profile.instagram}>Instagram</Social>}
+            {profile.whatsapp && <Social href={`https://wa.me/${profile.whatsapp}`}>WhatsApp</Social>}
+            {profile.website && <Social href={profile.website}>Website</Social>}
           </Socials>
         </Info>
 

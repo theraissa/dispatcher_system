@@ -1,15 +1,7 @@
-import styled from "styled-components"
-
-export const InlineFields = styled.div`
-  display: flex;
-  gap: 20px;
-  width: 100%;
-`
-
-export default function InlineFieldsForm({ children }) {
+export default function InlineFields({ children }: { children: React.ReactNode }) {
     return (
-        <InlineFields>
+        <div className="flex flex-col md:flex-row gap-5 w-full">
             {children}
-        </InlineFields>
-    )
+        </div>
+    );
 }
