@@ -3,7 +3,7 @@ Módulo de rotas relacionadas aos despachantes.
 """
 
 from flask import Flask, Response, jsonify, request
-from models.dispatcher import CreateDispatcherFullRequest, CreateDispatcherRequest
+from models.dispatcher import CreateDispatcherFullRequest
 from services.dispatcher import DispatcherService
 
 
@@ -32,12 +32,12 @@ def register_dispatcher_routes(
         created_dispatcher = dispatcher_service.create_dispatcher(body)
         return jsonify(created_dispatcher), 201
 
-    @app.put("/api/dispatcher-system/dispatcher/<dispatcher_id>")
-    def update_dispatcher(dispatcher_id) -> Response:
+    @app.put("/api/dispatcher-system/dispatcher/<int:user_id>")
+    def update_dispatcher(user_id):
         """Atualiza um despachante no banco de dados"""
-        body = CreateDispatcherRequest.model_validate(request.get_json())
-        updated_dispatcher = dispatcher_service.update_dispatcher(dispatcher_id, body)
-        return jsonify(updated_dispatcher), 200
+        data = request.get_json()
+        result = dispatcher_service.update_dispatcher_full(user_id, CreateDispatcherFullRequest(**data))
+        return jsonify(result), 200
 
     @app.delete("/api/dispatcher-system/dispatcher/<dispatcher_id>")
     def delete_ispatcher(dispatcher_id) -> Response:

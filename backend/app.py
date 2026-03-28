@@ -60,6 +60,7 @@ def create_app():
 
     @app.errorhandler(HTTPException)
     def handle_exception(e):
+        """handler global"""
         return (
             jsonify(
                 {

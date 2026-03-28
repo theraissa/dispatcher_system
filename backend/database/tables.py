@@ -41,6 +41,22 @@ class DispatcherDB(db.Model):
     deleted_at = Column(DateTime(timezone=True))
 
 
+class ProfileDB(db.Model):
+    """Perfil público do despachante"""
+
+    __tablename__ = "dispatcher_profile"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    dispatcher_id = Column(Integer, ForeignKey("dispatcher.id"), nullable=False)
+    photo = Column(String)
+    instagram = Column(String)
+    whatsapp = Column(String)
+    website = Column(String)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    deleted_at = Column(DateTime(timezone=True))
+
+
 class OfficeDB(db.Model):
     """Representa um Estabelecimento"""
 

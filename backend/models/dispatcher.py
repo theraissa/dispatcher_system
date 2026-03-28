@@ -67,17 +67,51 @@ class OfficeResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+# Modelos de resposta e criação do Perfil do Despachante
+class CreateProfileRequest(BaseModel):
+    """Modelo de criação do Profile."""
+
+    photo: Optional[str] = None
+    instagram: Optional[str] = None
+    whatsapp: Optional[str] = None
+    website: Optional[str] = None
+
+    model_config = ConfigDict(extra="forbid")
+
+
+class ProfileResponse(BaseModel):
+    """Modelo de resposta para o Profile."""
+
+    id: int
+    dispatcher_id: Optional[int]
+    photo: Optional[str]
+    instagram: Optional[str]
+    whatsapp: Optional[str]
+    website: Optional[str]
+    created_at: datetime
+    updated_at: datetime
+    deleted_at: Optional[datetime]
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 # Modelo final que vai criar usuário, despachante e o escritório
 class CreateDispatcherFullRequest(BaseModel):
+    """Criar múltiplas tabelas ao mesmo tempo"""
+
     user: CreateUserRequest
     dispatcher: CreateDispatcherRequest
     office: CreateOfficeRequest
+    profile: CreateProfileRequest
 
 
 class CreateDispatcherFullResponse(BaseModel):
+    """Responder múltiplas tabelas ao mesmo tempo"""
+
     user: UserResponse
     dispatcher: DispatcherResponse
     office: OfficeResponse
+    profile: ProfileResponse
 
 
 class ListDispatcherResponse(RootModel):

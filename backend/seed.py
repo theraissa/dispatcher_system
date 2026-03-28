@@ -3,19 +3,28 @@
 from datetime import datetime
 
 from database import db
-from database.tables import UserDB, DispatcherDB, OfficeDB, ServiceDB, ServiceDetailsDB
+from database.tables import (
+    UserDB,
+    DispatcherDB,
+    ProfileDB,
+    OfficeDB,
+    ServiceDB,
+    ServiceDetailsDB,
+)
 
 
 def seed():
     """Script que roda manualmente e popula o banco."""
 
-    # Evita duplicar dados
     if UserDB.query.first():
         print("Banco já possui dados. Seed ignorado.")
         return
 
     print("Iniciando seed...")
 
+    # =========================
+    # USERS
+    # =========================
     user1 = UserDB(
         name="Pedro Henrique",
         cpf="12345678900",
@@ -25,6 +34,7 @@ def seed():
         email="pedro@gmail.com",
         password="1234",
     )
+
     user2 = UserDB(
         name="Maria Souza",
         cpf="98765432100",
@@ -38,19 +48,51 @@ def seed():
     db.session.add_all([user1, user2])
     db.session.flush()
 
+    # =========================
+    # DISPATCHERS
+    # =========================
     dispatcher1 = DispatcherDB(
         user_id=user1.id,
         regis_crdd="CRDD123",
         date_exp_regis=datetime(2030, 7, 19),
+        status="pending",
     )
+
     dispatcher2 = DispatcherDB(
         user_id=user2.id,
         regis_crdd="CRDD456",
         date_exp_regis=datetime(2032, 5, 10),
+        status="pending",
     )
+
     db.session.add_all([dispatcher1, dispatcher2])
     db.session.flush()
 
+    # =========================
+    # DISPATCHER PROFILE (NOVO)
+    # =========================
+    profile1 = ProfileDB(
+        dispatcher_id=dispatcher1.id,
+        photo="https://i.pravatar.cc/200?img=1",
+        instagram="https://instagram.com/pedro",
+        whatsapp="55999999999",
+        website="https://pedrodespachante.com",
+    )
+
+    profile2 = ProfileDB(
+        dispatcher_id=dispatcher2.id,
+        photo="https://i.pravatar.cc/200?img=2",
+        instagram="https://instagram.com/maria",
+        whatsapp="55888888888",
+        website="https://mariadespachante.com",
+    )
+
+    db.session.add_all([profile1, profile2])
+    db.session.flush()
+
+    # =========================
+    # OFFICES
+    # =========================
     office1 = OfficeDB(
         dispatcher_id=dispatcher1.id,
         contact="55999999999",
@@ -61,6 +103,7 @@ def seed():
         city="Sapiranga",
         state="RS",
     )
+
     office2 = OfficeDB(
         dispatcher_id=dispatcher2.id,
         contact="55888888888",
@@ -71,9 +114,13 @@ def seed():
         city="Porto Alegre",
         state="RS",
     )
+
     db.session.add_all([office1, office2])
     db.session.flush()
 
+    # =========================
+    # SERVICES
+    # =========================
     services = [
         ServiceDB(name="Transferência de veículo", description="Transferência de propriedade"),
         ServiceDB(name="Licenciamento", description="Regularização anual do veículo"),
@@ -81,9 +128,13 @@ def seed():
         ServiceDB(name="2ª via de documento", description="Segunda via de documentos"),
         ServiceDB(name="Vistoria", description="Inspeção veicular"),
     ]
+
     db.session.add_all(services)
     db.session.flush()
 
+    # =========================
+    # SERVICE DETAILS
+    # =========================
     service_details = [
         ServiceDetailsDB(
             service_id=services[0].id,
@@ -106,6 +157,7 @@ def seed():
             price=80.00,
         ),
     ]
+
     db.session.add_all(service_details)
 
     db.session.commit()

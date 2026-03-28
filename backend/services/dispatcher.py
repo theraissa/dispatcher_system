@@ -5,16 +5,16 @@ Módulo com implementação do serviço DispatcherService.
 from datetime import datetime
 from typing import Any
 
-from database.tables import DispatcherDB, OfficeDB, UserDB
+from database.tables import DispatcherDB, OfficeDB, UserDB, ProfileDB
 from flask import abort
 from flask_sqlalchemy import SQLAlchemy
 from models.dispatcher import (
     CreateDispatcherFullRequest,
     CreateDispatcherFullResponse,
-    CreateDispatcherRequest,
     DispatcherResponse,
     ListDispatcherResponse,
     OfficeResponse,
+    ProfileResponse,
 )
 from models.user import UserResponse
 
@@ -39,45 +39,25 @@ class DispatcherService:
             Retorna uma lista vazia quando nenhum despachante estiver cadastrado.
         """
         results = (
-            self.db.session.query(DispatcherDB, UserDB, OfficeDB)
+            self.db.session.query(DispatcherDB, UserDB, OfficeDB, ProfileDB)
             .join(UserDB, DispatcherDB.user_id == UserDB.id)
             .join(OfficeDB, OfficeDB.dispatcher_id == DispatcherDB.id)
+            .join(ProfileDB, ProfileDB.dispatcher_id == DispatcherDB.id)
             .filter(DispatcherDB.deleted_at.is_(None))
             .all()
         )
 
         response = []
-        for dispatcher, user, office in results:
+        for dispatcher, user, office, profile in results:
             response.append(
                 CreateDispatcherFullResponse(
                     user=UserResponse.model_validate(user),
                     dispatcher=DispatcherResponse.model_validate(dispatcher),
                     office=OfficeResponse.model_validate(office),
+                    profile=ProfileResponse.model_validate(profile),
                 )
             )
         return ListDispatcherResponse(root=response).model_dump()
-
-    def get_dispatcher_by_cpf(self, dispatcher_cpf: str) -> dict:
-        """
-        Recupera um despachante a partir do CPF do usuário associado.
-
-        Args:
-            dispatcher_cpf (str): CPF do usuário vinculado ao despachante.
-        Returns:
-            dict: Dados serializados do despachante encontrado.
-        """
-        dispatcher = (
-            self.db.session.query(DispatcherDB)
-            .join(UserDB, DispatcherDB.user_id == UserDB.id)
-            .filter(UserDB.cpf == dispatcher_cpf)
-            .filter(DispatcherDB.deleted_at.is_(None))
-            .first()
-        )
-
-        if not dispatcher:
-            abort(404, description=f"Dispatcher with CPF '{dispatcher_cpf}' not found.")
-
-        return DispatcherResponse.model_validate(dispatcher).model_dump()
 
     def get_dispatcher_by_id(self, dispatcher_id: str) -> dict:
         """
@@ -96,25 +76,25 @@ class DispatcherService:
 
         user = self.db.session.query(UserDB).filter(UserDB.id == dispatcher.user_id).first()
         office = self.db.session.query(OfficeDB).filter(OfficeDB.dispatcher_id == dispatcher.id).first()
+        profile = self.db.session.query(ProfileDB).filter(ProfileDB.dispatcher_id == dispatcher.id).first()
 
         return CreateDispatcherFullResponse(
             user=UserResponse.model_validate(user),
             dispatcher=DispatcherResponse.model_validate(dispatcher),
             office=OfficeResponse.model_validate(office) if office else None,
+            profile=ProfileResponse.model_validate(profile),
         ).model_dump()
 
     def create_dispatcher(self, dispatcher_data: CreateDispatcherFullRequest) -> dict[str, Any]:
         """
-        Cria um novo despachante.
+        Cria um novo usuário, despachante, estabelecimento e perfil.
 
         Args:
-            dispatcher_data (CreateDispatcherRequest): O modelo Pydantic com os dados do novo despachante.
+            dispatcher_data (CreateDispatcherRequest): O modelo Pydantic com os dados.
         Returns:
             dict[str, Any]: Um dicionário serializado contendo o objeto recém-criado.
         """
-
         try:
-            # criar usuário
             new_user = UserDB(
                 cpf=dispatcher_data.user.cpf,
                 rg=dispatcher_data.user.rg,
@@ -128,7 +108,6 @@ class DispatcherService:
             self.db.session.add(new_user)
             self.db.session.flush()
 
-            # criar dispatcher
             new_dispatcher = DispatcherDB(
                 user_id=new_user.id,
                 regis_crdd=dispatcher_data.dispatcher.regis_crdd,
@@ -138,7 +117,6 @@ class DispatcherService:
             self.db.session.add(new_dispatcher)
             self.db.session.flush()
 
-            # criar office
             new_office = OfficeDB(
                 dispatcher_id=new_dispatcher.id,
                 contact=dispatcher_data.office.contact,
@@ -149,6 +127,13 @@ class DispatcherService:
                 state=dispatcher_data.office.state,
                 zip_code=int(dispatcher_data.office.zip_code),
             )
+            new_profile = ProfileDB(
+                dispatcher_id=new_dispatcher.id,
+                photo=dispatcher_data.profile.photo,
+                instagram=dispatcher_data.profile.instagram,
+                whatsapp=dispatcher_data.profile.whatsapp,
+                website=dispatcher_data.profile.website,
+            )
 
             self.db.session.add(new_office)
             self.db.session.commit()
@@ -157,33 +142,47 @@ class DispatcherService:
                 "user_id": new_user.id,
                 "dispatcher_id": new_dispatcher.id,
                 "office_id": new_office.id,
+                "profile_id": new_profile.id,
             }
 
         except Exception as e:
             self.db.session.rollback()
             raise e
 
-    def update_dispatcher(self, dispatcher_id: str, dispatcher_data: CreateDispatcherRequest) -> dict[str, Any]:
+    def update_dispatcher_full(self, user_id: int, data: CreateDispatcherFullRequest) -> dict:
         """
         Atualiza o despachante existente por seu ID.
 
         Args:
-            dispatcher_id: O ID do despachante a ser atualizado.
+            user_id: O ID do despachante a ser atualizado.
             dispatcher_data: O modelo Pydantic com os dados atualizados do despachante.
         Returns:
             dict[str, Any]: Um dicionário serializado contendo o objeto atualizado.
         """
-        dispatcher_to_update = DispatcherDB.query.filter(DispatcherDB.id == dispatcher_id, DispatcherDB.deleted_at.is_(None)).first()
-        if not dispatcher_to_update:
-            abort(404, description=f"Dispatcher with ID '{dispatcher_id}' not found.")
+        try:
 
-        for key, value in dispatcher_data.model_dump(mode="json").items():
-            setattr(dispatcher_to_update, key, value)
+            user = UserDB.query.filter(UserDB.id == user_id, UserDB.deleted_at.is_(None)).first()
+            if not user:
+                abort(404, description="User not found")
+            for key, value in data.user.model_dump(exclude_unset=True).items():
+                setattr(user, key, value)
 
-        dispatcher_to_update.updated_at = datetime.now()
-        self.db.session.commit()
+            dispatcher = DispatcherDB.query.filter_by(user_id=user_id).first()
+            if dispatcher:
+                for key, value in data.dispatcher.model_dump(exclude_unset=True).items():
+                    setattr(dispatcher, key, value)
 
-        return DispatcherResponse.model_validate(dispatcher_to_update).model_dump()
+            office = OfficeDB.query.filter_by(dispatcher_id=dispatcher.id).first()
+            if office:
+                for key, value in data.office.model_dump(exclude_unset=True).items():
+                    setattr(office, key, value)
+
+            self.db.session.commit()
+            return {"message": "Profile updated successfully"}
+
+        except Exception as e:
+            self.db.session.rollback()
+            raise e
 
     def delete_dispatcher(self, dispatcher_id: str) -> str:
         """
