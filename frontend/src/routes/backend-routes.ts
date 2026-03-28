@@ -36,4 +36,10 @@ export const BACKEND_ROUTES = {
     service: {
         list: `/service`,
     },
+
+    admin: {
+        listPending: `/admin/dispatchers?status=pending`,
+        approve: (id: number) => `/admin/dispatcher/${id}/approve`,
+        reject: (id: number) => `/admin/dispatcher/${id}/reject`,
+    },
 }

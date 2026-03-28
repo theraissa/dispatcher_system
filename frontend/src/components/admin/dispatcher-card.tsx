@@ -1,79 +1,52 @@
-import styled from "styled-components"
-
-const Card = styled.div`
-  background: white;
-  border: 1px solid #eaecf0;
-  border-radius: 12px;
-  padding: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`
-
-const Info = styled.div`
-  display: flex;
-  flex-direction: column;
-`
-
-const Name = styled.span`
-  font-weight: 600;
-  font-size: 16px;
-  color: #344054;
-`
-
-const Email = styled.span`
-  font-size: 14px;
-  color: #667085;
-`
-
-const Actions = styled.div`
-  display: flex;
-  gap: 10px;
-`
-
-const ApproveButton = styled.button`
-  background: #12b76a;
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 8px;
-  cursor: pointer;
-
-  &:hover {
-    background: #039855;
-  }
-`
-
-const RejectButton = styled.button`
-  background: #fee4e2;
-  color: #d92d20;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 8px;
-  cursor: pointer;
-
-  &:hover {
-    background: #fecdca;
-  }
-`
+import { CheckCircle, XCircle, Mail, User } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function AdminDispatcherCard({ dispatcher, onApprove, onReject }) {
-    return (
-        <Card>
-            <Info>
-                <Name>{dispatcher.name}</Name>
-                <Email>{dispatcher.email}</Email>
-            </Info>
+  return (
+    <div className="w-full bg-white p-5 rounded-[32px] border border-zinc-100 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 transition-all hover:shadow-md">
 
-            <Actions>
-                <ApproveButton onClick={() => onApprove(dispatcher.id)}>
-                    Aprovar
-                </ApproveButton>
+      <div className="flex items-center gap-4 w-full sm:w-auto">
+        {/* Avatar / Inicial */}
+        <div className="w-12 h-12 rounded-2xl bg-[#21314D]/5 flex items-center justify-center text-[#21314D]">
+          <User size={24} />
+        </div>
 
-                <RejectButton onClick={() => onReject(dispatcher.id)}>
-                    Reprovar
-                </RejectButton>
-            </Actions>
-        </Card>
-    )
+        {/* Informações do Despachante */}
+        <div className="flex flex-col">
+          <span className="text-base font-extrabold text-[#1E1E1E] tracking-tight">
+            {dispatcher.name}
+          </span>
+          <div className="flex items-center gap-1.5 text-zinc-500">
+            <Mail size={14} />
+            <span className="text-xs font-medium">{dispatcher.email}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Ações */}
+      <div className="flex items-center gap-3 w-full sm:w-auto border-t sm:border-t-0 pt-4 sm:pt-0">
+        <button
+          onClick={() => onReject(dispatcher.id)}
+          className={cn(
+            "flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all",
+            "bg-red-50 text-red-600 hover:bg-red-100 active:scale-95"
+          )}
+        >
+          <XCircle size={18} />
+          Reprovar
+        </button>
+
+        <button
+          onClick={() => onApprove(dispatcher.id)}
+          className={cn(
+            "flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all",
+            "bg-[#21314D] text-white hover:bg-[#1A263D] shadow-sm active:scale-95"
+          )}
+        >
+          <CheckCircle size={18} />
+          Aprovar
+        </button>
+      </div>
+    </div>
+  )
 }

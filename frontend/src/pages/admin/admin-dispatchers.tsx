@@ -1,149 +1,66 @@
-import { useEffect, useState } from "react"
-import styled from "styled-components"
-import AdminDispatcherList from "../../components/admin/dispatcher-list"
+import { useState } from "react";
+import { Search, ArrowLeft, ShieldAlert } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import AdminDispatcherList from "../../components/admin/dispatcher-list";
+import { FRONTEND_ROUTES } from "@/routes/frontend-routes";
+import { useAdminDispatchers } from "@/hooks/use-admin-dispatchers";
 
-type Dispatcher = {
-    id: number
-    name: string
-    email: string
-    cpf: string
-}
-
-// =====================
-// 🎨 Styled
-// =====================
-
-const PageContainer = styled.div`
-  padding: 32px;
-  background: #f9fafb;
-  min-height: 100vh;
-`
-
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-`
-
-const TitleSection = styled.div`
-  display: flex;
-  flex-direction: column;
-`
-
-const Title = styled.h1`
-  font-size: 24px;
-  font-weight: 700;
-  color: #101828;
-`
-
-const Subtitle = styled.span`
-  font-size: 14px;
-  color: #667085;
-`
-
-const Badge = styled.div`
-  background: #fff1f0;
-  color: #d92d20;
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 14px;
-`
-
-const SearchInput = styled.input`
-  width: 280px;
-  padding: 10px 14px;
-  border-radius: 10px;
-  border: 1px solid #d0d5dd;
-  outline: none;
-  font-size: 14px;
-
-  &:focus {
-    border-color: #213555;
-  }
-`
-
-const CardContainer = styled.div`
-  background: white;
-  border-radius: 16px;
-  padding: 24px;
-  border: 1px solid #eaecf0;
-`
-
-// =====================
-// 📺 Component
-// =====================
 
 export default function AdminDispatchers() {
-    const [dispatchers, setDispatchers] = useState<Dispatcher[]>([])
-    const [search, setSearch] = useState("")
+    const navigate = useNavigate();
+    const [search, setSearch] = useState("");
+    const { dispatchers, loading, approve, reject } = useAdminDispatchers();
 
-    useEffect(() => {
-        fetch("http://localhost:5000/api/admin/dispatchers?status=pending")
-            .then(res => res.json())
-            .then(data => setDispatchers(data))
-            .catch(err => console.error("Erro ao buscar despachantes:", err))
-    }, [])
-
-    function handleApprove(id: number) {
-        fetch(`http://localhost:5000/api/admin/dispatcher/${id}/approve`, {
-            method: "POST"
-        })
-            .then(() => {
-                setDispatchers(prev => prev.filter(d => d.id !== id))
-            })
-            .catch(err => console.error("Erro ao aprovar:", err))
-    }
-
-    function handleReject(id: number) {
-        fetch(`http://localhost:5000/api/admin/dispatcher/${id}/reject`, {
-            method: "POST"
-        })
-            .then(() => {
-                setDispatchers(prev => prev.filter(d => d.id !== id))
-            })
-            .catch(err => console.error("Erro ao rejeitar:", err))
-    }
-
-    const filteredDispatchers = dispatchers.filter(d =>
+    const filtered = dispatchers.filter(d =>
         d.name.toLowerCase().includes(search.toLowerCase()) ||
         d.email.toLowerCase().includes(search.toLowerCase())
-    )
+    );
 
     return (
-        <PageContainer>
+        <div className="min-h-screen bg-[#F8F9FA] p-6 md:p-10">
+            {/* Voltar e Header */}
+            <div className="max-w-5xl mx-auto">
+                <button
+                    onClick={() => navigate(FRONTEND_ROUTES.ADMIN.ROOT)}
+                    className="flex items-center gap-2 text-zinc-500 hover:text-[#21314D] font-bold text-sm mb-6 transition-colors"
+                >
+                    <ArrowLeft size={18} /> Voltar ao Painel
+                </button>
 
-            {/* HEADER */}
-            <Header>
-                <TitleSection>
-                    <Title>Despachantes Pendentes</Title>
-                    <Subtitle>Gerencie aprovações de cadastro</Subtitle>
-                </TitleSection>
+                <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+                    <div>
+                        <h1 className="text-2xl font-bold text-zinc-900">Aprovações Pendentes</h1>
+                        <p className="text-zinc-500 text-sm">Gerencie o ingresso de novos profissionais no sistema.</p>
+                    </div>
 
-                <Badge>
-                    {dispatchers.length} pendente{dispatchers.length !== 1 && "s"}
-                </Badge>
-            </Header>
+                    <div className="bg-red-50 text-red-600 px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2">
+                        <ShieldAlert size={16} />
+                        {dispatchers.length} aguardando
+                    </div>
+                </header>
 
-            {/* SEARCH */}
-            <div style={{ marginBottom: 20 }}>
-                <SearchInput
-                    placeholder="Buscar por nome ou email..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
+                {/* Busca */}
+                <div className="relative mb-6 group">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-[#21314D] transition-colors" size={18} />
+                    <input
+                        type="text"
+                        placeholder="Filtrar por nome ou e-mail..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="w-full h-12 pl-12 pr-4 bg-white border border-zinc-200 rounded-2xl text-sm focus:ring-2 focus:ring-[#21314D]/10 outline-none transition-all"
+                    />
+                </div>
+
+                {/* Lista */}
+                <div className="bg-white border border-zinc-100 rounded-[24px] p-2 md:p-6 shadow-sm">
+                    <AdminDispatcherList
+                        dispatchers={filtered}
+                        onApprove={approve}
+                        onReject={reject}
+                        loading={loading}
+                    />
+                </div>
             </div>
-
-            {/* CARD */}
-            <CardContainer>
-                <AdminDispatcherList
-                    dispatchers={filteredDispatchers}
-                    onApprove={handleApprove}
-                    onReject={handleReject}
-                />
-            </CardContainer>
-
-        </PageContainer>
-    )
+        </div>
+    );
 }

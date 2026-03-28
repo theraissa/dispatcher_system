@@ -1,49 +1,40 @@
 import { useState } from "react";
-import SelectServices from "./select-services";
-import ProfileContainer from "./layout/profile-container";
-import ProfileCard from "./layout/profile-card";
-import ProfileCardHeader from "./layout/profile-card-header";
-import TitleTemplate from "../../ui/title";
-import ProfileSearchContainer from "./layout/profile-search-container";
-import ProfileSearchInput from "./ui/profile-search-input";
-import ProfileEmptyState from "./layout/profile-empty-state";
-import ServiceDetails from "./profile-service-details";
-import {
-  ServiceList,
-  ServiceItem,
-  ServiceName,
-  AddServiceButton
-} from "./ui/profile-service";
-import ServiceActionButtons from "./ui/profile-buttons-action-service";
-import { useProfileServices } from "../../../hooks/use-profile-service";
+import { Plus, Search, Loader2 } from "lucide-react";
 
-type Service = {
-  id: number;
-  name: string;
-  price?: number;
-};
+import { ProfileCard, ProfileCardHeader, ProfileContainer } from "./layout/profile-card";
+import SelectServices from "./select-services";
+import ServiceDetails from "./profile-service-details";
+import ServiceActionButtons from "./ui/profile-buttons-action-service";
+import { useProfileServices } from "@/hooks/use-profile-service";
+
+
+const ServiceItem = ({ children, onClick }: { children: React.ReactNode, onClick: () => void }) => (
+  <div
+    onClick={onClick}
+    className="group flex items-center justify-between p-4 bg-zinc-50 hover:bg-white border border-transparent hover:border-zinc-200 rounded-2xl cursor-pointer transition-all hover:shadow-md"
+  >
+    {children}
+  </div>
+);
 
 export default function ProfileServices() {
   const [search, setSearch] = useState("");
   const [mode, setMode] = useState<"view" | "select" | "details">("view");
-  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [selectedService, setSelectedService] = useState<any | null>(null);
 
   const storedUser = JSON.parse(localStorage.getItem("user") || "null");
+  const { services, allServices, loading, removeService, addServices } = useProfileServices(storedUser?.id);
 
-  const {
-    services,
-    allServices,
-    loading,
-    removeService,
-    addServices
-  } = useProfileServices(storedUser?.id);
-
-  // =========================
-  // Filtro
-  // =========================
   const filteredServices = services.filter((s) =>
     s.name.toLowerCase().includes(search.toLowerCase())
   );
+
+  if (loading) return (
+    <div className="flex justify-center p-20 text-zinc-400">
+      <Loader2 className="animate-spin mr-2" /> Carregando serviços...
+    </div>
+  );
+
 
   // =========================
   // Tela de seleção
@@ -79,64 +70,63 @@ export default function ProfileServices() {
       />
     );
   }
-
-  // =========================
-  // Loading
-  // =========================
-  if (loading) {
-    return <p>Carregando serviços...</p>;
-  }
-
-  // =========================
-  // Tela principal
-  // =========================
   return (
     <ProfileContainer>
       <ProfileCard>
         <ProfileCardHeader>
-          <TitleTemplate title="Serviços Ativos" />
-          <AddServiceButton onClick={() => setMode("select")}>
-            + Novo Serviço
-          </AddServiceButton>
+          <h3 className="text-xl font-extrabold text-[#1E1E1E] tracking-tight">
+            Serviços <span className="text-[#21314D]">Ativos</span>
+          </h3>
+
+          <button
+            onClick={() => setMode("select")}
+            className="flex items-center gap-2 bg-[#21314D] text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-[#1A263D] transition-all active:scale-95 shadow-sm"
+          >
+            <Plus size={18} />
+            Novo Serviço
+          </button>
         </ProfileCardHeader>
 
-        <ProfileSearchContainer>
-          <ProfileSearchInput
+        {/* Input de Busca */}
+        <div className="relative group">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-[#21314D] transition-colors" size={18} />
+          <input
+            type="text"
             placeholder="Pesquisar em meus serviços..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            className="w-full h-12 pl-12 pr-4 bg-zinc-100 border-none rounded-2xl text-sm focus:bg-white focus:ring-2 focus:ring-[#21314D]/10 outline-none transition-all"
           />
-        </ProfileSearchContainer>
+        </div>
 
-        <ServiceList>
+        {/* Lista de Serviços */}
+        <div className="flex flex-col gap-3">
           {filteredServices.map((service) => (
-            <ServiceItem
-              key={service.id}
-              onClick={() => {
-                setSelectedService(service);
-                setMode("details");
-              }}
-            >
-              <ServiceName>{service.name}</ServiceName>
+            <ServiceItem key={service.id} onClick={() => { setSelectedService(service); setMode("details"); }}>
+              <span className="font-bold text-[#333] text-sm md:text-base">
+                {service.name}
+              </span>
 
-              <ServiceActionButtons
-                onEdit={() => {
-                  setSelectedService(service);
-                  setMode("details");
-                }}
-                onDelete={() => removeService(service.id)}
-              />
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-zinc-400 bg-zinc-100 px-3 py-1 rounded-full group-hover:bg-white transition-colors">
+                  Ver detalhes
+                </span>
+                <ServiceActionButtons
+                  onEdit={(e) => { e.stopPropagation(); setSelectedService(service); setMode("details"); }}
+                  onDelete={(e) => { e.stopPropagation(); removeService(service.id); }}
+                />
+              </div>
             </ServiceItem>
           ))}
 
           {filteredServices.length === 0 && (
-            <ProfileEmptyState>
-              <p>
-                Nenhum serviço encontrado para "<strong>{search}</strong>"
+            <div className="py-12 text-center bg-zinc-50 rounded-[32px] border-2 border-dashed border-zinc-200">
+              <p className="text-zinc-500 text-sm">
+                Nenhum serviço encontrado para <span className="text-[#21314D] font-bold">"{search}"</span>
               </p>
-            </ProfileEmptyState>
+            </div>
           )}
-        </ServiceList>
+        </div>
       </ProfileCard>
     </ProfileContainer>
   );

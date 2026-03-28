@@ -1,102 +1,71 @@
-import styled from "styled-components"
-
-const Container = styled.div`
-  display: flex;
-  justify-content: center;
-`
-
-const Card = styled.div`
-  position: relative;
-  display: flex;
-  width: 1445px;
-  max-width: 100%;
-  padding: 40px;
-  align-items: center;
-  gap: 20px;
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-`
-
-const Photo = styled.div`
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  background-color: #ddd;
-`
-
-const Info = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-`
-
-const Name = styled.h2`
-  margin: 0;
-`
-
-const Socials = styled.div`
-  margin-top: 10px;
-  display: flex;
-  gap: 20px;
-`
-
-const Social = styled.a`
-  font-size: 16px;
-  color: black;
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`
-
-const EditButton = styled.button`
-  position: absolute;
-  top: 20px;
-  right: 20px;
-
-  padding: 7px 25px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: bold;
-  
-  background-color: #333;
-  color: white;
-`
+import { InstagramIcon } from "@/components/icons/lucide-instagram";
+import { Globe, MessageCircle, Edit3, Save, Camera } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 
-export default function ProfileHeader({ user, profile, setIsEditing, isEditing }) {
-
+export default function ProfileHeader({ user, profile, isEditing, setIsEditing }) {
   return (
-    <Container>
-      <Card>
+    <div className="w-full flex justify-center mb-8">
+      <div className={cn(
+        "relative w-full bg-white p-6 md:p-8 rounded-[32px] shadow-sm border border-zinc-100",
+        "flex flex-col md:flex-row items-center gap-6"
+      )}>
 
-        <EditButton onClick={() => setIsEditing(prev => !prev)}>
-          {isEditing ? "Salvar" : "Editar"}
-        </EditButton>
+        {/* Botão de Editar/Salvar - Pequeno e no Canto */}
+        <button
+          onClick={() => setIsEditing(!isEditing)}
+          className={cn(
+            "absolute top-4 right-4 flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold transition-all",
+            isEditing
+              ? "bg-green-600 text-white hover:bg-green-700"
+              : "bg-[#21314D] text-white hover:bg-[#1A263D]"
+          )}
+        >
+          {isEditing ? <Save size={14} /> : <Edit3 size={14} />}
+          {isEditing ? "Salvar" : "Editar Perfil"}
+        </button>
 
-        {/* Foto de Perfil do Despachante */}
-        <Photo style={{
-          backgroundImage: `url(${user.photo_url || ""})`,
-          backgroundSize: "cover"
-        }} />
+        {/* Foto de Perfil com Overlay de Troca */}
+        <div className="relative group">
+          <div
+            className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-zinc-100 border-4 border-white shadow-md overflow-hidden bg-cover bg-center"
+            style={{ backgroundImage: `url(${user.photo_url || 'https://via.placeholder.com/150'})` }}
+          />
+          {isEditing && (
+            <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
+              <Camera className="text-white" size={20} />
+            </div>
+          )}
+        </div>
 
-        {/* Nome do Despachante e Link com as Redes Sociais */}
-        <Info>
-          <Name>{user.name || "Nome do Despachante"}</Name>
-          <span>{user.contact}</span>
+        {/* Informações */}
+        <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-1">
+          <h2 className="text-xl md:text-2xl font-extrabold text-[#1E1E1E] tracking-tight">
+            {user.name || "Nome do Despachante"}
+          </h2>
+          <span className="text-zinc-500 text-sm font-medium">{user.contact || "Sem contato cadastrado"}</span>
 
-          <Socials>
-            {profile.instagram && <Social href={profile.instagram}>Instagram</Social>}
-            {profile.whatsapp && <Social href={`https://wa.me/${profile.whatsapp}`}>WhatsApp</Social>}
-            {profile.website && <Social href={profile.website}>Website</Social>}
-          </Socials>
-        </Info>
+          {/* Redes Sociais com Ícones */}
+          <div className="flex gap-4 pt-3">
+            {profile.instagram && (
+              <a href={profile.instagram} target="_blank" className="text-zinc-400 hover:text-[#E4405F] transition-colors">
+                <InstagramIcon />
+              </a>
+            )}
+            {profile.whatsapp && (
+              <a href={`https://wa.me/${profile.whatsapp}`} target="_blank" className="text-zinc-400 hover:text-[#25D366] transition-colors">
+                <MessageCircle size={20} />
+              </a>
+            )}
+            {profile.website && (
+              <a href={profile.website} target="_blank" className="text-zinc-400 hover:text-[#21314D] transition-colors">
+                <Globe size={20} />
+              </a>
+            )}
+          </div>
+        </div>
 
-      </Card>
-    </Container>
-  )
+      </div>
+    </div>
+  );
 }

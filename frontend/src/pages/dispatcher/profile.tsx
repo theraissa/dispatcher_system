@@ -9,7 +9,6 @@ import { UserCircle, Briefcase } from "lucide-react"
 export default function ProfilePage() {
   const [tab, setTab] = useState<"info" | "services">("info")
 
-  // Estilo base para os botões do menu
   const menuButtonStyles = (isActive: boolean) => cn(
     "flex items-center gap-3 w-full p-3 rounded-xl text-sm font-bold transition-all duration-200",
     isActive
@@ -21,17 +20,18 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-[#F3EDE2]">
       <NavbarPage />
 
-      <main className="max-w-7xl mx-auto px-6 py-10">
-        <div className="flex flex-col lg:flex-row gap-8 items-start">
+      <main className="max-w-[1700px] mx-auto px-6 md:px-10 py-10 transition-all">
+
+        <div className="flex flex-col lg:flex-row gap-10 items-start">
 
           {/* Conteúdo Principal (Esquerda) */}
-          <div className="flex-1 w-full order-2 lg:order-1">
+          <div className="flex-[3] w-full order-2 lg:order-1 transition-all">
             {tab === "info" && <ProfileInfo />}
             {tab === "services" && <ProfileServices />}
           </div>
 
-          {/* Menu Lateral (Direita) - Stick à tela */}
-          <aside className="w-full lg:w-[220px] bg-white/50 backdrop-blur-sm p-4 rounded-[32px] shadow-sm border border-white/20 sticky top-6 order-1 lg:order-2">
+          {/* Menu Lateral (Direita) */}
+          <aside className="w-full lg:w-[220px] flex-shrink-0 bg-white/50 backdrop-blur-sm p-4 rounded-[32px] shadow-sm border border-white/20 sticky top-6 order-1 lg:order-2">
             <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-3 mb-4">
               Menu Perfil
             </p>

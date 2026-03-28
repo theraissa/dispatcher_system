@@ -1,138 +1,57 @@
-import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { Users, LayoutGrid, ArrowRight, ShieldCheck } from "lucide-react";
 import AdminDashboardCard from "../../components/admin/dashboard-card";
 
-// =====================
-// 🎨 Styled
-// =====================
-
-const PageContainer = styled.div`
-  padding: 32px;
-  background: #f9fafb;
-  min-height: 100vh;
-`;
-
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 28px;
-`;
-
-const TitleSection = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const Title = styled.h1`
-  font-size: 26px;
-  font-weight: 700;
-  color: #101828;
-`;
-
-const Subtitle = styled.span`
-  font-size: 14px;
-  color: #667085;
-`;
-
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
-`;
-
-const HighlightCard = styled.div`
-  background: linear-gradient(135deg, #213555, #3e5879);
-  color: white;
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 24px;
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const HighlightText = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const HighlightTitle = styled.span`
-  font-size: 14px;
-  opacity: 0.8;
-`;
-
-const HighlightValue = styled.span`
-  font-size: 28px;
-  font-weight: bold;
-`;
-
-const HighlightButton = styled.button`
-  background: white;
-  color: #213555;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-
-  &:hover {
-    background: #f2f4f7;
-  }
-`;
-
-// =====================
-// 📺 Component
-// =====================
-
 export default function AdminDashboard() {
-    // mock simples
-    const pendingDispatchers = 3;
-    const totalServices = 8;
+  const navigate = useNavigate();
+  const pendingDispatchers = 3;
 
-    const navigate = useNavigate();
+  return (
+    <div className="min-h-screen bg-[#F8F9FA] p-6 md:p-10 font-sans">
 
-    return (
-        <PageContainer>
+      {/* HEADER SIMPLES */}
+      <header className="mb-8">
+        <h1 className="text-2xl font-bold text-zinc-900">Painel Administrativo</h1>
+        <p className="text-zinc-500 text-sm">Gerencie o sistema de forma centralizada.</p>
+      </header>
 
-            {/* HEADER */}
-            <Header>
-                <TitleSection>
-                    <Title>Painel Administrativo</Title>
-                    <Subtitle>Gerencie o sistema de forma rápida</Subtitle>
-                </TitleSection>
-            </Header>
+      {/* CARD DE DESTAQUE (Banner) */}
+      <div className="bg-[#21314D] p-8 rounded-[24px] shadow-lg mb-8 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="flex items-center gap-5 text-white">
+          <div className="bg-white/10 p-4 rounded-xl">
+            <ShieldCheck size={28} />
+          </div>
+          <div>
+            <p className="text-xs uppercase tracking-wider opacity-70 font-semibold">Pendências</p>
+            <h2 className="text-2xl font-bold">{pendingDispatchers} Despachantes aguardando</h2>
+          </div>
+        </div>
 
-            {/* 🔥 Highlight (destaque principal) */}
-            <HighlightCard>
-                <HighlightText>
-                    <HighlightTitle>Despachantes pendentes</HighlightTitle>
-                    <HighlightValue>{pendingDispatchers}</HighlightValue>
-                </HighlightText>
+        <button
+          onClick={() => navigate("/admin/dispatcher")}
+          className="w-full md:w-auto bg-white text-[#21314D] px-6 py-3 rounded-xl font-bold text-sm hover:bg-zinc-100 transition-colors flex items-center justify-center gap-2"
+        >
+          Gerenciar <ArrowRight size={16} />
+        </button>
+      </div>
 
-                <HighlightButton onClick={() => navigate("/admin/dispatcher")}>
-                    Gerenciar
-                </HighlightButton>
-            </HighlightCard>
+      {/* GRID DE ATALHOS */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <AdminDashboardCard
+          title="Serviços"
+          description="Configuração do catálogo de serviços."
+          icon={<LayoutGrid size={22} />}
+          onClick={() => navigate("/admin/services")}
+        />
 
-            {/* 📊 Grid principal */}
-            <Grid>
-                <AdminDashboardCard
-                    title="Serviços"
-                    description="Gerencie os serviços disponíveis no sistema"
-                    extra={`${totalServices} cadastrados`}
-                    onClick={() => navigate("/admin/services")}
-                />
+        <AdminDashboardCard
+          title="Despachantes"
+          description="Aprovação e gestão de profissionais."
+          icon={<Users size={22} />}
+          onClick={() => navigate("/admin/dispatcher")}
+        />
+      </div>
 
-                <AdminDashboardCard
-                    title="Despachantes"
-                    description="Aprove ou gerencie cadastros de despachantes"
-                    extra={`${pendingDispatchers} pendentes`}
-                    onClick={() => navigate("/admin/dispatcher")}
-                />
-            </Grid>
-
-        </PageContainer>
-    );
+    </div>
+  );
 }
