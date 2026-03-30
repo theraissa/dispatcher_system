@@ -44,3 +44,19 @@ def register_dispatcher_routes(
         """Deleta um despachante no banco de dados"""
         deleted_dispatcher = dispatcher_service.delete_dispatcher(dispatcher_id)
         return jsonify(deleted_dispatcher), 200
+
+    @app.get("/api/dispatcher-system/dispatcher/search")
+    def search_dispatchers() -> Response:
+        """Busca despachantes com filtros"""
+
+        name = request.args.get("name")
+        city = request.args.get("city")
+        service = request.args.get("service")
+
+        dispatchers = dispatcher_service.search_dispatchers(
+            name=name,
+            city=city,
+            service=service,
+        )
+
+        return jsonify(dispatchers), 200

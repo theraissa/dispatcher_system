@@ -19,6 +19,12 @@ def register_users_routes(
         list_users = user_service.list_user()
         return jsonify(list_users), 200
 
+    @app.get("/api/dispatcher-system/user/<user_id>")
+    def get_user_by_id(user_id) -> Response:
+        """Obter usuários no banco de dados pelo seu identificador"""
+        user = user_service.get_user_by_id(user_id)
+        return jsonify(user), 200
+
     @app.post("/api/dispatcher-system/user")
     def create_user() -> Response:
         """Cria um usuário no banco de dados"""

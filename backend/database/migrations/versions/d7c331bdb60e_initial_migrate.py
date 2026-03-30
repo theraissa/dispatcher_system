@@ -32,7 +32,27 @@ def upgrade():
         sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=True),
         sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
         sa.PrimaryKeyConstraint("id"),
-    )
+    ),
+    op.create_table(
+        "address",
+        sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
+        sa.Column("user_id", sa.Integer(), nullable=False),
+        sa.Column("contact", sa.String(), nullable=True),
+        sa.Column("number", sa.Integer(), nullable=True),
+        sa.Column("neighborhood", sa.String(), nullable=True),
+        sa.Column("address", sa.String(), nullable=True),
+        sa.Column("city", sa.String(), nullable=True),
+        sa.Column("state", sa.String(), nullable=True),
+        sa.Column("zip_code", sa.String(), nullable=True),
+        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=True),
+        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=True),
+        sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
+        sa.ForeignKeyConstraint(
+            ["user_id"],
+            ["user.id"],
+        ),
+        sa.PrimaryKeyConstraint("id"),
+    ),
     op.create_table(
         "dispatcher",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
@@ -46,6 +66,23 @@ def upgrade():
         sa.ForeignKeyConstraint(
             ["user_id"],
             ["user.id"],
+        ),
+        sa.PrimaryKeyConstraint("id"),
+    )
+    op.create_table(
+        "dispatcher_profile",
+        sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
+        sa.Column("dispatcher_id", sa.Integer(), nullable=False),
+        sa.Column("photo", sa.String(), nullable=True),
+        sa.Column("instagram", sa.String(), nullable=True),
+        sa.Column("whatsapp", sa.String(), nullable=True),
+        sa.Column("website", sa.String(), nullable=True),
+        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=True),
+        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=True),
+        sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
+        sa.ForeignKeyConstraint(
+            ["dispatcher_id"],
+            ["dispatcher.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
     )

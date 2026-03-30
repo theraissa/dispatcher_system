@@ -6,8 +6,8 @@ from typing import Any
 from datetime import datetime
 
 from flask_sqlalchemy import SQLAlchemy
-from database.tables import UserDB
-from models.user import CreateUserRequest, UserResponse, ListUserResponse
+from database.tables import AddressDB, UserDB
+from models.user import CreateUserRequest, UpdateUserRequest, UserResponse, ListUserResponse, AddressResponse, ListUserFullResponse
 from flask import abort
 
 
@@ -50,6 +50,27 @@ class UserService:
 
         return UserResponse.model_validate(user).model_dump()
 
+    def get_user_by_id(self, user_id: str) -> dict:
+        """
+        Recupera um usuário a partir do ID.
+
+        Args:
+            user_id (str): ID do usuário.
+        Returns:
+            dict: Dados serializados do usuário encontrado.
+        """
+        user = UserDB.query.filter(UserDB.id == user_id, UserDB.deleted_at.is_(None)).first()
+
+        if not user:
+            abort(404, description=f"User with ID '{user_id}' not found.")
+
+        address = self.db.session.query(AddressDB).filter(AddressDB.id == user_id, AddressDB.deleted_at.is_(None)).first()
+
+        return ListUserFullResponse(
+            user=UserResponse.model_validate(user),
+            address=AddressResponse.model_validate(address) if address else None,
+        ).model_dump()
+
     def create_user(self, user_data: CreateUserRequest) -> dict[str, Any]:
         """
         Cria um novo usuário.
@@ -66,7 +87,7 @@ class UserService:
 
         return UserResponse.model_validate(new_user).model_dump()
 
-    def update_user(self, user_id: str, user_data: CreateUserRequest) -> dict[str, Any]:
+    def update_user(self, user_id: str, user_data: UpdateUserRequest) -> dict[str, Any]:
         """
         Atualiza usuário existente por seu ID.
 
@@ -80,13 +101,34 @@ class UserService:
         if not user_to_update:
             abort(404, description=f"User with ID '{user_id}' not found.")
 
-        for key, value in user_data.model_dump(mode="json").items():
-            setattr(user_to_update, key, value)
+        # Atualizar dados do usuário
+        if user_data.user:
+            for key, value in user_data.user.model_dump(exclude_unset=True).items():
+                setattr(user_to_update, key, value)
+
+        # Atualizar ou criar endereço
+        address = AddressDB.query.filter(AddressDB.user_id == user_id, AddressDB.deleted_at.is_(None)).first()
+        if user_data.address:
+            if address:
+                # UPDATE
+                for key, value in user_data.address.model_dump(exclude_unset=True).items():
+                    setattr(address, key, value)
+                address.updated_at = datetime.now()
+            else:
+                # CREATE
+                new_address = AddressDB(user_id=user_id, **user_data.address.model_dump(exclude_unset=True))
+                self.db.session.add(new_address)
 
         user_to_update.updated_at = datetime.now()
         self.db.session.commit()
 
-        return UserResponse.model_validate(user_to_update).model_dump()
+        # Buscar address atualizado
+        updated_address = AddressDB.query.filter(AddressDB.user_id == user_id, AddressDB.deleted_at.is_(None)).first()
+
+        return {
+            "user": UserResponse.model_validate(user_to_update).model_dump(),
+            "address": AddressResponse.model_validate(updated_address).model_dump() if updated_address else None,
+        }
 
     def delete_user(self, user_id: str) -> dict[str, Any]:
         """

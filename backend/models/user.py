@@ -31,6 +31,49 @@ class CreateUserRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
+# Modelos de resposta e criação do endereço do usuário
+class CreateAddressRequest(BaseModel):
+    """Modelo de criação do Address."""
+
+    contact: Optional[str] = None
+    number: Optional[int] = None
+    neighborhood: Optional[str] = None
+    address: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    zip_code: Optional[int] = None
+
+    model_config = ConfigDict(extra="forbid")
+
+
+class AddressResponse(BaseModel):
+    """Modelo de resposta para o Address."""
+
+    id: int
+    user_id: Optional[int]
+    contact: Optional[str]
+    number: Optional[int]
+    neighborhood: Optional[str]
+    address: Optional[str]
+    city: Optional[str]
+    state: Optional[str]
+    zip_code: Optional[int]
+    created_at: datetime
+    updated_at: datetime
+    deleted_at: Optional[datetime]
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class UpdateUserRequest(BaseModel):
+    """Modelo de atualização do UserService."""
+
+    user: Optional[CreateUserRequest] = None
+    address: Optional[CreateAddressRequest] = None
+
+    model_config = ConfigDict(extra="forbid")
+
+
 class UserResponse(BaseModel):
     """Modelo de resposta para o UserService."""
 
@@ -53,3 +96,10 @@ class ListUserResponse(RootModel):
     """Modelo de listagem para o UserService."""
 
     root: List[UserResponse]
+
+
+class ListUserFullResponse(BaseModel):
+    """Responder múltiplas tabelas ao mesmo tempo"""
+
+    user: UserResponse
+    address: Optional[AddressResponse] = None

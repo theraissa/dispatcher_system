@@ -26,6 +26,25 @@ class UserDB(db.Model):
     deleted_at = Column(DateTime(timezone=True))
 
 
+class AddressDB(db.Model):
+    """Representa um Endereço"""
+
+    __tablename__ = "address"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    contact = Column(String)
+    address = Column(String)
+    number = Column(Integer)
+    neighborhood = Column(String)
+    city = Column(String)
+    state = Column(String)
+    zip_code = Column(String)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    deleted_at = Column(DateTime(timezone=True))
+
+
 class DispatcherDB(db.Model):
     """Representa um Despachante"""
 

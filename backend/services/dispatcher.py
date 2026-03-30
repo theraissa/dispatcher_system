@@ -5,7 +5,7 @@ Módulo com implementação do serviço DispatcherService.
 from datetime import datetime
 from typing import Any
 
-from database.tables import DispatcherDB, OfficeDB, UserDB, ProfileDB
+from database.tables import DispatcherDB, OfficeDB, ServiceDetailsDB, UserDB, ProfileDB, ServiceDB
 from flask import abort
 from flask_sqlalchemy import SQLAlchemy
 from models.dispatcher import (
@@ -127,13 +127,6 @@ class DispatcherService:
                 state=dispatcher_data.office.state,
                 zip_code=int(dispatcher_data.office.zip_code),
             )
-            new_profile = ProfileDB(
-                dispatcher_id=new_dispatcher.id,
-                photo=dispatcher_data.profile.photo,
-                instagram=dispatcher_data.profile.instagram,
-                whatsapp=dispatcher_data.profile.whatsapp,
-                website=dispatcher_data.profile.website,
-            )
 
             self.db.session.add(new_office)
             self.db.session.commit()
@@ -142,7 +135,6 @@ class DispatcherService:
                 "user_id": new_user.id,
                 "dispatcher_id": new_dispatcher.id,
                 "office_id": new_office.id,
-                "profile_id": new_profile.id,
             }
 
         except Exception as e:
@@ -201,3 +193,56 @@ class DispatcherService:
         self.db.session.commit()
 
         return DispatcherResponse.model_validate(dispatcher_to_delete).model_dump()
+
+    def search_dispatchers(self, name: str | None, city: str | None, service: str | None) -> ListDispatcherResponse:
+        """
+        Busca despachantes com filtros opcionais por nome, cidade e serviço.
+
+        Args:
+            name (str | None): Filtro por nome do despachante.
+            city (str | None): Filtro por cidade do escritório do despachante.
+            service (str | None): Filtro por serviço oferecido no perfil do despachante.
+        Returns:
+            ListDispatcherResponse: Lista de despachantes que correspondem aos filtros.
+        """
+        query = (
+            self.db.session.query(DispatcherDB, UserDB, OfficeDB, ProfileDB)
+            .join(UserDB, DispatcherDB.user_id == UserDB.id)
+            .join(OfficeDB, OfficeDB.dispatcher_id == DispatcherDB.id)
+            .join(ProfileDB, ProfileDB.dispatcher_id == DispatcherDB.id)
+            .filter(DispatcherDB.deleted_at.is_(None))
+        )
+
+        # Filtrar por nome
+        if name:
+            query = query.filter(UserDB.name.ilike(f"%{name}%"))
+
+        # Filtrar por cidade
+        if city:
+            query = query.filter(OfficeDB.city.ilike(f"%{city}%"))
+
+        # Filtrar por serviço
+        if service:
+            query = (
+                query.join(ServiceDetailsDB, ServiceDetailsDB.dispatcher_id == DispatcherDB.id)
+                .join(ServiceDB, ServiceDB.id == ServiceDetailsDB.service_id)
+                .filter(ServiceDB.name.ilike(f"%{service}%"))
+            )
+
+        # paginação - limitando a 10 resultados por página
+        query = query.offset((1 - 1) * 10).limit(10)
+
+        results = query.all()
+
+        response = []
+        for dispatcher, user, office, profile in results:
+            response.append(
+                CreateDispatcherFullResponse(
+                    user=UserResponse.model_validate(user),
+                    dispatcher=DispatcherResponse.model_validate(dispatcher),
+                    office=OfficeResponse.model_validate(office),
+                    profile=ProfileResponse.model_validate(profile),
+                )
+            )
+
+        return ListDispatcherResponse(root=response).model_dump()
