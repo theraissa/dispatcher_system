@@ -28,3 +28,12 @@ export interface RegisterDispatcherRequest {
     contact: string
   }
 }
+
+/**
+ * Parâmetros para busca de despachantes (frontend).
+ */
+export type SearchDispatchersParams = {
+  name?: string;
+  city?: string;
+  service?: string;
+};

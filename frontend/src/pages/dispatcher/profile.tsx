@@ -4,6 +4,7 @@ import ProfileInfo from "../../components/dispatcher/profile/profile-info"
 import ProfileServices from "../../components/dispatcher/profile/profile-services"
 import { cn } from "@/lib/utils"
 import { UserCircle, Briefcase } from "lucide-react"
+import { dispatcherLinksNavbar } from "@/routes/frontend-routes"
 
 
 export default function ProfilePage() {
@@ -18,7 +19,7 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-[#F3EDE2]">
-      <NavbarPage />
+      <NavbarPage title="Central do Despachante" shortTitle="D" links={dispatcherLinksNavbar} />
 
       <main className="max-w-[1700px] mx-auto px-6 md:px-10 py-10 transition-all">
 

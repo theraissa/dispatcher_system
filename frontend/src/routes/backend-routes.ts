@@ -17,6 +17,8 @@ export const BACKEND_ROUTES = {
     },
 
     users: {
+        updateById: (id: string) => `/user/${id}`,
+        getById: (id: string) => `/user/${id}`,
         create: `/user`,
     },
 
@@ -31,6 +33,7 @@ export const BACKEND_ROUTES = {
         profile: (userId: string) => `/dispatcher/${userId}`,
         getById: (id: string) => `/dispatcher/${id}`,
         create: `/dispatcher`,
+        search: `/dispatcher/search`,
     },
 
     service: {

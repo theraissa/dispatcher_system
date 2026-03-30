@@ -39,9 +39,16 @@ async function request<T>(
 }
 
 export const apiClient = {
-    get: <T>(endpoint: string) =>
-        request<T>(endpoint),
+    get: <T>(endpoint: string, params?: Record<string, any>) => {
+        const query = params
+            ? "?" +
+            new URLSearchParams(
+                Object.entries(params).filter(([_, v]) => v !== "" && v != null)
+            ).toString()
+            : "";
 
+        return request<T>(endpoint + query);
+    },
     post: <T>(endpoint: string, body?: any) =>
         request<T>(endpoint, {
             method: "POST",

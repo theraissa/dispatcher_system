@@ -2,7 +2,11 @@
  * Representa os dados do usuário no sistema.
 */
 
-export interface User {
+
+/**
+ * Representa os dados do usuário.
+*/
+export type User = {
     id: number
     name: string
     cpf: string
@@ -12,12 +16,7 @@ export interface User {
     contact?: string
 }
 
-export interface Dispatcher {
-    regis_crdd: string
-    date_exp_regis: string
-}
-
-export interface Office {
+export type Address = {
     contact: string
     address: string
     number: string
@@ -27,23 +26,53 @@ export interface Office {
     state: string
 }
 
-export interface Profile {
+/*
+* Representa os dados específicos do despachante, que são adicionais aos dados do usuário.
+*/
+export type Dispatcher = {
+    regis_crdd: string
+    date_exp_regis: string
+}
+
+export type Office = {
+    contact: string
+    address: string
+    number: string
+    neighborhood: string
+    zip_code: string
+    city: string
+    state: string
+}
+
+export type Profile = {
     photo: string
     instagram: string
     whatsapp: string
     website: string
 }
 
-export interface ProfileDispatcher {
+/*
+* Representa o perfil completo do despachante, incluindo dados do usuário, despachante, escritório e perfil.
+*/
+export type ProfileDispatcher = {
     user: User
     dispatcher: Dispatcher
     office: Office
     profile: Profile
 }
 
+/**
+* Representa o perfil completo do cliente, incluindo dados do usuário.
+*/
+export type ProfileClient = {
+    user: User
+    address: Address
+}
 
-/**/
-export interface CreateUserRequest {
+/**
+ * Representa os dados necessários para criar um novo usuário.
+ */
+export type CreateUserRequest = {
     name: string
     cpf: string
     email: string
@@ -51,13 +80,15 @@ export interface CreateUserRequest {
 }
 
 
-/**/
-export interface LoginRequest {
+/**
+ * Representa os dados necessários para o login do usuário.
+ */
+export type LoginRequest = {
     email: string
     password: string
 }
 
-export interface LoginResponse {
+export type LoginResponse = {
     id: number
     name: string
     email: string
@@ -65,8 +96,10 @@ export interface LoginResponse {
     token: string
 }
 
-/**/
-export interface ApiError {
+/**
+ * Representa os dados de erro da API.
+ */
+export type ApiError = {
     message?: string
     description?: string
 }

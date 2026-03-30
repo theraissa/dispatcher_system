@@ -1,7 +1,21 @@
+import type { SearchDispatchersParams } from "@/types/dispatcher.types";
 import { Search as SearchIcon, MapPin, Briefcase } from "lucide-react";
 
+type SearchProps = {
+  filters: SearchDispatchersParams;
+  setFilters: React.Dispatch<React.SetStateAction<SearchDispatchersParams>>;
+  onSearch: () => void;
+};
 
-export default function Search() {
+export default function Search({ filters, setFilters, onSearch }: SearchProps) {
+
+  const handleChange = (field: string, value: string) => {
+    setFilters((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
   const inputContainerStyles = "relative flex-1 w-full group";
   const iconStyles = "absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-[#21314D] transition-colors";
   const inputStyles = "w-full h-12 pl-12 pr-4 bg-transparent outline-none text-sm font-medium placeholder:text-zinc-400";
@@ -15,6 +29,8 @@ export default function Search() {
         <div className={inputContainerStyles}>
           <SearchIcon className={iconStyles} size={18} />
           <input
+            value={filters.name}
+            onChange={(e) => handleChange("name", e.target.value)}
             type="text"
             placeholder="Nome do despachante..."
             className={inputStyles}
@@ -27,6 +43,8 @@ export default function Search() {
         <div className={inputContainerStyles}>
           <Briefcase className={iconStyles} size={18} />
           <input
+            value={filters.service}
+            onChange={(e) => handleChange("service", e.target.value)}
             type="text"
             placeholder="Qual serviço procura? (ex: IPVA)"
             className={inputStyles}
@@ -39,6 +57,8 @@ export default function Search() {
         <div className={inputContainerStyles}>
           <MapPin className={iconStyles} size={18} />
           <input
+            value={filters.city}
+            onChange={(e) => handleChange("city", e.target.value)}
             type="text"
             placeholder="Cidade ou região..."
             className={inputStyles}
@@ -46,7 +66,10 @@ export default function Search() {
         </div>
 
         {/* Botão de Ação */}
-        <button className="w-full lg:w-auto px-10 h-12 bg-[#21314D] text-white rounded-xl lg:rounded-full font-bold text-sm hover:bg-[#1A263D] transition-all shadow-md active:scale-95 flex items-center justify-center gap-2">
+        <button
+          onClick={onSearch}
+          className="w-full lg:w-auto px-10 h-12 bg-[#21314D] text-white rounded-xl lg:rounded-full font-bold text-sm hover:bg-[#1A263D] transition-all shadow-md active:scale-95 flex items-center justify-center gap-2"
+        >
           <SearchIcon size={16} className="lg:hidden" />
           Buscar
         </button>

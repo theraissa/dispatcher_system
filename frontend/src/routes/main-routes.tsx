@@ -10,6 +10,8 @@ import AdminDashboard from '../pages/admin/admin-dashboard.tsx';
 import AdminDispatchers from '../pages/admin/admin-dispatchers.tsx';
 
 import { FRONTEND_ROUTES } from './frontend-routes.ts';
+import ProfileClient from '@/pages/client/profile.tsx';
+import CalledClient from '@/pages/client/called.tsx';
 
 /**
  * Componente responsável por definir as rotas da aplicação.
@@ -45,7 +47,14 @@ export function MainRoutes() {
           path={FRONTEND_ROUTES.INITIAL.DISPATCHER_PROFILE}
           element={<ProfilePage />}
         />
-
+        <Route
+          path={FRONTEND_ROUTES.CLIENT.PROFILE}
+          element={<ProfileClient />}
+        />
+        <Route
+          path={FRONTEND_ROUTES.CLIENT.CALLED}
+          element={<CalledClient />}
+        />
         <Route path={FRONTEND_ROUTES.ADMIN.ROOT} element={<AdminDashboard />} />
         <Route
           path={FRONTEND_ROUTES.ADMIN.DISPATCHERS}

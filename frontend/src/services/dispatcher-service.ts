@@ -9,9 +9,6 @@ export async function getDispatcherProfile(userId: string) {
     const response = await apiClient.get<ProfileDispatcher>(
         BACKEND_ROUTES.dispatcher.profile(userId)
     )
-
-    console.log("RAW RESPONSE:", response)
-    console.log("RAW:", response)
     return response
 }
 

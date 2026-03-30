@@ -30,6 +30,7 @@ export function useDispatcherProfile(userId: string) {
             return
         }
 
+        // Função para buscar os dados do perfil do despachante
         async function fetchData() {
             console.log("Buscando perfil...")
 
@@ -50,6 +51,7 @@ export function useDispatcherProfile(userId: string) {
         fetchData()
     }, [userId])
 
+    // Função genérica para atualizar campos do perfil
     function handleChange<
         T extends keyof ProfileDispatcher
     >(
@@ -70,6 +72,7 @@ export function useDispatcherProfile(userId: string) {
         })
     }
 
+    // Função para enviar atualizações para a API
     async function handleSubmit() {
         if (!data) return
 
