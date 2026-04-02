@@ -12,7 +12,7 @@ def register_admin_routes(
 ) -> None:
     """Registra as rotas do admnistrador na aplicação Flask."""
 
-    @app.get("/api/admin/dispatchers")
+    @app.get("/api/dispatcher-system/admin/dispatchers")
     def list_dispatchers():
         """
         Lista despachantes filtrando por status.
@@ -26,7 +26,7 @@ def register_admin_routes(
 
         return jsonify(result), 200
 
-    @app.post("/api/admin/dispatcher/<int:dispatcher_id>/approve")
+    @app.post("/api/dispatcher-system/admin/dispatcher/<int:dispatcher_id>/approve")
     def approve_dispatcher(dispatcher_id):
         """
         Aprova um despachante.
@@ -34,7 +34,7 @@ def register_admin_routes(
         result = admin_service.approve_dispatcher(dispatcher_id)
         return jsonify(result), 200
 
-    @app.post("/api/admin/dispatcher/<int:dispatcher_id>/reject")
+    @app.post("/api/dispatcher-system/dispatcher/<int:dispatcher_id>/reject")
     def reject_dispatcher(dispatcher_id):
         """
         Reprova um despachante.

@@ -47,16 +47,7 @@ def register_dispatcher_routes(
 
     @app.get("/api/dispatcher-system/dispatcher/search")
     def search_dispatchers() -> Response:
-        """Busca despachantes com filtros"""
-
-        name = request.args.get("name")
-        city = request.args.get("city")
-        service = request.args.get("service")
-
-        dispatchers = dispatcher_service.search_dispatchers(
-            name=name,
-            city=city,
-            service=service,
-        )
-
+        """Busca despachantes com filtro único"""
+        query = request.args.get("query")
+        dispatchers = dispatcher_service.search_dispatchers(query)
         return jsonify(dispatchers), 200

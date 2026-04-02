@@ -14,7 +14,7 @@ class LoginUserRequest(BaseModel):
     email: Optional[str]
     password: Optional[str]
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
 
 class CreateUserRequest(BaseModel):
@@ -28,7 +28,7 @@ class CreateUserRequest(BaseModel):
     email: Optional[str] = None
     password: Optional[str] = None
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
 
 # Modelos de resposta e criação do endereço do usuário
@@ -41,9 +41,9 @@ class CreateAddressRequest(BaseModel):
     address: Optional[str] = None
     city: Optional[str] = None
     state: Optional[str] = None
-    zip_code: Optional[int] = None
+    zip_code: Optional[str] = None
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
 
 class AddressResponse(BaseModel):
@@ -57,7 +57,7 @@ class AddressResponse(BaseModel):
     address: Optional[str]
     city: Optional[str]
     state: Optional[str]
-    zip_code: Optional[int]
+    zip_code: Optional[str]
     created_at: datetime
     updated_at: datetime
     deleted_at: Optional[datetime]
@@ -71,7 +71,7 @@ class UpdateUserRequest(BaseModel):
     user: Optional[CreateUserRequest] = None
     address: Optional[CreateAddressRequest] = None
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
 
 class UserResponse(BaseModel):

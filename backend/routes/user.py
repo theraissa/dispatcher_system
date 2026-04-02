@@ -3,7 +3,7 @@ Módulo de rotas relacionadas aos usuários.
 """
 
 from flask import Flask, Response, jsonify, request
-from models.user import CreateUserRequest
+from models.user import CreateUserRequest, UpdateUserRequest
 from services.user import UserService
 
 
@@ -35,7 +35,7 @@ def register_users_routes(
     @app.put("/api/dispatcher-system/user/<user_id>")
     def update_user(user_id) -> Response:
         """Atualiza um usuário no banco de dados"""
-        body = CreateUserRequest.model_validate(request.get_json())
+        body = UpdateUserRequest.model_validate(request.get_json())
         updated_user = user_service.update_user(user_id, body)
         return jsonify(updated_user), 200
 

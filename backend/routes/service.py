@@ -13,27 +13,27 @@ def register_service_routes(
 ) -> None:
     """Registra as rotas dos serviços na aplicação Flask."""
 
-    @app.get("/api/dispatcher-system/service")
+    @app.get("/api/dispatcher-system/admin/service")
     def list_service() -> Response:
         """Lista os serviços no banco de dados"""
         list_services = service.list_service()
         return jsonify(list_services), 200
 
-    @app.post("/api/dispatcher-system/service")
+    @app.post("/api/dispatcher-system/admin/service")
     def create_service() -> Response:
         """Cria um serviço no banco de dados"""
         body = CreateServiceRequest.model_validate(request.get_json())
         created_service = service.create_service(body)
         return jsonify(created_service), 201
 
-    @app.put("/api/dispatcher-system/service/<service_id>")
+    @app.put("/api/dispatcher-system/admin/service/<service_id>")
     def update_service(service_id) -> Response:
         """Atualiza um serviço no banco de dados"""
         body = CreateServiceRequest.model_validate(request.get_json())
         updated_service = service.update_service(service_id, body)
         return jsonify(updated_service), 200
 
-    @app.delete("/api/dispatcher-system/service/<service_id>")
+    @app.delete("/api/dispatcher-system/admin/service/<service_id>")
     def delete_service(service_id) -> Response:
         """Deleta um serviço no banco de dados"""
         deleted_service = service.delete_service(service_id)

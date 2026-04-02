@@ -60,11 +60,10 @@ class UserService:
             dict: Dados serializados do usuário encontrado.
         """
         user = UserDB.query.filter(UserDB.id == user_id, UserDB.deleted_at.is_(None)).first()
-
         if not user:
             abort(404, description=f"User with ID '{user_id}' not found.")
 
-        address = self.db.session.query(AddressDB).filter(AddressDB.id == user_id, AddressDB.deleted_at.is_(None)).first()
+        address = AddressDB.query.filter(AddressDB.user_id == user_id, AddressDB.deleted_at.is_(None)).first()
 
         return ListUserFullResponse(
             user=UserResponse.model_validate(user),

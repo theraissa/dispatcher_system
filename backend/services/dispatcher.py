@@ -17,6 +17,7 @@ from models.dispatcher import (
     ProfileResponse,
 )
 from models.user import UserResponse
+from sqlalchemy import or_
 
 
 class DispatcherService:
@@ -194,7 +195,7 @@ class DispatcherService:
 
         return DispatcherResponse.model_validate(dispatcher_to_delete).model_dump()
 
-    def search_dispatchers(self, name: str | None, city: str | None, service: str | None) -> ListDispatcherResponse:
+    def search_dispatchers(self, query: str | None) -> ListDispatcherResponse:
         """
         Busca despachantes com filtros opcionais por nome, cidade e serviço.
 
@@ -205,7 +206,7 @@ class DispatcherService:
         Returns:
             ListDispatcherResponse: Lista de despachantes que correspondem aos filtros.
         """
-        query = (
+        base_query = (
             self.db.session.query(DispatcherDB, UserDB, OfficeDB, ProfileDB)
             .join(UserDB, DispatcherDB.user_id == UserDB.id)
             .join(OfficeDB, OfficeDB.dispatcher_id == DispatcherDB.id)
@@ -213,26 +214,25 @@ class DispatcherService:
             .filter(DispatcherDB.deleted_at.is_(None))
         )
 
-        # Filtrar por nome
-        if name:
-            query = query.filter(UserDB.name.ilike(f"%{name}%"))
+        if query:
+            search = f"%{query}%"
 
-        # Filtrar por cidade
-        if city:
-            query = query.filter(OfficeDB.city.ilike(f"%{city}%"))
-
-        # Filtrar por serviço
-        if service:
-            query = (
-                query.join(ServiceDetailsDB, ServiceDetailsDB.dispatcher_id == DispatcherDB.id)
-                .join(ServiceDB, ServiceDB.id == ServiceDetailsDB.service_id)
-                .filter(ServiceDB.name.ilike(f"%{service}%"))
+            base_query = (
+                base_query.outerjoin(ServiceDetailsDB, ServiceDetailsDB.dispatcher_id == DispatcherDB.id)
+                .outerjoin(ServiceDB, ServiceDB.id == ServiceDetailsDB.service_id)
+                .filter(
+                    or_(
+                        UserDB.name.ilike(search),
+                        OfficeDB.city.ilike(search),
+                        ServiceDB.name.ilike(search),
+                    )
+                )
             )
 
-        # paginação - limitando a 10 resultados por página
-        query = query.offset((1 - 1) * 10).limit(10)
+        # paginação
+        base_query = base_query.offset(0).limit(10)
 
-        results = query.all()
+        results = base_query.all()
 
         response = []
         for dispatcher, user, office, profile in results:
