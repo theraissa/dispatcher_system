@@ -23,6 +23,7 @@ export const FRONTEND_ROUTES = {
     CLIENT: {
         PROFILE: "/client/profile",
         CALLED: "/client/called",
+        CARD_PROFILE_DISPATCHER_BY_ID: (id: string) => `/client/profile-dispatcher/${id}`,
     },
 
     ADMIN: {

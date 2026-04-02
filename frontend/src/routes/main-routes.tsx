@@ -12,6 +12,8 @@ import AdminDispatchers from '../pages/admin/admin-dispatchers.tsx';
 import { FRONTEND_ROUTES } from './frontend-routes.ts';
 import ProfileClient from '@/pages/client/profile.tsx';
 import CalledClient from '@/pages/client/called.tsx';
+import AdminServices from '@/pages/admin/admin-service.tsx';
+import CardProfileDispatcher from '@/pages/client/card-profile-dispatcher.tsx';
 
 /**
  * Componente responsável por definir as rotas da aplicação.
@@ -20,16 +22,18 @@ export function MainRoutes() {
   return (
     <BrowserRouter>
       <Routes>
+
+        // Rotas públicas
         <Route
           path={FRONTEND_ROUTES.HOME}
           element={<Home />}
         />
-
         <Route
           path={FRONTEND_ROUTES.LOGIN}
           element={<Login />}
         />
 
+        // Register routes
         <Route
           path={FRONTEND_ROUTES.REGISTER.CLIENT}
           element={<ClientRecord />}
@@ -39,6 +43,7 @@ export function MainRoutes() {
           element={<DispatcherRecord />}
         />
 
+        // Initial routes
         <Route
           path={FRONTEND_ROUTES.INITIAL.SEARCH_DISPATCHER}
           element={<InitialSearchDisp />}
@@ -47,6 +52,8 @@ export function MainRoutes() {
           path={FRONTEND_ROUTES.INITIAL.DISPATCHER_PROFILE}
           element={<ProfilePage />}
         />
+
+        // Client routes
         <Route
           path={FRONTEND_ROUTES.CLIENT.PROFILE}
           element={<ProfileClient />}
@@ -55,14 +62,22 @@ export function MainRoutes() {
           path={FRONTEND_ROUTES.CLIENT.CALLED}
           element={<CalledClient />}
         />
-        <Route path={FRONTEND_ROUTES.ADMIN.ROOT} element={<AdminDashboard />} />
+        <Route
+          path={FRONTEND_ROUTES.CLIENT.CARD_PROFILE_DISPATCHER_BY_ID(":id")}
+          element={<CardProfileDispatcher />}
+        />
+        // Admin routes
+        <Route
+          path={FRONTEND_ROUTES.ADMIN.ROOT}
+          element={<AdminDashboard />}
+        />
         <Route
           path={FRONTEND_ROUTES.ADMIN.DISPATCHERS}
           element={<AdminDispatchers />}
         />
         <Route
           path={FRONTEND_ROUTES.ADMIN.SERVICES}
-          element={<AdminDispatchers />}
+          element={<AdminServices />}
         />
       </Routes>
     </BrowserRouter>
