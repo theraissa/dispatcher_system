@@ -1,76 +1,36 @@
-import type { SearchDispatchersParams } from "@/types/dispatcher.types";
-import { Search as SearchIcon, MapPin, Briefcase } from "lucide-react";
+import { Search as SearchIcon } from "lucide-react";
 
 type SearchProps = {
-  filters: SearchDispatchersParams;
-  setFilters: React.Dispatch<React.SetStateAction<SearchDispatchersParams>>;
+  input: string;
+  setInput: (value: string) => void;
   onSearch: () => void;
 };
 
-export default function Search({ filters, setFilters, onSearch }: SearchProps) {
-
-  const handleChange = (field: string, value: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const inputContainerStyles = "relative flex-1 w-full group";
-  const iconStyles = "absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-[#21314D] transition-colors";
-  const inputStyles = "w-full h-12 pl-12 pr-4 bg-transparent outline-none text-sm font-medium placeholder:text-zinc-400";
-  const dividerStyles = "hidden lg:block w-px h-8 bg-zinc-200";
+export default function Search({ input, setInput, onSearch }: SearchProps) {
 
   return (
-    <div className="w-full max-w-6xl mx-auto mb-12 px-4">
-      <div className="flex flex-col lg:flex-row items-center gap-3 bg-white p-2 rounded-[24px] lg:rounded-full shadow-sm border border-zinc-100">
+    <div className="w-full max-w-3xl mx-auto mb-12 px-4">
+      <div className="flex items-center gap-3 bg-white p-2 rounded-full shadow-sm border border-zinc-100">
 
-        {/* 1. Busca por Nome/Despachante */}
-        <div className={inputContainerStyles}>
-          <SearchIcon className={iconStyles} size={18} />
+        <div className="relative flex-1 group">
+          <SearchIcon
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-[#21314D]"
+            size={18}
+          />
+
           <input
-            value={filters.name}
-            onChange={(e) => handleChange("name", e.target.value)}
-            type="text"
-            placeholder="Nome do despachante..."
-            className={inputStyles}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Buscar por nome, serviço ou cidade..."
+            className="w-full h-12 pl-12 pr-4 bg-transparent outline-none text-sm font-medium placeholder:text-zinc-400"
           />
         </div>
 
-        <div className={dividerStyles} />
-
-        {/* 2. NOVO: Busca por Serviço */}
-        <div className={inputContainerStyles}>
-          <Briefcase className={iconStyles} size={18} />
-          <input
-            value={filters.service}
-            onChange={(e) => handleChange("service", e.target.value)}
-            type="text"
-            placeholder="Qual serviço procura? (ex: IPVA)"
-            className={inputStyles}
-          />
-        </div>
-
-        <div className={dividerStyles} />
-
-        {/* 3. Busca por Município */}
-        <div className={inputContainerStyles}>
-          <MapPin className={iconStyles} size={18} />
-          <input
-            value={filters.city}
-            onChange={(e) => handleChange("city", e.target.value)}
-            type="text"
-            placeholder="Cidade ou região..."
-            className={inputStyles}
-          />
-        </div>
-
-        {/* Botão de Ação */}
         <button
           onClick={onSearch}
-          className="w-full lg:w-auto px-10 h-12 bg-[#21314D] text-white rounded-xl lg:rounded-full font-bold text-sm hover:bg-[#1A263D] transition-all shadow-md active:scale-95 flex items-center justify-center gap-2"
+          className="px-8 h-12 bg-[#21314D] text-white rounded-full font-bold text-sm hover:bg-[#1A263D] transition-all shadow-md active:scale-95 flex items-center gap-2"
         >
-          <SearchIcon size={16} className="lg:hidden" />
+          <SearchIcon size={16} />
           Buscar
         </button>
       </div>

@@ -1,6 +1,10 @@
+import { FRONTEND_ROUTES } from "@/routes/frontend-routes";
 import { User, MapPin } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function CardDispatcher({ dispatchers, loading }) {
+
+  const navigate = useNavigate();
 
   if (loading) {
     return (
@@ -23,6 +27,13 @@ export default function CardDispatcher({ dispatchers, loading }) {
       {dispatchers.map((dispatcher) => (
         <div
           key={dispatcher.dispatcher.id}
+          onClick={() =>
+            navigate(
+              FRONTEND_ROUTES.CLIENT.CARD_PROFILE_DISPATCHER_BY_ID(
+                dispatcher.dispatcher.id
+              )
+            )
+          }
           className="group bg-white p-4 rounded-[32px] shadow-sm border border-zinc-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer"
         >
           {/* Foto */}
