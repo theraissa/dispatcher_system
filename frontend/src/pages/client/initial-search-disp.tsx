@@ -6,19 +6,15 @@ import { useSearchDispatchers } from "@/hooks/use-search-dispatcher";
 import { clientLinksNavbar } from "@/routes/frontend-routes";
 
 export default function InitialSearchDisp() {
-  const [filters, setFilters] = useState({
-    name: "",
-    service: "",
-    city: "",
-  });
 
-  const [appliedFilters, setAppliedFilters] = useState(filters);
-  const { data, loading } = useSearchDispatchers(appliedFilters);
+  const [input, setInput] = useState("");
+  const [query, setQuery] = useState("");
+
+  const { data, loading } = useSearchDispatchers(query);
 
   const handleSearch = () => {
-    setAppliedFilters(filters);
+    setQuery(input);
   };
-
 
   return (
     <div className="min-h-screen bg-[#F3EDE2]">
@@ -35,10 +31,11 @@ export default function InitialSearchDisp() {
         </div>
 
         <Search
-          filters={filters}
-          setFilters={setFilters}
+          input={input}
+          setInput={setInput}
           onSearch={handleSearch}
         />
+
         <CardDispatcher dispatchers={data} loading={loading} />
       </main>
     </div>
