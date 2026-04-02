@@ -1,20 +1,25 @@
 import { searchDispatchers } from "@/services/search-dispatcher";
-import type { SearchDispatchersParams } from "@/types/dispatcher.types";
 import { useEffect, useState } from "react";
 
 
-export function useSearchDispatchers(filters: SearchDispatchersParams) {
+/**
+ * Hook personalizado para buscar despachantes com base em uma query de pesquisa.
+ */
+export function useSearchDispatchers(query: string) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (!query) return;
+
+    // Função assíncrona para buscar os despachantes com base na query
     const fetchDispatchers = async () => {
       try {
         setLoading(true);
 
-        const result = await searchDispatchers(filters);        
+        const result = await searchDispatchers(query);
         setData(result);
-        
+
       } catch (error) {
         console.error("Erro ao buscar despachantes", error);
       } finally {
@@ -23,7 +28,7 @@ export function useSearchDispatchers(filters: SearchDispatchersParams) {
     };
 
     fetchDispatchers();
-  }, [filters]);
+  }, [query]);
 
   return { data, loading };
 }

@@ -10,7 +10,6 @@ export function useClientProfile(userId: string) {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        console.log("USER ID:", userId)
         if (!userId) {
             setLoading(false)
             return
@@ -38,7 +37,7 @@ export function useClientProfile(userId: string) {
     >(
         entity: T,
         field: keyof ProfileClient[T],
-        value: string
+        value: any
     ) {
         setData(prev => {
             if (!prev) return prev
@@ -46,7 +45,7 @@ export function useClientProfile(userId: string) {
             return {
                 ...prev,
                 [entity]: {
-                    ...prev[entity],
+                    ...(prev[entity] ?? {}),
                     [field]: value
                 }
             }
@@ -57,6 +56,7 @@ export function useClientProfile(userId: string) {
     async function handleSubmit() {
         if (!data) return
 
+        console.log("ANTES DE ENVIAR:", data)
         await updateClientProfile(userId, data)
     }
 

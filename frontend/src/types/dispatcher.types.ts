@@ -1,7 +1,7 @@
 /**
  * Formulário de cadastro de despachante (frontend).
  */
-export interface RegisterDispatcherRequest {
+export type RegisterDispatcherRequest = {
   user: {
     name: string
     cpf: string
@@ -28,12 +28,3 @@ export interface RegisterDispatcherRequest {
     contact: string
   }
 }
-
-/**
- * Parâmetros para busca de despachantes (frontend).
- */
-export type SearchDispatchersParams = {
-  name?: string;
-  city?: string;
-  service?: string;
-};
