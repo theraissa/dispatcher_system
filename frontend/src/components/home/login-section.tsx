@@ -13,7 +13,7 @@ export default function LoginSection() {
   }
 
   return (
-    <section className="relative flex flex-col items-center justify-center py-20 md:py-32 px-6 bg-[#D8C4B6]">
+    <section className="relative flex flex-col items-center justify-center py-20 md:py-50 px-6 bg-[#D8C4B6]">
       {/* Sutil detalhe de fundo */}
       <div className="absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(#21314D_1px,transparent_1px)] [background-size:16px_16px]" />
 

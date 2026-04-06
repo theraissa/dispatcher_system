@@ -26,7 +26,7 @@ export default function CarouselSection() {
   ];
 
   return (
-    <section id="carousel-section" className="py-20 px-6 bg-[#F5EFE7]">
+    <section id="carousel-section" className="py-30 px-6 bg-[#F5EFE7]">
       <div className="max-w-7xl mx-auto">
         {/* Título da Seção (Opcional, mas ajuda no contexto) */}
         <div className="mb-12 text-center md:text-left">

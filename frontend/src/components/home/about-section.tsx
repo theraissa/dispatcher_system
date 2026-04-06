@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 
 export default function AboutSection() {
   return (
-    <section id="about-section" className="py-20 px-6 bg-[#D8C4B6] flex justify-center items-center">
+    <section id="about-section" className="py-30 px-6 bg-[#D8C4B6] flex justify-center items-center">
       {/* Container Principal: Card Branco com Bordas Arredondadas */}
       <div className={cn(
         "max-w-4xl w-full bg-white p-10 md:p-16",
