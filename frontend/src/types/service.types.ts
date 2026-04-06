@@ -17,3 +17,14 @@ export type ServiceResponse = {
     created_at?: string;
     updated_at?: string;
 };
+
+
+
+/* 
+* Representa os dados de um serviço, incluindo o preço definido pelo despachante
+*/
+export type ServiceDetail = {
+    id: number
+    name: string
+    price?: number
+}

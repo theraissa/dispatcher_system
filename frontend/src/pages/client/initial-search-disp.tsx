@@ -7,13 +7,15 @@ import { clientLinksNavbar } from "@/routes/frontend-routes";
 
 export default function InitialSearchDisp() {
 
-  const [input, setInput] = useState("");
-  const [query, setQuery] = useState("");
+  const [input, setInput] = useState(""); // Estado para o valor do input de busca
+  const [query, setQuery] = useState(""); // Estado para a query que será enviada para a API
+  const [hasSearched, setHasSearched] = useState(false); // Estado para controlar se o usuário já realizou uma busca
 
   const { data, loading } = useSearchDispatchers(query);
 
   const handleSearch = () => {
     setQuery(input);
+    setHasSearched(true);
   };
 
   return (
@@ -36,7 +38,11 @@ export default function InitialSearchDisp() {
           onSearch={handleSearch}
         />
 
-        <CardDispatcher dispatchers={data} loading={loading} />
+        <CardDispatcher
+          dispatchers={data}
+          loading={loading}
+          hasSearched={hasSearched}
+        />
       </main>
     </div>
   );

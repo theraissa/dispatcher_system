@@ -17,14 +17,14 @@
  */
 import { useEffect, useState } from "react"
 import { getDispatcherProfile, updateDispatcherProfile } from "../services/dispatcher-service"
-import type { ProfileDispatcher } from "../types/type"
+import type { ProfileDispatcher } from "@/types/dispatcher.types"
 
 export function useDispatcherProfile(userId: string) {
     const [data, setData] = useState<ProfileDispatcher | null>(null)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        console.log("USER ID:", userId)
+
         if (!userId) {
             setLoading(false)
             return
@@ -32,13 +32,8 @@ export function useDispatcherProfile(userId: string) {
 
         // Função para buscar os dados do perfil do despachante
         async function fetchData() {
-            console.log("Buscando perfil...")
-
             try {
                 const profile = await getDispatcherProfile(userId)
-
-                console.log("PROFILE RECEBIDO:", profile)
-
                 setData(profile)
             } catch (error) {
                 console.error("ERRO AO BUSCAR PERFIL:", error)
@@ -75,7 +70,6 @@ export function useDispatcherProfile(userId: string) {
     // Função para enviar atualizações para a API
     async function handleSubmit() {
         if (!data) return
-
         await updateDispatcherProfile(userId, data)
     }
 

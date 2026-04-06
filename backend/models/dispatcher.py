@@ -9,7 +9,6 @@ from models.user import CreateUserRequest, UserResponse
 from pydantic import BaseModel, ConfigDict, RootModel
 
 
-# Modelos de resposta e criação do Despachante
 class CreateDispatcherRequest(BaseModel):
     """Modelo de criação do DispatcherService."""
 
@@ -33,7 +32,6 @@ class DispatcherResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-# Modelos de resposta e criação do Escritório do Despachante
 class CreateOfficeRequest(BaseModel):
     """Modelo de criação do Office."""
 
@@ -67,7 +65,6 @@ class OfficeResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-# Modelos de resposta e criação do Perfil do Despachante
 class CreateProfileRequest(BaseModel):
     """Modelo de criação do Profile."""
 
@@ -95,7 +92,6 @@ class ProfileResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-# Modelo final que vai criar usuário, despachante e o escritório
 class CreateDispatcherFullRequest(BaseModel):
     """Criar múltiplas tabelas ao mesmo tempo"""
 

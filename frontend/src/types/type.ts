@@ -1,9 +1,4 @@
 /**
- * Representa os dados do usuário no sistema.
-*/
-
-
-/**
  * Representa os dados do usuário.
 */
 export type User = {
@@ -14,8 +9,13 @@ export type User = {
     rg?: string
     date_birth?: string
     contact?: string
+    password?: string
+    confirm_password?: string
 }
 
+/**
+ * Representa os dados do endereço do usuário.
+*/
 export type Address = {
     contact: string
     address: string
@@ -26,14 +26,18 @@ export type Address = {
     state: string
 }
 
+
 /*
-* Representa os dados específicos do despachante, que são adicionais aos dados do usuário.
+* Representa os dados específicos do despachante.
 */
 export type Dispatcher = {
     regis_crdd: string
     date_exp_regis: string
 }
 
+/*
+* Representa os dados específicos do escritório do despachante.
+*/
 export type Office = {
     contact: string
     address: string
@@ -44,41 +48,15 @@ export type Office = {
     state: string
 }
 
+/*
+* Representa os dados específicos do perfil do despachante.
+*/
 export type Profile = {
     photo: string
     instagram: string
     whatsapp: string
     website: string
 }
-
-/*
-* Representa o perfil completo do despachante, incluindo dados do usuário, despachante, escritório e perfil.
-*/
-export type ProfileDispatcher = {
-    user: User
-    dispatcher: Dispatcher
-    office: Office
-    profile: Profile
-}
-
-/**
-* Representa o perfil completo do cliente, incluindo dados do usuário.
-*/
-export type ProfileClient = {
-    user: User
-    address: Address
-}
-
-/**
- * Representa os dados necessários para criar um novo usuário.
- */
-export type CreateUserRequest = {
-    name: string
-    cpf: string
-    email: string
-    password: string
-}
-
 
 /**
  * Representa os dados necessários para o login do usuário.

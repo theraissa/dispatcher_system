@@ -1,18 +1,14 @@
+import type { ServiceDetail } from "@/types/service.types"
 import { BACKEND_ROUTES } from "../routes/backend-routes"
 import { apiClient } from "./api-client"
 
 
-type Service = {
-    id: number
-    name: string
-    price?: number
-}
 
 /**
  * Busca os serviços do despachante
  */
 export async function getDispatcherServices(userId: number) {
-    return apiClient.get<Service[]>(
+    return apiClient.get<ServiceDetail[]>(
         BACKEND_ROUTES.dispatcher.services(userId)
     )
 }
@@ -21,7 +17,7 @@ export async function getDispatcherServices(userId: number) {
  * Busca catálogo global de serviços
  */
 export async function getAllServices() {
-    return apiClient.get<Service[]>(
+    return apiClient.get<ServiceDetail[]>(
         BACKEND_ROUTES.service.list
     )
 }

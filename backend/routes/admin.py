@@ -34,7 +34,7 @@ def register_admin_routes(
         result = admin_service.approve_dispatcher(dispatcher_id)
         return jsonify(result), 200
 
-    @app.post("/api/dispatcher-system/dispatcher/<int:dispatcher_id>/reject")
+    @app.post("/api/dispatcher-system/admin/dispatcher/<int:dispatcher_id>/reject")
     def reject_dispatcher(dispatcher_id):
         """
         Reprova um despachante.

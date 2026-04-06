@@ -6,23 +6,16 @@ import {
     addDispatcherService,
     updateDispatcherService
 } from "../services/profile-service"
+import type { ServiceDetail } from "@/types/service.types"
 
 
-/*
- * Tipagem para os serviços
- */
-type Service = {
-    id: number
-    name: string
-    price?: number
-}
 
 /**
  * Hook personalizado para gerenciar os serviços do perfil do despachante.
  */
 export function useProfileServices(userId: number) {
-    const [services, setServices] = useState<Service[]>([])
-    const [allServices, setAllServices] = useState<Service[]>([])
+    const [services, setServices] = useState<ServiceDetail[]>([])
+    const [allServices, setAllServices] = useState<ServiceDetail[]>([])
     const [loading, setLoading] = useState(true)
 
     // Busca os serviços do despachante e a lista completa de serviços disponíveis
@@ -43,6 +36,7 @@ export function useProfileServices(userId: number) {
         fetchData().finally(() => setLoading(false))
     }, [userId])
 
+
     // Função para remover um serviço do perfil do despachante
     async function removeService(serviceId: number) {
         await removeDispatcherService(userId, serviceId)
@@ -51,7 +45,7 @@ export function useProfileServices(userId: number) {
     }
 
     // Função para adicionar novos serviços ao perfil do despachante
-    async function addServices(newServices: Service[]) {
+    async function addServices(newServices: ServiceDetail[]) {
         await Promise.all(
             newServices.map(service =>
                 addDispatcherService(userId, service.id)

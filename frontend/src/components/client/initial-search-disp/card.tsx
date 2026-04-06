@@ -2,7 +2,7 @@ import { FRONTEND_ROUTES } from "@/routes/frontend-routes";
 import { User, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-export default function CardDispatcher({ dispatchers, loading }) {
+export default function CardDispatcher({ dispatchers, loading, hasSearched }) {
 
   const navigate = useNavigate();
 
@@ -10,6 +10,14 @@ export default function CardDispatcher({ dispatchers, loading }) {
     return (
       <p className="col-span-full text-center text-zinc-400">
         Carregando despachantes...
+      </p>
+    );
+  }
+
+  if (!hasSearched) {
+    return (
+      <p className="col-span-full text-center text-zinc-400">
+        Busque por um despachante para começar.
       </p>
     );
   }

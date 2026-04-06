@@ -1,30 +1,30 @@
+import type { Dispatcher, Office, Profile, User } from "./type"
+
+
 /**
  * Formulário de cadastro de despachante (frontend).
  */
 export type RegisterDispatcherRequest = {
-  user: {
-    name: string
-    cpf: string
-    rg: string
-    date_birth: string
-    contact: string
-    email: string
-    password: string
-    confirm_password: string
-  }
+  user: User
+  dispatcher: Dispatcher
+  office: Office
+}
 
-  dispatcher: {
-    regis_crdd: string
-    date_exp_regis: string
-  }
+/**
+ * Representa a resposta da API ao criar um despachante.
+ */
+export type RegisterDispatcherResponse = {
+  user_id: number
+  dispatcher_id: number
+  office_id: number
+}
 
-  office: {
-    address: string
-    number: string
-    neighborhood: string
-    zip_code: string
-    city: string
-    state: string
-    contact: string
-  }
+/*
+* Representa o perfil completo do despachante, incluindo dados do usuário, despachante, escritório e perfil.
+*/
+export type ProfileDispatcher = {
+  user: User
+  dispatcher: Dispatcher
+  office: Office
+  profile: Profile
 }

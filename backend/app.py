@@ -1,6 +1,6 @@
 """Módulo principal do backend"""
 
-from flask import Flask, Response, jsonify, request
+from flask import Flask, Response, jsonify, request, g
 from flask_cors import CORS
 from flask_migrate import upgrade
 
@@ -13,10 +13,11 @@ from services.dispatcher import DispatcherService
 from services.user import UserService
 from services.auth import AuthService
 from services.service import Service
-from models.user import LoginUserRequest
 from seed import seed
 from admin.admin import AdminService
 from werkzeug.exceptions import HTTPException
+from require_auth import require_auth
+from models.auth import LoginUserRequest
 
 
 def create_app():
@@ -59,8 +60,7 @@ def create_app():
         return "I'm alive!"
 
     @app.errorhandler(HTTPException)
-    def handle_exception(e):
-        """handler global"""
+    def handle_http_exception(e):
         return (
             jsonify(
                 {
@@ -76,7 +76,14 @@ def create_app():
         """Logar"""
         body = LoginUserRequest.model_validate(request.get_json())
         user = auth_service.login(body)
-        return jsonify(user), 200
+        return jsonify(user.model_dump()), 200
+
+    @app.get("/api/dispatcher-system/me")
+    @require_auth
+    def get_me():
+        """Rota protegida para testar autenticação."""
+        user_id = g.user_id
+        return jsonify({"user_id": user_id}), 200
 
     return app
 
@@ -84,4 +91,4 @@ def create_app():
 app = create_app()
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)

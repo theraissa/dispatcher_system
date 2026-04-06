@@ -2,12 +2,15 @@
 Módulo com implementação do serviço AuthService.
 """
 
+from datetime import datetime, timedelta, timezone
 from typing import Any
+
+import jwt
 
 from database.tables import DispatcherDB, UserDB
 from flask import abort
 from flask_sqlalchemy import SQLAlchemy
-from models.user import UserResponse, LoginUserRequest
+from models.auth import LoginUserRequest, LoginUserResponse, RoleType
 
 
 class AuthService:
@@ -35,23 +38,46 @@ class AuthService:
             UserDB.email == user_data.email,
             UserDB.deleted_at.is_(None),
         ).first()
+
         if not user:
-            abort(404, description="User not found.")
+            abort(404, description="Usuário não encontrado.")
+
         if user.password != user_data.password:
-            abort(401, description="Invalid credentials.")
+            abort(401, description="Credenciais inválidas.")
 
         dispatcher = DispatcherDB.query.filter_by(user_id=user.id).first()
 
         if dispatcher:
             if dispatcher.status == "pending":
-                abort(401, description="Your registration is still pending.")
-
+                abort(401, description="Seu registro está pendente.")
             elif dispatcher.status == "rejected":
-                abort(401, description="Your registration was rejected.")
+                abort(401, description="Seu registro foi rejeitado.")
 
-        role = "dispatcher" if dispatcher else "client"
+        role: RoleType = "dispatcher" if dispatcher else "client"
 
-        user_data_response = UserResponse.model_validate(user).model_dump()
-        user_data_response["role"] = role
+        token = self._generate_token(user.id, role)
 
-        return user_data_response
+        return LoginUserResponse(
+            id=user.id,
+            name=user.name,
+            email=user.email,
+            role=role,
+            token=token,
+        )
+
+    def _generate_token(self, user_id: int, role: RoleType) -> str:
+        """
+        Gera um token JWT para o usuário autenticado.
+
+        Args:
+            user_id (int): ID do usuário.
+            role (RoleType): Papel do usuário (client ou dispatcher).
+        Returns:
+            str: Token JWT gerado.
+        """
+        payload = {
+            "user_id": user_id,
+            "role": role,
+            "exp": datetime.now(timezone.utc) + timedelta(hours=2),
+        }
+        return jwt.encode(payload, "sua_chave_secreta", algorithm="HS256")

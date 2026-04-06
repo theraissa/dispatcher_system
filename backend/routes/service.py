@@ -3,6 +3,7 @@ Módulo de rotas relacionadas aos serviços.
 """
 
 from flask import Flask, Response, jsonify, request
+from require_auth import require_auth
 from models.service import CreateServiceRequest
 from services.service import Service
 
@@ -42,24 +43,28 @@ def register_service_routes(
     # Rotas que gerenciam os vinculo do serviços com os despachantes
 
     @app.get("/api/dispatcher-system/dispatcher/<int:dispatcher_id>/services")
+    @require_auth
     def get_services_from_dispatcher(dispatcher_id):
         """Obtém todos os serviços vinculados a um despachante."""
         services = service.get_services_from_dispatcher(dispatcher_id)
         return jsonify(services), 200
 
     @app.post("/api/dispatcher-system/dispatcher/<int:dispatcher_id>/service/<int:service_id>")
+    @require_auth
     def add_service_for_dispatcher(dispatcher_id, service_id):
         """Vincula um serviço a um despachante."""
         result = service.add_service_for_dispatcher(dispatcher_id, service_id)
         return jsonify(result), 201
 
     @app.put("/api/dispatcher-system/dispatcher/<int:dispatcher_id>/service/<int:service_id>")
+    @require_auth
     def update_dispatcher_service(dispatcher_id, service_id):
         body = request.get_json()
         result = service.update_dispatcher_service(dispatcher_id, service_id, body)
         return jsonify(result), 200
 
     @app.delete("/api/dispatcher-system/dispatcher/<int:dispatcher_id>/service/<int:service_id>")
+    @require_auth
     def remove_dispatcher_service(dispatcher_id, service_id):
         """Remove o vínculo entre um serviço e um despachante."""
         result = service.remove_dispatcher_service(dispatcher_id, service_id)

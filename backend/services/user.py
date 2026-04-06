@@ -34,22 +34,6 @@ class UserService:
         response = ListUserResponse(root=[UserResponse.model_validate(user) for user in list_users])
         return response.model_dump()
 
-    def get_user_by_cpf(self, user_cpf: str) -> dict[str, Any]:
-        """
-        Recupera um usuário a partir do CPF.
-
-        Args:
-            user_cpf (str): CPF do usuário.
-        Returns:
-            dict: Dados serializados do usuário encontrado.
-        """
-        user = UserDB.query.filter(UserDB.cpf == user_cpf, UserDB.deleted_at.is_(None))
-
-        if not user:
-            abort(404, description=f"User with CPF '{user_cpf}' not found.")
-
-        return UserResponse.model_validate(user).model_dump()
-
     def get_user_by_id(self, user_id: str) -> dict:
         """
         Recupera um usuário a partir do ID.

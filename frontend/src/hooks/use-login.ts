@@ -4,6 +4,7 @@ import { loginRequest } from "../services/login-request"
 import { FRONTEND_ROUTES } from "../routes/frontend-routes"
 import type { LoginRequest } from "../types/type"
 
+
 /**
  * Hook responsável pelo fluxo de autenticação do usuário.
  */
@@ -19,15 +20,25 @@ export function useLogin() {
 
             const user = await loginRequest(data)
 
-            localStorage.setItem("user", JSON.stringify(user))
+            localStorage.setItem("token", user.token)
+            localStorage.setItem("user", JSON.stringify({
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }))
 
             if (user.role === "dispatcher") {
                 navigate(FRONTEND_ROUTES.INITIAL.DISPATCHER_PROFILE)
             } else {
                 navigate(FRONTEND_ROUTES.INITIAL.SEARCH_DISPATCHER)
             }
-        } catch (err: any) {
-            setError(err.message)
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message)
+            } else {
+                setError("Erro inesperado")
+            }
         } finally {
             setLoading(false)
         }

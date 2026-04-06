@@ -5,9 +5,12 @@ import { User, CreditCard, Mail, Lock } from "lucide-react"
 import InputForm from "../ui/input-form"
 import LabelForm from "../ui/label-form"
 import ButtonSubmitForm from "../ui/button-submit-form"
+import { useNavigate } from "react-router-dom"
+import { FRONTEND_ROUTES } from "@/routes/frontend-routes"
 
 export function FormClient() {
   const { register, error, loading } = useRegisterUser()
+  const navigate = useNavigate()
 
   const [formData, setFormData] = useState({
     name: "",
@@ -22,18 +25,29 @@ export function FormClient() {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  function handleSubmit(event: React.FormEvent) {
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
+
     if (formData.password !== formData.confirmar_senha) {
       alert("As senhas não coincidem!")
       return
     }
-    register({
-      name: formData.name,
-      cpf: formData.cpf,
-      email: formData.email,
-      password: formData.password
-    })
+
+    try {
+      await register({
+        name: formData.name,
+        cpf: formData.cpf,
+        email: formData.email,
+        password: formData.password
+      })
+
+      navigate(FRONTEND_ROUTES.LOGIN, {
+        state: { email: formData.email }
+      })
+
+    } catch (err) {
+      console.error("Erro ao registrar usuário:", err)
+    }
   }
 
   return (

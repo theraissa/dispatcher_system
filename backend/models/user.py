@@ -8,15 +8,6 @@ from typing import List, Optional
 from pydantic import BaseModel, ConfigDict, RootModel
 
 
-class LoginUserRequest(BaseModel):
-    """Modelo de login do UserService."""
-
-    email: Optional[str]
-    password: Optional[str]
-
-    model_config = ConfigDict(extra="ignore")
-
-
 class CreateUserRequest(BaseModel):
     """Modelo de criação do UserService."""
 
@@ -31,7 +22,24 @@ class CreateUserRequest(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
 
-# Modelos de resposta e criação do endereço do usuário
+class UserResponse(BaseModel):
+    """Modelo de resposta para o UserService."""
+
+    id: int
+    cpf: Optional[str]
+    rg: Optional[str]
+    name: Optional[str]
+    date_birth: Optional[str]
+    contact: Optional[str]
+    email: Optional[str]
+    password: Optional[str]
+    created_at: datetime
+    updated_at: datetime
+    deleted_at: Optional[datetime]
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class CreateAddressRequest(BaseModel):
     """Modelo de criação do Address."""
 
@@ -72,24 +80,6 @@ class UpdateUserRequest(BaseModel):
     address: Optional[CreateAddressRequest] = None
 
     model_config = ConfigDict(extra="ignore")
-
-
-class UserResponse(BaseModel):
-    """Modelo de resposta para o UserService."""
-
-    id: int
-    cpf: Optional[str]
-    rg: Optional[str]
-    name: Optional[str]
-    date_birth: Optional[str]
-    contact: Optional[str]
-    email: Optional[str]
-    password: Optional[str]
-    created_at: datetime
-    updated_at: datetime
-    deleted_at: Optional[datetime]
-
-    model_config = ConfigDict(from_attributes=True)
 
 
 class ListUserResponse(RootModel):

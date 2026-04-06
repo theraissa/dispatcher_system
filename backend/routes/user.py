@@ -3,8 +3,9 @@ Módulo de rotas relacionadas aos usuários.
 """
 
 from flask import Flask, Response, jsonify, request
-from models.user import CreateUserRequest, UpdateUserRequest
+from require_auth import require_auth
 from services.user import UserService
+from models.user import CreateUserRequest, UpdateUserRequest
 
 
 def register_users_routes(
@@ -20,6 +21,7 @@ def register_users_routes(
         return jsonify(list_users), 200
 
     @app.get("/api/dispatcher-system/user/<user_id>")
+    @require_auth
     def get_user_by_id(user_id) -> Response:
         """Obter usuários no banco de dados pelo seu identificador"""
         user = user_service.get_user_by_id(user_id)
@@ -33,6 +35,7 @@ def register_users_routes(
         return jsonify(created_user), 201
 
     @app.put("/api/dispatcher-system/user/<user_id>")
+    @require_auth
     def update_user(user_id) -> Response:
         """Atualiza um usuário no banco de dados"""
         body = UpdateUserRequest.model_validate(request.get_json())
@@ -40,6 +43,7 @@ def register_users_routes(
         return jsonify(updated_user), 200
 
     @app.delete("/api/dispatcher-system/user/<user_id>")
+    @require_auth
     def delete_user(user_id) -> Response:
         """Deleta um usuário no banco de dados"""
         deleted_user = user_service.delete_user(user_id)
