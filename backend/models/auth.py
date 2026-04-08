@@ -21,9 +21,10 @@ class LoginUserResponse(BaseModel):
     """Modelo de login do UserService."""
 
     id: int
+    dispatcher_id: Optional[int]
     name: str
     email: str
     role: RoleType
     token: str
 
-    model_config = ConfigDict(extra="ignore")
+    model_config = ConfigDict(from_attributes=True)
