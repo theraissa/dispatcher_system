@@ -1,5 +1,10 @@
 services:
 
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
   backend:
       build: ./backend
       ports:
@@ -7,6 +12,8 @@ services:
       volumes:
         - ./backend:/app
       environment:
+        - REDIS_HOST=redis
+        - REDIS_PORT=6379
         - PYTHONDONTWRITEBYTECODE=1 # impede criação de __pycache__
         - PYTHONUNBUFFERED=1 # logs em tempo real
         - FLASK_ENV=development
@@ -14,6 +21,7 @@ services:
       command: python app.py
       depends_on:
         - database
+        - redis
 
   frontend:
     image: node:20-alpine 

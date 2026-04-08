@@ -120,3 +120,18 @@ class ServiceDetailsDB(db.Model):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True))
+
+
+class TicketDB(db.Model):
+    """Representa um Chamado de serviço"""
+
+    __tablename__ = "ticket"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    dispatcher_id = Column(Integer, ForeignKey("dispatcher.id"), nullable=False)
+    service_id = Column(Integer, ForeignKey("service.id"), nullable=False)
+    status = Column(String, default="pending")
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    deleted_at = Column(DateTime(timezone=True))
