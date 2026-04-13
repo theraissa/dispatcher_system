@@ -1,13 +1,13 @@
+import type { ProfileDispatcher } from "@/types/dispatcher.types"
 import { BACKEND_ROUTES } from "../routes/backend-routes"
-import type { ProfileDispatcher } from "../types/type"
 import { apiClient } from "./api-client"
 
 /**
  * Busca o perfil completo do despachante
  */
-export async function getDispatcherProfile(userId: string) {
+export async function getDispatcherProfile(dispatcherId: number) {
     const response = await apiClient.get<ProfileDispatcher>(
-        BACKEND_ROUTES.dispatcher.profile(userId)
+        BACKEND_ROUTES.dispatcher.getById(dispatcherId)
     )
     return response
 }
@@ -16,11 +16,9 @@ export async function getDispatcherProfile(userId: string) {
  * Atualiza o perfil completo do despachante
  */
 export async function updateDispatcherProfile(
-    userId: string,
+    userId: number,
     data: ProfileDispatcher
 ) {
     return apiClient.put(
-        BACKEND_ROUTES.dispatcher.profile(userId),
-        data
-    )
+        BACKEND_ROUTES.dispatcher.profile(userId), data)
 }

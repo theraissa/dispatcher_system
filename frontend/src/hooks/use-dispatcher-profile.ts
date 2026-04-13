@@ -7,7 +7,7 @@
  * - Atualizar campos do formulário dinamicamente
  * - Enviar atualizações para a API
  *
- * @param userId ID do usuário/despachante
+ * @param dispatcherId ID do usuário/despachante
  *
  * @returns
  * - data: dados do perfil
@@ -19,13 +19,13 @@ import { useEffect, useState } from "react"
 import { getDispatcherProfile, updateDispatcherProfile } from "../services/dispatcher-service"
 import type { ProfileDispatcher } from "@/types/dispatcher.types"
 
-export function useDispatcherProfile(userId: string) {
-    const [data, setData] = useState<ProfileDispatcher | null>(null)
+export function useDispatcherProfile(userId: number, dispatcherId: number) {
+    const [data, setData] = useState<ProfileDispatcher>()
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
 
-        if (!userId) {
+        if (!dispatcherId) {
             setLoading(false)
             return
         }
@@ -33,7 +33,7 @@ export function useDispatcherProfile(userId: string) {
         // Função para buscar os dados do perfil do despachante
         async function fetchData() {
             try {
-                const profile = await getDispatcherProfile(userId)
+                const profile = await getDispatcherProfile(dispatcherId)
                 setData(profile)
             } catch (error) {
                 console.error("ERRO AO BUSCAR PERFIL:", error)
@@ -44,7 +44,7 @@ export function useDispatcherProfile(userId: string) {
         }
 
         fetchData()
-    }, [userId])
+    }, [dispatcherId])
 
     // Função genérica para atualizar campos do perfil
     function handleChange<

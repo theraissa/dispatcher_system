@@ -13,7 +13,6 @@ export default function FormDispatcher() {
     user: {
       name: "",
       cpf: "",
-      rg: "",
       date_birth: "",
       contact: "",
       email: "",

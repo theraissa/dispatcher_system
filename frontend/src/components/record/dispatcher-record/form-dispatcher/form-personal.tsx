@@ -5,7 +5,7 @@ import LabelForm from "../../ui/label-form"
 import InputForm from "../../ui/input-form"
 import ButtonAppendForm from "../../ui/button-append-form"
 import TitleTemplate from "../../../ui/title"
-import { User, CreditCard, Fingerprint, Calendar, Phone, Mail, Lock } from "lucide-react";
+import { User, CreditCard, Calendar, Phone, Mail, Lock } from "lucide-react";
 
 export default function FormPersonal({ user, onChange, readOnly }) {
 
@@ -38,18 +38,6 @@ export default function FormPersonal({ user, onChange, readOnly }) {
             value={user.cpf}
             onChange={handleUserChange}
             placeholder="000.000.000-00"
-            readOnly={readOnly}
-          />
-        </InlineField>
-
-        <InlineField>
-          <LabelForm title="RG" />
-          <InputForm
-            name="rg"
-            icon={<Fingerprint size={18} />}
-            value={user.rg}
-            onChange={handleUserChange}
-            placeholder="Digite seu RG"
             readOnly={readOnly}
           />
         </InlineField>

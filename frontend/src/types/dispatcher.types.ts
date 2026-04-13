@@ -1,11 +1,11 @@
-import type { Dispatcher, Office, Profile, User } from "./type"
+import type { Dispatcher, Office, Profile, UserType } from "./type"
 
 
 /**
  * Formulário de cadastro de despachante (frontend).
  */
 export type RegisterDispatcherRequest = {
-  user: User
+  user: UserType
   dispatcher: Dispatcher
   office: Office
 }
@@ -23,7 +23,7 @@ export type RegisterDispatcherResponse = {
 * Representa o perfil completo do despachante, incluindo dados do usuário, despachante, escritório e perfil.
 */
 export type ProfileDispatcher = {
-  user: User
+  user: UserType
   dispatcher: Dispatcher
   office: Office
   profile: Profile
