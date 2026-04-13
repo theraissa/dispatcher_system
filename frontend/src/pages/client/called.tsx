@@ -1,15 +1,19 @@
 import NavbarPage from "../../components/record/ui/navbar-page";
 import CalledClientFilter from "@/components/client/called/called-client-filter";
 import CalledContainer from "@/components/client/called/called-container";
+import { useAuth } from "@/hooks/use-auth";
+import { useTickets } from "@/hooks/use-ticket";
 import { clientLinksNavbar } from "@/routes/frontend-routes";
 
 
 export default function CalledClient() {
 
-    const tickets = [
-        { id: "0001", service: "Transferência de Veículo", dispatcher: "Carlos Silva", date: "28/03/2026", state: "RS", status: "Em Andamento" },
-        { id: "0002", service: "Licenciamento Anual", dispatcher: "Ana Oliveira", date: "25/03/2026", state: "SC", status: "Concluído" },
-    ];
+    const { user } = useAuth();
+    const { tickets, loading } = useTickets(user?.id);
+
+    if (loading) {
+        return <div>Carregando chamados...</div>;
+    }
 
     return (
         <div className="min-h-screen bg-[#F3EDE2]">
