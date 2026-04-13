@@ -66,25 +66,24 @@ export const apiClient = {
 
     // Método GET com suporte a query params
     get: <T>(endpoint: string, params?: Record<string, string | number | boolean | null | undefined>) => {
-        const query = params
-            ? "?" +
-            new URLSearchParams(
-                Object.entries(params)
-                    .filter(([_, v]) => v !== "" && v != null)
-                    .map(([k, v]) => [k, String(v)])
-            ).toString()
-            : ""
-
-        return request<T>(endpoint + query);
+        const url = new URL(`${BASE_URL}${endpoint}`);
+        if (params) {
+            Object.entries(params).forEach(([key, value]) => {
+                if (value !== "" && value != null) {
+                    url.searchParams.append(key, String(value));
+                }
+            });
+        }
+        return request<T>(endpoint + url.search);
     },
 
-    post: <T>(endpoint: string, body?: undefined) =>
+    post: <T>(endpoint: string, body?: Record<string, string | number | boolean | null | undefined>) =>
         request<T>(endpoint, {
             method: "POST",
             body: JSON.stringify(body)
         }),
 
-    put: <T>(endpoint: string, body?: undefined) =>
+    put: <T>(endpoint: string, body?: Record<string, string | number | boolean | null | undefined>) =>
         request<T>(endpoint, {
             method: "PUT",
             body: JSON.stringify(body)

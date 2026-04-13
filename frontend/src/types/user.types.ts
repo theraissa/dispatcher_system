@@ -1,4 +1,4 @@
-import type { Address, User } from "./type"
+import type { Address, UserType } from "./type"
 
 
 /**
@@ -20,7 +20,6 @@ export type UserResponse = {
     name?: string
     cpf?: string
     email?: string
-    rg?: string
     date_birth?: string
     contact?: string
     created_at: string
@@ -32,7 +31,7 @@ export type UserResponse = {
 /*
 * Representa o perfil completo do cliente, incluindo dados do usuário.
 */
-export type ProfileClient = {
-    user: User
+export type ProfileUser = {
+    user: UserType
     address: Address
 }

@@ -3,13 +3,20 @@ import { useNavigate } from "react-router-dom"
 import { loginRequest } from "../services/login-request"
 import { FRONTEND_ROUTES } from "../routes/frontend-routes"
 import type { LoginRequest } from "../types/type"
-
+import { useAuth } from "@/hooks/use-auth"
 
 /**
  * Hook responsável pelo fluxo de autenticação do usuário.
+ *
+ * Responsabilidades:
+ * - Executar login no backend
+ * - Armazenar dados no contexto global (AuthProvider)
+ * - Redirecionar usuário conforme o papel (role)
  */
 export function useLogin() {
     const navigate = useNavigate()
+    const { signIn } = useAuth()
+
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState("")
 
@@ -20,19 +27,29 @@ export function useLogin() {
 
             const user = await loginRequest(data)
 
-            localStorage.setItem("token", user.token)
-            localStorage.setItem("user", JSON.stringify({
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                role: user.role
-            }))
+            /**
+             * Atualiza estado global + localStorage via AuthProvider
+             */
+            signIn(
+                {
+                    id: user.id,
+                    dispatcherId: user.dispatcherId,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role
+                },
+                user.token
+            )
 
-            if (user.role === "dispatcher") {
+            /**
+             * Redirecionamento baseado no role
+             */
+            if (user.role.dispatcher === "dispatcher") {
                 navigate(FRONTEND_ROUTES.INITIAL.DISPATCHER_PROFILE)
             } else {
                 navigate(FRONTEND_ROUTES.INITIAL.SEARCH_DISPATCHER)
             }
+
         } catch (err: unknown) {
             if (err instanceof Error) {
                 setError(err.message)
