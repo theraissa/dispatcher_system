@@ -1,18 +1,14 @@
 import { Link, useLocation } from "react-router-dom";
+import { LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLogout } from "@/hooks/use-logout"; // Importe seu hook aqui
 
-// Tipo para os links de navegação
 type NavLink = {
   label: string;
   path: string;
   icon: React.ComponentType<{ size?: number; strokeWidth?: number }>;
 }
 
-// Exemplo de uso:
-// const links: NavLink[] = [
-//   { label: "Perfil", path: "/client/profile", icon: UserIcon },
-//   { label: "Chamados", path: "/client/called", icon: FileTextIcon },
-// ];
 type NavbarPageProps = {
   title: string;
   shortTitle?: string;
@@ -21,6 +17,7 @@ type NavbarPageProps = {
 
 export default function NavbarPage({ title, shortTitle = "P", links }: NavbarPageProps) {
   const location = useLocation();
+  const { logout } = useLogout();
 
   const buttonStyles = (isActive: boolean) => cn(
     "flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-200",
@@ -59,6 +56,18 @@ export default function NavbarPage({ title, shortTitle = "P", links }: NavbarPag
             </Link>
           );
         })}
+
+        {/* BOTÃO DE LOGOUT - AGORA AUTOSSUFICIENTE */}
+        <button
+          onClick={logout}
+          className={cn(
+            buttonStyles(false),
+            "hover:bg-red-500/20 hover:text-red-400 ml-2"
+          )}
+        >
+          <LogOut size={16} strokeWidth={2} />
+          <span className="hidden md:inline">Sair</span>
+        </button>
       </nav>
     </header>
   );
