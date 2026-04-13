@@ -1,41 +1,57 @@
+import { getPendingDispatchers, updateStatusDispatcher } from "@/services/admin-dispatcher";
+import type { ListDispatcherAdmin, StatusType } from "@/types/admin.type";
 import { useState, useEffect } from "react";
-import { adminService } from "../services/admin-service";
+
 
 
 /*
- * Hook personalizado para gerenciar a lista de despachantes pendentes no painel administrativo.
- * Fornece funções para aprovar ou rejeitar despachantes, além de um método para recarregar a lista.
+ * Hook para gerenciar despachantes no admin.
  */
 export function useAdminDispatchers() {
-    const [dispatchers, setDispatchers] = useState<any[]>([]);
+    const [dispatchers, setDispatchers] = useState<ListDispatcherAdmin>([]);
     const [loading, setLoading] = useState(true);
 
-    // Função para carregar os despachantes pendentes do backend
+    /**
+     * Carrega despachantes (por padrão: pending)
+     */
     const loadDispatchers = async () => {
         try {
             setLoading(true);
-            const data = await adminService.getPendingDispatchers();
-            setDispatchers(data);
+            const response = await getPendingDispatchers();
+            setDispatchers(response);
         } catch (err) {
-            console.error(err);
+            console.error("Erro ao carregar despachantes:", err);
         } finally {
             setLoading(false);
         }
     };
 
-    useEffect(() => { loadDispatchers(); }, []);
+    useEffect(() => {
+        loadDispatchers();
+    }, []);
 
-    // Função para aprovar um despachante, que também atualiza a lista localmente
-    const approve = async (id: number) => {
-        await adminService.approveDispatcher(id);
-        setDispatchers(prev => prev.filter(d => d.id !== id));
+    /**
+     * Atualiza o status de um despachante
+     */
+    const updateStatus = async (
+        id: number,
+        status: StatusType
+    ) => {
+        try {
+            await updateStatusDispatcher(id, { status });
+
+            // Como a lista é de "pending", remove da tela
+            setDispatchers((prev) => prev.filter((d) => d.id !== id));
+
+        } catch (error) {
+            console.error("Erro ao atualizar status:", error);
+        }
     };
 
-    // Função para rejeitar um despachante, que também atualiza a lista localmente
-    const reject = async (id: number) => {
-        await adminService.rejectDispatcher(id);
-        setDispatchers(prev => prev.filter(d => d.id !== id));
+    return {
+        dispatchers,
+        loading,
+        updateStatus,
+        refresh: loadDispatchers
     };
-
-    return { dispatchers, loading, approve, reject, refresh: loadDispatchers };
 }
