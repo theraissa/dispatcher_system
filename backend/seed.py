@@ -28,7 +28,6 @@ def seed():
     user1 = UserDB(
         name="Pedro Henrique",
         cpf="12345678900",
-        rg="123456789",
         date_birth="2005-03-18",
         contact="55999999999",
         email="pedro@gmail.com",
@@ -38,7 +37,6 @@ def seed():
     user2 = UserDB(
         name="Maria Souza",
         cpf="98765432100",
-        rg="987654321",
         date_birth="1998-07-10",
         contact="55888888888",
         email="maria@gmail.com",

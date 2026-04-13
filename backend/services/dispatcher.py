@@ -98,7 +98,6 @@ class DispatcherService:
         try:
             new_user = UserDB(
                 cpf=dispatcher_data.user.cpf,
-                rg=dispatcher_data.user.rg,
                 name=dispatcher_data.user.name,
                 date_birth=dispatcher_data.user.date_birth,
                 contact=dispatcher_data.user.contact,

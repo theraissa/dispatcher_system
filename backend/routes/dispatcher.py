@@ -20,7 +20,7 @@ def register_dispatcher_routes(
         dispatchers = dispatcher_service.list_dispatcher()
         return jsonify(dispatchers), 200
 
-    @app.get("/api/dispatcher-system/dispatcher/<dispatcher_id>")
+    @app.get("/api/dispatcher-system/dispatcher/<int:dispatcher_id>")
     @require_auth
     def get_dispatcher_by_id(dispatcher_id) -> Response:
         """Obter despachantes no banco de dados pelo seu identificador"""

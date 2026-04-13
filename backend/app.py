@@ -5,7 +5,7 @@ from flask_cors import CORS
 from flask_migrate import upgrade
 
 from database import db, migrate
-from routes.admin import register_admin_routes
+from routes.management import register_admin_routes
 from routes.dispatcher import register_dispatcher_routes
 from routes.user import register_users_routes
 from routes.service import register_service_routes
@@ -16,7 +16,7 @@ from services.auth import AuthService
 from services.service import Service
 from services.ticket import TicketService
 from seed import seed
-from admin.admin import AdminService
+from admin.management import AdminService
 from werkzeug.exceptions import HTTPException
 from require_auth import require_auth
 from models.auth import LoginUserRequest

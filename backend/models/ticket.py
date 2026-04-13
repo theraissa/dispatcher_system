@@ -3,7 +3,7 @@ Modelos Pydantic relacionados ao TicketService.
 """
 
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel, ConfigDict, RootModel
 
 
@@ -12,7 +12,7 @@ class CreateTicketRequest(BaseModel):
 
     user_id: int
     dispatcher_id: int
-    service_id: int
+    service_details_id: int
 
     model_config = ConfigDict(extra="ignore")
 
@@ -27,12 +27,14 @@ class TicketResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class ServiceInfo(BaseModel):
+class ServiceDetailsInfo(BaseModel):
     """Modelo com informações do Serviço."""
 
     id: int
-    name: str
-    description: str | None = None
+    price: int
+    service_id: int
+    name: Optional[str] = None
+    description: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -41,43 +43,69 @@ class DispatcherInfo(BaseModel):
     """Modelo com informações do Despachante."""
 
     name: str
-    contact: str | None = None
+    email: str
+    contact: str
+    address: str
+    city: str
+    state: str
+    number: int
+    neighborhood: str
 
 
 class UserInfo(BaseModel):
-    """Modelo com informações do Usuário."""
+    """Modelo com informações do usuário."""
 
     name: str
-    contact: str | None = None
+    email: str
+    contact: str
+    cpf: str
+    address: str
+    city: str
+    state: str
+    number: int
+    neighborhood: str
 
 
 class TicketUserResponse(BaseModel):
     """Modelo de resposta dos chamados do Usuário"""
 
-    ticket_id: int
+    id: int
     status: str
-    created_at: datetime
-    service: ServiceInfo
-    dispatcher: DispatcherInfo
-
-
-class TicketDispatcherResponse(BaseModel):
-    """Modelo de resposta dos chamados do Despachante"""
-
-    ticket_id: int
-    status: str
-    created_at: datetime
-    service: ServiceInfo
     user: UserInfo
+    dispatcher: DispatcherInfo
+    service_details: ServiceDetailsInfo
+    created_at: datetime
+
+
+class ListTicketResponse(BaseModel):
+    """Modelo de resposta de listagem de chamados do usuário"""
+
+    id: int
+    status: str
+    name_service: str
+    name_dispatcher: str
+    created_at: datetime
 
 
 class ListTicketUserResponse(RootModel):
-    """Modelo de listagem para o TicketUserResponse."""
+    """Modelo de listagem para o TicketResponse."""
 
-    root: List[TicketUserResponse]
+    root: List[ListTicketResponse]
 
 
-class ListTicketDispatcherResponse(RootModel):
-    """Modelo de listagem para o TicketDispatcherResponse."""
+# Models relacionada as mensagems do chamado.
 
-    root: List[TicketDispatcherResponse]
+
+class TicketMessageResponse(BaseModel):
+    """Modelo de resposta da mensagem"""
+
+    id: int
+    user_id: int
+    message: str
+    created_at: datetime
+
+
+class ListTicketMessageResponse(RootModel):
+    """Modelo de listagem para o TicketMessageResponse."""
+
+    root: List[TicketMessageResponse]

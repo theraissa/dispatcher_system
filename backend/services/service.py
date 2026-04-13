@@ -124,6 +124,7 @@ class Service:
 
         return [
             {
+                "id": detail.id,
                 "service_id": service.id,
                 "name": service.name,
                 "price": detail.price,
@@ -138,7 +139,6 @@ class Service:
         Args:
             dispatcher_id (int): ID do despachante.
             service_id (int): ID do serviço a ser vinculado.
-
         Returns:
             dict: Mensagem indicando sucesso na operação.
         """

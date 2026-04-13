@@ -12,7 +12,6 @@ class CreateUserRequest(BaseModel):
     """Modelo de criação do UserService."""
 
     cpf: Optional[str] = None
-    rg: Optional[str] = None
     name: Optional[str] = None
     date_birth: Optional[str] = None
     contact: Optional[str] = None
@@ -27,7 +26,6 @@ class UserResponse(BaseModel):
 
     id: int
     cpf: Optional[str]
-    rg: Optional[str]
     name: Optional[str]
     date_birth: Optional[str]
     contact: Optional[str]

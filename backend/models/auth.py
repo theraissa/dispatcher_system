@@ -7,6 +7,8 @@ from pydantic import BaseModel, ConfigDict
 
 RoleType = Literal["client", "dispatcher"]
 
+StatusType = Literal["aprovado", "negado", "pendente"]
+
 
 class LoginUserRequest(BaseModel):
     """Modelo de login do UserService."""
