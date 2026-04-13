@@ -14,6 +14,7 @@ import ProfileClient from '@/pages/client/profile.tsx';
 import CalledClient from '@/pages/client/called.tsx';
 import AdminServices from '@/pages/admin/admin-service.tsx';
 import CardProfileDispatcher from '@/pages/client/card-profile-dispatcher.tsx';
+import TicketDetails from '@/pages/client/called-details.tsx';
 
 /**
  * Componente responsável por definir as rotas da aplicação.
@@ -63,7 +64,11 @@ export function MainRoutes() {
           element={<CalledClient />}
         />
         <Route
-          path={FRONTEND_ROUTES.CLIENT.CARD_PROFILE_DISPATCHER_BY_ID(":id")}
+          path={FRONTEND_ROUTES.CLIENT.CALLED_DETAILS}
+          element={<TicketDetails />}
+        />
+        <Route
+          path={FRONTEND_ROUTES.CLIENT.CARD_PROFILE_DISPATCHER}
           element={<CardProfileDispatcher />}
         />
         // Admin routes

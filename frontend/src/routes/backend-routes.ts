@@ -14,6 +14,7 @@
 export const BACKEND_ROUTES = {
     auth: {
         login: `/login`,
+        logout: `/logout`,
     },
 
     users: {
@@ -23,15 +24,17 @@ export const BACKEND_ROUTES = {
     },
 
     dispatcher: {
-        services: (userId: number) => `/dispatcher/${userId}/services`,
-        addService: (userId: number, serviceId: number) =>
-            `/dispatcher/${userId}/service/${serviceId}`,
-        removeService: (userId: number, serviceId: number) =>
-            `/dispatcher/${userId}/service/${serviceId}`,
-        updateService: (userId: number, serviceId: number) =>
-            `/dispatcher/${userId}/service/${serviceId}`,
-        profile: (userId: string) => `/dispatcher/${userId}`,
-        getById: (id: string) => `/dispatcher/${id}`,
+        getServiceDetailsById: (dispatcherId: number) =>
+            `/dispatcher/${dispatcherId}/services`,
+        createServiceDetails: (dispatcherId: number, serviceId: number) =>
+            `/dispatcher/${dispatcherId}/service/${serviceId}`,
+        deleteServiceDetails: (dispatcherId: number, serviceId: number) =>
+            `/dispatcher/${dispatcherId}/service/${serviceId}`,
+        updateServiceDetails: (dispatcherId: number, serviceId: number) =>
+            `/dispatcher/${dispatcherId}/service/${serviceId}`,
+
+        profile: (userId: number) => `/dispatcher/${userId}`,
+        getById: (dispatcherId: number) => `/dispatcher/${dispatcherId}`,
         create: `/dispatcher`,
         search: `/dispatcher/search`,
     },
@@ -40,10 +43,19 @@ export const BACKEND_ROUTES = {
         list: `/admin/service`,
     },
 
+    tickets: {
+        createTicket: `/ticket`,
+        listTicketsByUser: (userId: number) => `/ticket/user/${userId}`,
+        listTicketsByDispatcher: (dispatcherId: number) => `/ticket/dispatcher/${dispatcherId}`,
+        getTicketById: (ticketId: number) => `/ticket/${ticketId}`,
+
+        listMessagesTicket: (ticketId: number) => `/ticket/${ticketId}/messages`,
+        createMessageTicket: (ticketId: number) => `/ticket/${ticketId}/messages`,
+    },
+
     admin: {
         listPending: `/admin/dispatchers?status=pending`,
-        approve: (id: number) => `/admin/dispatcher/${id}/approve`,
-        reject: (id: number) => `/admin/dispatcher/${id}/reject`,
+        updateStatusDispatcher: (dispatcherId: number) => `/admin/dispatcher/${dispatcherId}/status`,
 
         listServices: `/admin/service`,
         createService: `/admin/service`,
