@@ -15,21 +15,21 @@ export default function LoginSection() {
   return (
     <section className="relative flex flex-col items-center justify-center py-20 md:py-50 px-6 bg-[#D8C4B6]">
       {/* Sutil detalhe de fundo */}
-      <div className="absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(#21314D_1px,transparent_1px)] [background-size:16px_16px]" />
+      <div className="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#21314D_1px,transparent_1px)] [background-size:16px_16px]" />
 
       <div className="relative z-10 max-w-4xl w-full text-center space-y-4">
-        {/* Título: Reduzido de 75px para 48px/60px (4xl/6xl) */}
+        {/* Título*/}
         <h1 className="text-4xl md:text-6xl font-extrabold text-[#1E1E1E] tracking-tight leading-tight">
           Despachante de <span className="text-[#21314D]">Trânsito</span>
         </h1>
 
-        {/* Texto: Reduzido de 25px para 18px (lg) */}
+        {/* Texto */}
         <p className="text-base md:text-lg text-zinc-700 max-w-xl mx-auto">
           Sistema Web para centralizar serviços e comunicação, <br className="hidden md:block" />
           otimizando a gestão do seu escritório.
         </p>
 
-        {/* Formulário: Altura reduzida de 14 para 12 (h-12) */}
+        {/* Formulário */}
         <form
           onSubmit={handleSubmit}
           className="flex flex-col md:flex-row items-center justify-center gap-2 pt-6"
