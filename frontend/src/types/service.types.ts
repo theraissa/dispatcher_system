@@ -1,30 +1,29 @@
-
-/*
-* Criar um serviço
-*/
-export type CreateServiceRequest = {
-    name: string;
-    description: string;
-};
-
-/* 
-* Resposta do backend para um serviço
-*/
+/**
+ * Reflete o ServiceResponse (BaseModel) do Pydantic
+ */
 export type ServiceResponse = {
     id: number;
     name: string;
     description: string;
-    created_at?: string;
-    updated_at?: string;
+    created_at: string;
+    updated_at: string;
+    deleted_at?: string | null;
 };
 
+/**
+ * Reflete o CreateServiceRequest do Pydantic
+ */
+export type CreateServiceRequest = {
+    name?: string;
+    description?: string;
+};
 
-
-/* 
-* Representa os dados de um serviço, incluindo o preço definido pelo despachante
-*/
-export type ServiceDetail = {
-    id: number
-    name: string
-    price?: number
-}
+/**
+ * Reflete o retorno do método get_services_from_dispatcher
+ */
+export type ServiceDetails = {
+    id: number;
+    service_id: number;
+    name: string;
+    price: string;
+};

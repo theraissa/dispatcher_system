@@ -1,12 +1,13 @@
+import type { ProfileUser } from "@/types/user.types"
 import { BACKEND_ROUTES } from "../routes/backend-routes"
-import type { ProfileClient } from "../types/type"
 import { apiClient } from "./api-client"
+
 
 /**
  * Busca o perfil completo do usuário cliente
  */
 export async function getClientProfile(userId: string) {
-    const response = await apiClient.get<ProfileClient>(
+    const response = await apiClient.get<ProfileUser>(
         BACKEND_ROUTES.users.getById(userId)
     )
     return response
@@ -15,10 +16,9 @@ export async function getClientProfile(userId: string) {
 /**
  * Atualiza o perfil do usuário cliente
  */
-export async function updateClientProfile(userId: string, data: ProfileClient) {
-    const response = await apiClient.put<ProfileClient>(
-        BACKEND_ROUTES.users.updateById(userId),
-        data
+export async function updateClientProfile(userId: string, data: ProfileUser) {
+    const response = await apiClient.put<ProfileUser>(
+        BACKEND_ROUTES.users.updateById(userId), data
     )
     return response
 }

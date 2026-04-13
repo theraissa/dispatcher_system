@@ -1,19 +1,39 @@
-import { ChevronDown, FileText, Check } from "lucide-react";
+import { ChevronDown, FileText, Check, Loader2 } from "lucide-react";
 import * as Accordion from "@radix-ui/react-accordion";
-import { useProfileServices } from "@/hooks/use-profile-service";
+import { useServiceDetails } from "@/hooks/use-service-details";
+import { useTickets } from "@/hooks/use-ticket";
+import { FRONTEND_ROUTES } from "@/routes/frontend-routes";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
+export default function AccordionServiceDispatcher({ userId, dispatcherId }: { userId: number, dispatcherId: number }) {
 
-export default function AccordionServiceDispatcher({ userId }: { userId: number }) {
+    const navigate = useNavigate();
 
-    const { services, loading } = useProfileServices(userId);
+    const { serviceDetails, loading } = useServiceDetails(dispatcherId);
+    const { handleCreateTicket, loading: creatingTicket } = useTickets(userId);
 
     if (loading) {
         return <p className="text-zinc-400">Carregando serviços...</p>;
     }
-
-    if (!services || services.length === 0) {
+    if (!serviceDetails || serviceDetails.length === 0) {
         return <p className="text-zinc-400">Nenhum serviço disponível.</p>;
     }
+
+    const onSolicitarAtendimento = async (serviceDetailsId: number) => {
+        try {
+            await handleCreateTicket({
+                user_id: userId,
+                dispatcher_id: dispatcherId,
+                service_details_id: serviceDetailsId,
+            });
+            toast.success("Chamado criado com sucesso!");
+            navigate(FRONTEND_ROUTES.CLIENT.CALLED);
+        } catch (error: any) {
+            toast.error(error.message);
+        }
+    };
+
 
     return (
         <section className="bg-white p-8 md:p-10 rounded-[32px] shadow-sm border border-zinc-100 h-fit">
@@ -27,7 +47,7 @@ export default function AccordionServiceDispatcher({ userId }: { userId: number 
             </div>
 
             <Accordion.Root type="single" collapsible className="space-y-3">
-                {services.map((service, idx) => (
+                {serviceDetails.map((service, idx) => (
                     <Accordion.Item
                         key={service.id}
                         value={`item-${idx}`}
@@ -76,8 +96,16 @@ export default function AccordionServiceDispatcher({ userId }: { userId: number 
                                         </li>
                                     </ul>
 
-                                    <button className="bg-[#21314D] text-white h-12 w-full rounded-xl font-bold text-xs hover:bg-[#1A263D] active:scale-[0.98] transition-all shadow-sm">
-                                        Solicitar Atendimento
+                                    <button
+                                        onClick={() => onSolicitarAtendimento(service.service_id)}
+                                        disabled={creatingTicket}
+                                        className="bg-[#21314D] text-white h-12 w-full rounded-xl font-bold text-xs hover:bg-[#1A263D] active:scale-[0.98] transition-all shadow-sm flex items-center justify-center gap-2"
+                                    >
+                                        {creatingTicket ? (
+                                            <Loader2 size={18} className="animate-spin" />
+                                        ) : (
+                                            "Solicitar Atendimento"
+                                        )}
                                     </button>
                                 </div>
                             </div>

@@ -5,7 +5,8 @@ import { ProfileCard, ProfileCardHeader, ProfileContainer } from "./layout/profi
 import SelectServices from "./select-services";
 import ServiceDetails from "./profile-service-details";
 import ServiceActionButtons from "./ui/profile-buttons-action-service";
-import { useProfileServices } from "@/hooks/use-profile-service";
+import { useServiceDetails } from "@/hooks/use-service-details";
+import { useAuth } from "@/hooks/use-auth";
 
 
 const ServiceItem = ({ children, onClick }: { children: React.ReactNode, onClick: () => void }) => (
@@ -20,12 +21,13 @@ const ServiceItem = ({ children, onClick }: { children: React.ReactNode, onClick
 export default function ProfileServices() {
   const [search, setSearch] = useState("");
   const [mode, setMode] = useState<"view" | "select" | "details">("view");
-  const [selectedService, setSelectedService] = useState<any | null>(null);
+  const [selectedService, setSelectedService] = useState<string | null>(null);
 
-  const storedUser = JSON.parse(localStorage.getItem("user") || "null");
-  const { services, allServices, loading, removeService, addServices } = useProfileServices(storedUser?.id);
+  const { user } = useAuth();
 
-  const filteredServices = services.filter((s) =>
+  const { serviceDetails, allServices, loading, createServiceDetails, updateServiceDetails, removeServiceDetails } = useServiceDetails(user?.dispatcherId);
+
+  const filteredServices = serviceDetails.filter((s) =>
     s.name.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -41,7 +43,7 @@ export default function ProfileServices() {
   // =========================
   if (mode === "select") {
     const availableServices = allServices.filter(
-      (s) => !services.some((userService) => userService.id === s.id)
+      (s) => !serviceDetails.some((userService) => userService.id === s.id)
     );
 
     return (
@@ -49,7 +51,7 @@ export default function ProfileServices() {
         availableServices={availableServices}
         onCancel={() => setMode("view")}
         onAdd={(services) => {
-          addServices(services);
+          createServiceDetails(services);
           setMode("view");
         }}
       />
@@ -64,7 +66,8 @@ export default function ProfileServices() {
       <ServiceDetails
         service={selectedService}
         onBack={() => setMode("view")}
-        onSave={() => {
+        onSave={async (id, price) => {
+          await updateServiceDetails(id, price);
           setMode("view");
         }}
       />
@@ -113,7 +116,7 @@ export default function ProfileServices() {
                 </span>
                 <ServiceActionButtons
                   onEdit={(e) => { e.stopPropagation(); setSelectedService(service); setMode("details"); }}
-                  onDelete={(e) => { e.stopPropagation(); removeService(service.id); }}
+                  onDelete={(e) => { e.stopPropagation(); removeServiceDetails(service.id); }}
                 />
               </div>
             </ServiceItem>
