@@ -1,6 +1,10 @@
-import { User, Mail, MapPin } from "lucide-react";
-import { FormInput, FormLabel, FormSection } from "../ui/fields-profile";
+import { User, Mail, MapPin, CreditCard, Calendar, Phone, Lock, Hash, Milestone, Navigation, Globe } from "lucide-react";
 import type { Address, UserType } from "@/types/type";
+import TitleTemplate from "@/components/ui/title";
+import LabelForm from "@/components/record/ui/label-form";
+import InputForm from "@/components/record/ui/input-form";
+import InlineFields from "@/components/layout/inline-fields-form";
+import InlineField from "@/components/layout/inline-field-form";
 
 
 /**
@@ -38,162 +42,198 @@ type FormProfileClientProps = {
  */
 export default function FormProfileClient({ data, handleChange, isEditing }: FormProfileClientProps) {
 
+    // Função auxiliar para adaptar o evento do InputForm ao seu handleChange original
+    const onInputChange = (entity: "user" | "address") => (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        handleChange(entity, name, value);
+    };
+
     return (
-        <section className="flex-1 bg-white p-8 md:p-12 rounded-[40px] border border-zinc-100 shadow-sm">
+        <section className="flex-1 bg-white md:p-12 rounded-[32px] border border-zinc-100 shadow-sm">
+
             {/* INFORMAÇÕES PESSOAIS */}
-            <FormSection title="Informações Pessoais" icon={<User size={20} />}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div className="md:col-span-2">
-                        <FormLabel>Nome Completo</FormLabel>
-                        <FormInput
-                            value={data.user.name}
-                            readOnly={!isEditing}
-                            className={!isEditing ? "bg-zinc-50 border-transparent cursor-not-allowed" : ""}
-                            onChange={(e) => handleChange("user", "name", e.target.value)}
-                        />
-                    </div>
-                    <div>
-                        <FormLabel>CPF</FormLabel>
-                        <FormInput
-                            value={data.user.cpf}
-                            placeholder="000.000.000-00"
-                            readOnly={!isEditing}
-                            className={!isEditing ? "bg-zinc-50 border-transparent cursor-not-allowed" : ""}
-                            onChange={(e) => handleChange("user", "cpf", e.target.value)}
-                        />
-                    </div>
-                    <div>
-                        <FormLabel>Data de Nascimento</FormLabel>
-                        <FormInput
-                            type="date"
-                            value={data.user.date_birth}
-                            readOnly={!isEditing}
-                            className={!isEditing ? "bg-zinc-50 border-transparent cursor-not-allowed" : ""}
-                            onChange={(e) => handleChange("user", "date_birth", e.target.value)}
-                        />
-                    </div>
-                </div>
-            </FormSection>
+            <TitleTemplate title="Informações Pessoais" />
+
+            <LabelForm title="Nome Completo" />
+            <InputForm
+                name="name"
+                icon={<User size={18} />}
+                value={data.user.name}
+                onChange={onInputChange("user")}
+                placeholder="Digite seu nome completo"
+                readOnly={!isEditing}
+            />
+
+            <InlineFields>
+                <InlineField>
+                    <LabelForm title="CPF" />
+                    <InputForm
+                        name="cpf"
+                        icon={<CreditCard size={18} />}
+                        value={data.user.cpf}
+                        onChange={onInputChange("user")}
+                        placeholder="000.000.000-00"
+                        readOnly={!isEditing}
+                    />
+                </InlineField>
+                <InlineField>
+                    <LabelForm title="Data de Nascimento" />
+                    <InputForm
+                        type="date"
+                        name="date_birth"
+                        icon={<Calendar size={18} />}
+                        value={data.user.date_birth}
+                        onChange={onInputChange("user")}
+                        readOnly={!isEditing}
+                    />
+                </InlineField>
+            </InlineFields>
+
+            <hr className="border-zinc-100 my-8" />
 
             {/* CONTATO E LOGIN */}
-            <FormSection title="Contato e Login" icon={<Mail size={20} />}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                        <FormLabel>Telefone / WhatsApp</FormLabel>
-                        <FormInput
-                            placeholder="(00) 00000-0000"
-                            value={data.user.contact}
-                            readOnly={!isEditing}
-                            className={!isEditing ? "bg-zinc-50 border-transparent cursor-not-allowed" : ""}
-                            onChange={(e) => handleChange("user", "contact", e.target.value)}
+            <TitleTemplate title="Contato e Login" />
+
+            <InlineFields>
+                <InlineField>
+                    <LabelForm title="Telefone / WhatsApp" />
+                    <InputForm
+                        name="contact"
+                        icon={<Phone size={18} />}
+                        value={data.user.contact}
+                        onChange={onInputChange("user")}
+                        placeholder="(00) 00000-0000"
+                        readOnly={!isEditing}
+                    />
+                </InlineField>
+                <InlineField>
+                    <LabelForm title="Telefone Residencial" />
+                    <InputForm
+                        name="contact"
+                        icon={<Phone size={18} />}
+                        value={data.address?.contact || ""}
+                        onChange={onInputChange("address")}
+                        placeholder="(00) 0000-0000"
+                        readOnly={!isEditing}
+                    />
+                </InlineField>
+            </InlineFields>
+
+            <LabelForm title="E-mail" />
+            <InputForm
+                type="email"
+                name="email"
+                icon={<Mail size={18} />}
+                value={data.user.email}
+                onChange={onInputChange("user")}
+                placeholder="seu@email.com"
+                readOnly={!isEditing}
+            />
+
+            {isEditing && (
+                <InlineFields>
+                    <InlineField>
+                        <LabelForm title="Nova Senha" />
+                        <InputForm
+                            type="password"
+                            name="password"
+                            icon={<Lock size={18} />}
+                            value={data.user.password || ""}
+                            onChange={onInputChange("user")}
+                            placeholder="••••••••"
                         />
-                    </div>
-                    <div>
-                        <FormLabel>Telefone Residencial</FormLabel>
-                        <FormInput
-                            placeholder="(00) 0000-0000"
-                            value={data.address?.contact || ""}
-                            readOnly={!isEditing}
-                            className={!isEditing ? "bg-zinc-50 border-transparent cursor-not-allowed" : ""}
-                            onChange={(e) => handleChange("address", "contact", e.target.value)}
+                    </InlineField>
+                    <InlineField>
+                        <LabelForm title="Confirmar Senha" />
+                        <InputForm
+                            type="password"
+                            name="confirm_password"
+                            icon={<Lock size={18} />}
+                            placeholder="••••••••"
                         />
-                    </div>
-                    <div className={isEditing ? "md:col-span-2" : ""}>
-                        <FormLabel>E-mail</FormLabel>
-                        <FormInput
-                            type="email"
-                            placeholder="seu@email.com"
-                            value={data.user.email}
-                            readOnly={!isEditing}
-                            className={!isEditing ? "bg-zinc-50 border-transparent cursor-not-allowed" : ""}
-                            onChange={(e) => handleChange("user", "email", e.target.value)}
-                        />
-                    </div>
-                    {isEditing && (
-                        <>
-                            <div>
-                                <FormLabel>Nova Senha</FormLabel>
-                                <FormInput
-                                    type="password"
-                                    placeholder="••••••••"
-                                    value={data.user.password || ""}
-                                    onChange={(e) => handleChange("user", "password", e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <FormLabel>Confirmar Senha</FormLabel>
-                                <FormInput type="password" placeholder="••••••••" />
-                            </div>
-                        </>
-                    )}
-                </div>
-            </FormSection>
+                    </InlineField>
+                </InlineFields>
+            )}
+
+            <hr className="border-zinc-100 my-8" />
 
             {/* ENDEREÇO RESIDENCIAL */}
-            <FormSection title="Endereço Residencial" icon={<MapPin size={20} />}>
-                <div className="grid grid-cols-1 md:grid-cols-6 gap-5">
-                    <div className="md:col-span-4">
-                        <FormLabel>Rua / Logradouro</FormLabel>
-                        <FormInput
-                            placeholder="Nome da rua"
-                            value={data.address?.address || ""}
-                            readOnly={!isEditing}
-                            className={!isEditing ? "bg-zinc-50 border-transparent cursor-not-allowed" : ""}
-                            onChange={(e) => handleChange("address", "address", e.target.value)}
-                        />
-                    </div>
-                    <div className="md:col-span-2">
-                        <FormLabel>Número</FormLabel>
-                        <FormInput
-                            placeholder="123"
-                            value={data.address?.number || ""}
-                            readOnly={!isEditing}
-                            className={!isEditing ? "bg-zinc-50 border-transparent cursor-not-allowed" : ""}
-                            onChange={(e) => handleChange("address", "number", e.target.value)}
-                        />
-                    </div>
-                    <div className="md:col-span-3">
-                        <FormLabel>Bairro</FormLabel>
-                        <FormInput
-                            placeholder="Seu bairro"
-                            value={data.address?.neighborhood || ""}
-                            readOnly={!isEditing}
-                            className={!isEditing ? "bg-zinc-50 border-transparent cursor-not-allowed" : ""}
-                            onChange={(e) => handleChange("address", "neighborhood", e.target.value)}
-                        />
-                    </div>
-                    <div className="md:col-span-3">
-                        <FormLabel>CEP</FormLabel>
-                        <FormInput
-                            placeholder="00000-000"
-                            value={data.address?.zip_code || ""}
-                            readOnly={!isEditing}
-                            className={!isEditing ? "bg-zinc-50 border-transparent cursor-not-allowed" : ""}
-                            onChange={(e) => handleChange("address", "zip_code", e.target.value)}
-                        />
-                    </div>
-                    <div className="md:col-span-4">
-                        <FormLabel>Cidade</FormLabel>
-                        <FormInput
-                            placeholder="Sua cidade"
-                            value={data.address?.city || ""}
-                            readOnly={!isEditing}
-                            className={!isEditing ? "bg-zinc-50 border-transparent cursor-not-allowed" : ""}
-                            onChange={(e) => handleChange("address", "city", e.target.value)}
-                        />
-                    </div>
-                    <div className="md:col-span-2">
-                        <FormLabel>Estado (UF)</FormLabel>
-                        <FormInput
-                            placeholder="RS"
-                            value={data.address?.state || ""}
-                            readOnly={!isEditing}
-                            className={!isEditing ? "bg-zinc-50 border-transparent cursor-not-allowed" : ""}
-                            onChange={(e) => handleChange("address", "state", e.target.value)}
-                        />
-                    </div>
-                </div>
-            </FormSection>
+            <TitleTemplate title="Endereço Residencial" />
+
+            <InlineFields>
+                <InlineField>
+                    <LabelForm title="Rua / Logradouro" />
+                    <InputForm
+                        name="address"
+                        icon={<MapPin size={18} />}
+                        value={data.address?.address || ""}
+                        onChange={onInputChange("address")}
+                        placeholder="Nome da rua"
+                        readOnly={!isEditing}
+                    />
+                </InlineField>
+                <InlineField>
+                    <LabelForm title="Número" />
+                    <InputForm
+                        name="number"
+                        icon={<Hash size={18} />}
+                        value={data.address?.number || ""}
+                        onChange={onInputChange("address")}
+                        placeholder="123"
+                        readOnly={!isEditing}
+                    />
+                </InlineField>
+            </InlineFields>
+
+            <InlineFields>
+                <InlineField>
+                    <LabelForm title="Bairro" />
+                    <InputForm
+                        name="neighborhood"
+                        icon={<Navigation size={18} />}
+                        value={data.address?.neighborhood || ""}
+                        onChange={onInputChange("address")}
+                        placeholder="Seu bairro"
+                        readOnly={!isEditing}
+                    />
+                </InlineField>
+                <InlineField>
+                    <LabelForm title="CEP" />
+                    <InputForm
+                        name="zip_code"
+                        icon={<Milestone size={18} />}
+                        value={data.address?.zip_code || ""}
+                        onChange={onInputChange("address")}
+                        placeholder="00000-000"
+                        readOnly={!isEditing}
+                    />
+                </InlineField>
+            </InlineFields>
+
+            <InlineFields>
+                <InlineField>
+                    <LabelForm title="Cidade" />
+                    <InputForm
+                        name="city"
+                        icon={<Globe size={18} />}
+                        value={data.address?.city || ""}
+                        onChange={onInputChange("address")}
+                        placeholder="Sua cidade"
+                        readOnly={!isEditing}
+                    />
+                </InlineField>
+                <InlineField>
+                    <LabelForm title="Estado (UF)" />
+                    <InputForm
+                        name="state"
+                        value={data.address?.state || ""}
+                        onChange={onInputChange("address")}
+                        placeholder="RS"
+                        maxLength={2}
+                        readOnly={!isEditing}
+                    />
+                </InlineField>
+            </InlineFields>
         </section>
     );
 }
