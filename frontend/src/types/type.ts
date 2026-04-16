@@ -75,11 +75,7 @@ export type Service = {
     deleted_at?: string | null;
 }
 
-export type RolePermission = {
-    dispatcher: string;
-    user: string;
-    admin: string;
-}
+export type RolePermission = "dispatcher" | "user" | "admin"
 
 /**
  * Representa os dados necessários para o login do usuário.
@@ -90,6 +86,7 @@ export type LoginRequest = {
 }
 
 export type LoginResponse = UserContext & {
+    dispatcher_id?: number;
     token: string;
 }
 

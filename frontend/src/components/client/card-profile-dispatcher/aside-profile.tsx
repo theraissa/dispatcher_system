@@ -11,6 +11,7 @@ type AsideProfileDispatcherProps = {
         user: Record<string, any>;
         office: Record<string, any>;
     };
+    onOpenReview: () => void;
 };
 
 /**
@@ -22,7 +23,7 @@ type AsideProfileDispatcherProps = {
  * - Indicação de credenciamento
  * - Área de avaliação do atendimento
  */
-export function AsideProfileDispatcher({ dispatcher }: AsideProfileDispatcherProps) {
+export function AsideProfileDispatcher({ dispatcher, onOpenReview }: AsideProfileDispatcherProps) {
     return (
         <aside>
             <div className="bg-white p-8 rounded-[32px] shadow-sm border border-zinc-100 sticky top-24">
@@ -81,7 +82,7 @@ export function AsideProfileDispatcher({ dispatcher }: AsideProfileDispatcherPro
                     />
                 </div>
 
-                <Separator className="my-6 opacity-50" />
+                <Separator className="my-8 opacity-100" />
 
                 {/* =========================
                    SEÇÃO DE AVALIAÇÃO
@@ -97,13 +98,17 @@ export function AsideProfileDispatcher({ dispatcher }: AsideProfileDispatcherPro
                             <Star
                                 key={s}
                                 size={22}
+                                onClick={onOpenReview}
                                 className="text-zinc-200 hover:text-yellow-400 cursor-pointer transition-colors"
                             />
                         ))}
                     </div>
 
                     {/* Ação de envio de feedback */}
-                    <Button className="w-full bg-[#21314D] hover:bg-[#1A263D] text-xs font-bold h-11 rounded-xl shadow-md transition-all active:scale-95">
+                    <Button
+                        onClick={onOpenReview}
+                        className="w-full bg-[#21314D] hover:bg-[#1A263D] text-xs font-bold h-11 rounded-xl shadow-md transition-all active:scale-95"
+                    >
                         Enviar Feedback
                     </Button>
                 </div>

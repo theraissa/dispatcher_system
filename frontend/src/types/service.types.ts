@@ -25,5 +25,5 @@ export type ServiceDetails = {
     id: number;
     service_id: number;
     name: string;
-    price: string;
+    price?: number;
 };

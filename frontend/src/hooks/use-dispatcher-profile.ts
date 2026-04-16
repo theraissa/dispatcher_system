@@ -1,3 +1,8 @@
+import { useEffect, useState } from "react"
+import { getDispatcherProfile, updateDispatcherProfile } from "../services/dispatcher-service"
+import type { ProfileDispatcher } from "@/types/dispatcher.types"
+
+
 /**
  * Hook responsável por gerenciar o perfil do despachante.
  *
@@ -6,25 +11,13 @@
  * - Armazenar e gerenciar estado local
  * - Atualizar campos do formulário dinamicamente
  * - Enviar atualizações para a API
- *
- * @param dispatcherId ID do usuário/despachante
- *
- * @returns
- * - data: dados do perfil
- * - loading: estado de carregamento inicial
- * - handleChange: função para atualizar campos
- * - handleSubmit: função para salvar alterações
  */
-import { useEffect, useState } from "react"
-import { getDispatcherProfile, updateDispatcherProfile } from "../services/dispatcher-service"
-import type { ProfileDispatcher } from "@/types/dispatcher.types"
-
 export function useDispatcherProfile(userId: number, dispatcherId: number) {
+
     const [data, setData] = useState<ProfileDispatcher>()
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-
         if (!dispatcherId) {
             setLoading(false)
             return

@@ -5,9 +5,12 @@ import { AsideProfileDispatcher } from '@/components/client/card-profile-dispatc
 import { TimelineTicket } from '@/components/client/called-details/timeline-ticket';
 import { useTickets } from "@/hooks/use-ticket";
 import { useParams } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { TicketChat } from '@/components/client/called-details/chat-ticket';
 import { InfoServiceAndUser } from "@/components/client/called-details/info-service-user-ticket";
+import { useTicketReview } from "@/hooks/use-ticket-review";
+import { ReviewModal } from "@/components/client/ui/review-modal";
+import { toast } from "sonner";
 
 
 /**
@@ -45,19 +48,48 @@ export default function TicketDetails() {
     // Hook responsável por gerenciar tickets
     const { selectedTicket, loading, fetchTicketById } = useTickets(user.id);
 
-    // EFEITO: BUSCAR CHAMADO
+    // Controla a abertura/fechamento do modal de avaliação.
+    const [isReviewOpen, setIsReviewOpen] = useState(false);
+
+    // Hook responsável por enviar a avaliação do atendimento.
+    const { loading: reviewLoading, handleSubmit } = useTicketReview(
+        Number(ticketId),
+        user.id
+    );
+
+    console.log(ticketId)
+
+    /**
+     * Efeito responsável por buscar os dados do chamado
+     * sempre que o `ticketId` mudar.
+     */
     useEffect(() => {
         if (!ticketId) return;
 
-        // Converte string da URL para número
         fetchTicketById(Number(ticketId));
-
     }, [ticketId]);
 
+    /**
+     * Manipula o envio da avaliação do usuário.
+     */
+    async function handleReviewSubmit(data: { rating: number; comment?: string }) {
+        try {
+            await handleSubmit(data);
 
+            toast.success("Avaliação enviada com sucesso!");
+            setIsReviewOpen(false);
+
+        } catch (err: any) {
+            toast.error(err.message);
+        }
+    }
+
+    // Estado de carregamento do ticket.
     if (loading) {
         return <p className="text-center mt-10">Carregando o chamado...</p>;
     }
+
+    // Estado em que o ticket não foi encontrado.
     if (!selectedTicket) {
         return <p className="text-center mt-10">Chamado não encontrado.</p>;
     }
@@ -116,6 +148,8 @@ export default function TicketDetails() {
                     </div>
                 </header>
 
+                {/* Timeline do chamado */}
+                <TimelineTicket ticketId={Number(ticketId)} />
 
                 {/* =========================
                    LAYOUT PRINCIPAL (GRID)
@@ -142,10 +176,18 @@ export default function TicketDetails() {
                     <aside className="space-y-8 sticky top-10 self-start h-fit">
 
                         {/* Perfil do despachante */}
-                        <AsideProfileDispatcher dispatcher={dispatcherProfile} />
+                        <AsideProfileDispatcher
+                            dispatcher={dispatcherProfile}
+                            onOpenReview={() => setIsReviewOpen(true)}
+                        />
 
-                        {/* Timeline do chamado */}
-                        <TimelineTicket />
+                        {/* Modal para avaliar o despachante */}
+                        <ReviewModal
+                            isOpen={isReviewOpen}
+                            onClose={() => setIsReviewOpen(false)}
+                            onSubmit={handleReviewSubmit}
+                            loading={reviewLoading}
+                        />
                     </aside>
                 </div>
             </main>

@@ -88,3 +88,38 @@ export type TicketMessage = {
 
 // Tipo para resposta da listagem de mensagem do chamado.
 export type ListTicketMessage = TicketMessage[]
+
+/*
+* Informações que contém na mensagem do chamado.
+*/
+export type TicketReview = {
+    id: number;
+    ticket_id: number;
+    rating: string;
+    comment: string;
+    created_at: string;
+}
+
+
+
+/*
+* Informações necessárias para criar um timeline para o chamado.
+*/
+export type CreateTimelineRequest = {
+    description: string;
+    action_by?: number;
+    status: string;
+}
+/*
+* Informações que contém no timeline do chamado.
+*/
+export type TimelineResponse = {
+    id: number;
+    status: string;
+    description: string;
+    action_by?: number;
+    created_at: string;
+}
+
+// Tipo para resposta da listagem de timeline do chamado.
+export type ListTimelineResponse = TimelineResponse[]

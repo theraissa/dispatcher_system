@@ -7,7 +7,7 @@ export function ProfileContainer({ children }: { children: React.ReactNode }) {
 
 export function ProfileCard({ children }: { children: React.ReactNode }) {
     return (
-        <div className="w-full bg-white p-8 rounded-[32px] shadow-sm border border-zinc-100 flex flex-col gap-6 transition-all">
+        <div className="w-full bg-white p-10 rounded-[30px] shadow-sm border border-zinc-100 flex flex-col gap-6 transition-all">
             {children}
         </div>
     );

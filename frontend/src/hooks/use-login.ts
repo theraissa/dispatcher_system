@@ -33,7 +33,7 @@ export function useLogin() {
             signIn(
                 {
                     id: user.id,
-                    dispatcherId: user.dispatcherId,
+                    dispatcherId: user.dispatcher_id,
                     name: user.name,
                     email: user.email,
                     role: user.role
@@ -44,7 +44,7 @@ export function useLogin() {
             /**
              * Redirecionamento baseado no role
              */
-            if (user.role.dispatcher === "dispatcher") {
+            if (user.role === "dispatcher") {
                 navigate(FRONTEND_ROUTES.INITIAL.DISPATCHER_PROFILE)
             } else {
                 navigate(FRONTEND_ROUTES.INITIAL.SEARCH_DISPATCHER)

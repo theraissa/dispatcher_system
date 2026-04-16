@@ -50,6 +50,7 @@ export function InfoServiceAndUser({ ticket, onCancel }: InfoServiceAndUserProps
                             <DataField label="Nome do Serviço" value={ticket.service_details.name} />
                             <DataField label="Valor do Serviço" value={`R$ ${ticket.service_details.price}`} />
                             <DataField label="Data de Abertura" value={formatDate(ticket.created_at)} />
+                            <DataField label="Data de Fechamento" value={formatDate(ticket.created_at)} />
                         </div>
                     </div>
 
@@ -88,7 +89,7 @@ export function InfoServiceAndUser({ ticket, onCancel }: InfoServiceAndUserProps
                             className="flex items-center gap-2 bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white px-4 py-2 rounded-xl text-xs font-bold transition-all border border-red-500/20 active:scale-95"
                         >
                             <XCircle size={16} />
-                            Cancelar Chamado
+                            Encerrar Chamado
                         </button>
                     )}
                 </div>

@@ -55,11 +55,13 @@ export function useServiceDetails(dispatcherId: number) {
         await updateServiceDetailsDispatcher(dispatcherId, serviceId, price);
 
         // Isso aqui atualiza a lista na tela SEM precisar recarregar do banco:
-        setServiceDetails(prev => prev.map(s =>
-            s.service_id === serviceId
-                ? { ...s, price: price.toString() }
-                : s
-        ))
+        setServiceDetails(prev =>
+            prev.map(s =>
+                s.service_id === serviceId
+                    ? { ...s, price }
+                    : s
+            )
+        )
     }
 
     // Função para remover o serviço detalhado do despachante
@@ -67,7 +69,7 @@ export function useServiceDetails(dispatcherId: number) {
         await removeDispatcherServiceDetails(dispatcherId, serviceId)
 
         // Isso remove o item da sua lista local instantaneamente para o usuário
-        setServiceDetails(prev => prev.filter(s => s.id !== serviceId))
+        setServiceDetails(prev => prev.filter(s => s.service_id !== serviceId))
     }
 
     return {

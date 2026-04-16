@@ -4,18 +4,67 @@ import { useDispatcherProfile } from "@/hooks/use-dispatcher-profile";
 import FormPersonal from "@/components/record/dispatcher-record/form-dispatcher/form-personal";
 import ProfileHeader from "./profile-header";
 import FormCommercial from "@/components/record/dispatcher-record/form-dispatcher/form-commercial";
+import { Loader2 } from "lucide-react";
 
-export default function ProfileInfo() {
+
+/**
+ * Componente responsável por exibir e editar as informações do perfil do despachante.
+ *
+ * Ele reúne dados pessoais, comerciais e de configuração do despacho,
+ * permitindo edição controlada via estado interno.
+ */
+export default function ProfileInfo({ dispatcherId, userId }:
+    { dispatcherId: number; userId: number }
+) {
+
+    //Controla se o usuário está em modo de edição ou apenas visualização.
     const [isEditing, setIsEditing] = useState(false);
-    const storedUser = JSON.parse(localStorage.getItem("user") || "null")
 
-    const { data, loading, handleChange, handleSubmit } = useDispatcherProfile(storedUser?.id)
+    /**
+     * Hook responsável por carregar e gerenciar os dados do perfil do despachante.
+     *
+     * Responsável por:
+     * - Buscar dados do usuário e do despachante
+     * - Controlar estado de loading
+     * - Gerenciar mudanças nos campos do formulário
+     * - Submeter atualizações do perfil
+     */
+    const {
+        data,
+        loading,
+        handleChange,
+        handleSubmit,
+    } = useDispatcherProfile(userId, dispatcherId);
 
-    if (loading || !data) return <p className="text-center p-10">Carregando...</p>
+    if (loading || !data) {
+        return (
+            <div className="flex justify-center p-20 text-zinc-400">
+                <Loader2 className="animate-spin mr-2" />
+                Carregando perfil...
+            </div>
+        );
+    }
+
+    /**
+     * Submissão do formulário de perfil.
+     *
+     * Fluxo:
+     * 1. Evita reload padrão do formulário
+     * 2. Envia dados atualizados via hook
+     * 3. Sai do modo de edição após salvar
+     */
+    function handleFormSubmit(e: React.FormEvent) {
+        e.preventDefault();
+        handleSubmit();
+        setIsEditing(false);
+    }
 
     return (
-        <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); setIsEditing(false); }}>
+        <form onSubmit={handleFormSubmit}>
 
+            {/* =========================
+                HEADER DO PERFIL
+                ========================= */}
             <ProfileHeader
                 user={data.user}
                 profile={data.profile}
@@ -23,10 +72,14 @@ export default function ProfileInfo() {
                 setIsEditing={setIsEditing}
             />
 
-            {/* AJUSTE AQUI: flex-col para mobile e flex-row para telas grandes */}
+            {/* =========================
+                FORMULÁRIO PRINCIPAL
+                ========================= */}
             <div className="flex flex-col lg:flex-row gap-6 items-start">
 
-                {/* Lado Esquerdo: Pessoal */}
+                {/* =========================
+                    DADOS PESSOAIS
+                ========================= */}
                 <div className="flex-1 w-full">
                     <FormPersonal
                         user={data.user}
@@ -35,7 +88,9 @@ export default function ProfileInfo() {
                     />
                 </div>
 
-                {/* Lado Direito: Comercial */}
+                {/* =========================
+                    DADOS COMERCIAIS
+                ========================= */}
                 <div className="flex-1 w-full">
                     <FormCommercial
                         dispatcher={data.dispatcher}
@@ -46,7 +101,9 @@ export default function ProfileInfo() {
                 </div>
             </div>
 
-            {/* Botão de Salvar flutuante */}
+            {/* =========================
+                BOTÃO DE SALVAR (FLOATING)
+                ========================= */}
             {isEditing && (
                 <div className="fixed bottom-8 right-8 z-50">
                     <button
@@ -58,5 +115,5 @@ export default function ProfileInfo() {
                 </div>
             )}
         </form>
-    )
+    );
 }

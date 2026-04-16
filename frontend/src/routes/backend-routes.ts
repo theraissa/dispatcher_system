@@ -51,6 +51,11 @@ export const BACKEND_ROUTES = {
 
         listMessagesTicket: (ticketId: number) => `/ticket/${ticketId}/messages`,
         createMessageTicket: (ticketId: number) => `/ticket/${ticketId}/messages`,
+
+        createReviewTicket: (ticketId: number) => `/ticket/${ticketId}/review`,
+
+        listTimelineTicket: (ticketId: number) => `/ticket/${ticketId}/timeline`,
+        createTimelineTicket: (ticketId: number) => `/ticket/${ticketId}/timeline`,
     },
 
     admin: {
