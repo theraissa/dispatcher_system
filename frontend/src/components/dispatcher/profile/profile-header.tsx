@@ -1,5 +1,5 @@
 import { InstagramIcon } from "@/components/icons/lucide-instagram";
-import { Globe, MessageCircle, Edit3, Save, Camera } from "lucide-react";
+import { Globe, MessageCircle, Edit3, Save, Camera, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Profile, UserType } from "@/types/type";
 
@@ -38,7 +38,6 @@ export default function ProfileHeader({
 
   return (
     <div className="w-full h-52 flex justify-center mb-8">
-
       <div
         className={cn(
           "relative w-full bg-white p-6 md:p-8 rounded-[32px] shadow-sm border border-zinc-100",
@@ -47,38 +46,50 @@ export default function ProfileHeader({
       >
 
         {/* =========================
-            BOTÃO EDITAR / SALVAR
+            CONTAINER DE AÇÕES (TOPO DIREITO)
            ========================= */}
-        <button
-          onClick={() => setIsEditing(!isEditing)}
-          className={cn(
-            "cursor-pointer absolute top-8 right-8 flex items-center gap-4 px-6 py-2 rounded-lg text-[15px] font-bold transition-all",
-            isEditing
-              ? "bg-green-600 text-white hover:bg-green-700"
-              : "bg-[#21314D] text-white hover:bg-[#1A263D]"
+        <div className="absolute top-8 right-8 flex items-center gap-2">
+
+          {/* Botão Cancelar (Apenas em edição) */}
+          {isEditing && (
+            <button
+              onClick={() => setIsEditing(false)}
+              className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-lg text-[15px] font-bold bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 transition-all active:scale-95 border border-red-100"
+            >
+              <X size={20} />
+              Cancelar
+            </button>
           )}
-        >
-          {isEditing ? <Save size={20} /> : <Edit3 size={20} />}
-          {isEditing ? "Salvar" : "Editar Perfil"}
-        </button>
+
+          {/* Botão Editar / Salvar */}
+          <button
+            onClick={() => setIsEditing(!isEditing)}
+            className={cn(
+              "cursor-pointer flex items-center gap-4 px-6 py-2 rounded-lg text-[15px] font-bold transition-all active:scale-95 shadow-sm",
+              isEditing
+                ? "bg-green-600 text-white hover:bg-green-700"
+                : "bg-[#21314D] text-white hover:bg-[#1A263D]"
+            )}
+          >
+            {isEditing ? <Save size={20} /> : <Edit3 size={20} />}
+            {isEditing ? "Salvar" : "Editar Perfil"}
+          </button>
+        </div>
 
         {/* =========================
             FOTO DO USUÁRIO
            ========================= */}
         <div className="relative group">
-
-          {/* Imagem de perfil */}
           <div
-            className="md:w-38 md:h-38 rounded-full bg-zinc-100 border-4 border-white shadow-md overflow-hidden bg-cover bg-center"
+            className="w-32 h-32 md:w-38 md:h-38 rounded-full bg-zinc-100 border-4 border-white shadow-md overflow-hidden bg-cover bg-center transition-all"
             style={{
               backgroundImage: `url(${profile.photo || "https://via.placeholder.com/150"})`,
             }}
           />
 
-          {/* Overlay de edição (apenas no modo editável) */}
           {isEditing && (
-            <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
-              <Camera className="text-white" size={20} />
+            <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center cursor-pointer opacity-100 transition-opacity">
+              <Camera className="text-white" size={24} />
             </div>
           )}
         </div>
@@ -87,44 +98,39 @@ export default function ProfileHeader({
             INFORMAÇÕES DO USUÁRIO
            ========================= */}
         <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-1">
-
-          {/* Nome */}
           <h2 className="text-2xl font-extrabold text-[#1E1E1E] tracking-tight">
             {user.name || "Nome do Despachante"}
           </h2>
 
-          {/* =========================
-              REDES SOCIAIS
-             ========================= */}
+          {/* REDES SOCIAIS */}
           <div className="flex gap-6 pt-6">
-
-            {/* Instagram */}
             {profile.instagram && (
               <a
                 href={profile.instagram}
                 target="_blank"
+                rel="noreferrer"
                 className="text-zinc-400 hover:text-[#E4405F] transition-colors"
               >
                 <InstagramIcon size={30} />
               </a>
             )}
 
-            {/* WhatsApp */}
             {profile.whatsapp && (
               <a
                 href={`https://wa.me/${profile.whatsapp}`}
                 target="_blank"
+                rel="noreferrer"
                 className="text-zinc-400 hover:text-[#25D366] transition-colors"
               >
                 <MessageCircle size={30} />
               </a>
             )}
 
-            {/* Website */}
             {profile.website && (
               <a
                 href={profile.website}
                 target="_blank"
+                rel="noreferrer"
                 className="text-zinc-400 hover:text-[#21314D] transition-colors"
               >
                 <Globe size={30} />
