@@ -7,10 +7,11 @@ a chamados, incluindo criação, consulta detalhada e listagem por usuário.
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import joinedload
-from database.tables import TicketDB, UserDB, ServiceDetailsDB, DispatcherDB, TicketMessageDB
+from database.tables import TicketDB, UserDB, ServiceDetailsDB, DispatcherDB, TicketReviewDB, TicketTimelineDB
 from flask import abort
 from models.ticket import (
     CreateTicketRequest,
+    ReviewResponse,
     TicketResponse,
     TicketUserResponse,
     ListTicketUserResponse,
@@ -18,8 +19,7 @@ from models.ticket import (
     DispatcherInfo,
     UserInfo,
     ListTicketResponse,
-    TicketMessageResponse,
-    ListTicketMessageResponse,
+    CreateReviewRequest,
 )
 
 
@@ -172,6 +172,17 @@ class TicketService:
         ticket = TicketDB(**data.model_dump())
 
         self.db.session.add(ticket)
+        self.db.session.flush()  # Necessário para obter o ID do ticket antes de criar a timeline
+
+        # CRIA TIMELINE INICIAl
+        timeline = TicketTimelineDB(
+            ticket_id=ticket.id,
+            description="Chamado criado e aguardando atendimento",
+            action_by=data.user_id,
+            status="Pendente",
+        )
+
+        self.db.session.add(timeline)
         self.db.session.commit()
 
         return TicketResponse.model_validate(ticket).model_dump()
@@ -214,83 +225,62 @@ class TicketService:
         if not all(is_filled(field) for field in address_fields):
             abort(400, description="Endereço do usuário está incompleto.")
 
-    # Métodos relacionado a tabela TicketMessageDB
+    # Métodos relacionado a tabela TicketReviewDB
 
-    def list_messages_by_ticket(self, ticket_id: int) -> ListTicketMessageResponse:
+    def create_review(self, ticket_id: int, data: CreateReviewRequest) -> ReviewResponse:
         """
-        Lista todas as mensagens associadas a um chamado.
+        Cria uma avaliação para um chamado finalizado.
 
-        A consulta retorna apenas mensagens ativas (não deletadas),
-        ordenadas cronologicamente da mais antiga para a mais recente.
+        Este método permite que o cliente avalie o despachante responsável
+        após a conclusão do serviço.
+
+        Regras de validação:
+            - O chamado deve existir
+            - O chamado deve pertencer ao usuário
+            - O chamado deve estar finalizado
+            - O chamado não pode já possuir avaliação
+            - A nota deve estar entre 1 e 5
 
         Args:
-            ticket_id (int): Identificador do chamado.
+            ticket_id (int): ID do chamado a ser avaliado.
+            user_id (int): ID do usuário que está avaliando.
+            rating (int): Nota atribuída ao despachante (1 a 5).
+            comment (str | None): Comentário opcional da avaliação.
 
         Returns:
-            List[dict]: Lista de mensagens do chamado, contendo:
-                - id (int): Identificador da mensagem
-                - user_id (int): ID do usuário que enviou a mensagem
-                - message (str): Conteúdo da mensagem
-                - created_at (datetime): Data de criação da mensagem
+            dict: Dados da avaliação criada.
         """
         ticket = self.db.session.get(TicketDB, ticket_id)
-        if not ticket:
-            abort(404, description="Chamado com o ID {ticket_id} não encontrado.")
+        if not ticket or ticket.deleted_at is not None:
+            abort(404, description=f"Chamado com ID '{ticket_id}' não encontrado.")
 
-        messages = (
-            self.db.session.query(TicketMessageDB)
-            .filter(TicketMessageDB.ticket_id == ticket_id, TicketMessageDB.deleted_at.is_(None))
-            .order_by(TicketMessageDB.created_at.asc())
-            .all()
+        # valida status
+        if ticket.status != "completed":
+            abort(400, description="O chamado precisa estar finalizado para ser avaliado.")
+
+        # valida duplicidade
+        if ticket.review:
+            abort(400, description="Este chamado já foi avaliado.")
+
+        # valida rating
+        if data.rating < 1 or data.rating > 5:
+            abort(400, description="A avaliação deve estar entre 1 e 5.")
+
+        review = TicketReviewDB(
+            ticket_id=ticket.id,
+            dispatcher_id=ticket.dispatcher_id,
+            user_id=data.user_id,
+            rating=data.rating,
+            comment=data.comment,
         )
 
-        response = [
-            TicketMessageResponse(
-                id=msg.id,
-                message=msg.message,
-                created_at=msg.created_at,
-                user_id=msg.user_id,
-            )
-            for msg in messages
-        ]
-
-        return ListTicketMessageResponse(root=response).model_dump()
-
-    def create_message(self, ticket_id: int, user_id: int, message: str) -> TicketMessageResponse:
-        """
-        Cria uma nova mensagem vinculada a um chamado.
-
-        A mensagem é associada ao usuário remetente e persistida no banco de dados.
-
-        Args:
-            ticket_id (int): Identificador do chamado ao qual a mensagem pertence.
-            user_id (int): Identificador do usuário que está enviando a mensagem.
-            message (str): Conteúdo textual da mensagem.
-
-        Returns:
-            dict: Objeto com os dados da mensagem criada, contendo:
-                - id (int): Identificador da mensagem
-                - user_id (int): ID do usuário remetente
-                - message (str): Conteúdo da mensagem
-                - created_at (datetime): Data de criação da mensagem
-        """
-        ticket = self.db.session.get(TicketDB, ticket_id)
-        if not ticket:
-            abort(404, description="Chamado com o ID {ticket_id} não encontrado.")
-
-        if not message or not message.strip():
-            abort(400, description="Mensagem não pode ser vazia.")
-
-        new_message = TicketMessageDB(ticket_id=ticket_id, user_id=user_id, message=message)
-
-        self.db.session.add(new_message)
+        self.db.session.add(review)
         self.db.session.commit()
 
-        return TicketMessageResponse(
-            id=new_message.id,
-            message=new_message.message,
-            created_at=new_message.created_at,
-            user_id=new_message.user_id,
-        )
-
-    # Métodos relacionado a tabela TicketReviewDB
+        return ReviewResponse(
+            id=review.id,
+            ticket_id=review.ticket_id,
+            rating=review.rating,
+            comment=review.comment,
+            created_at=review.created_at,
+        ).model_dump()

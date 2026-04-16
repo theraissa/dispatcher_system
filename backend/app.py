@@ -15,6 +15,8 @@ from services.user import UserService
 from services.auth import AuthService
 from services.service import Service
 from services.ticket import TicketService
+from services.message import MessageService
+from services.timeline import TimelineService
 from seed import seed
 from admin.management import AdminService
 from werkzeug.exceptions import HTTPException
@@ -49,14 +51,21 @@ def create_app():
     dispatcher_service = DispatcherService(db)
     auth_service = AuthService(db)
     service = Service(db)
+    timeline_service = TimelineService(db)
     ticket_service = TicketService(db)
+    message_service = MessageService(db)
 
     # ========= Rotas ==========
     register_admin_routes(app, admin_service)
     register_users_routes(app, user_service)
     register_dispatcher_routes(app, dispatcher_service)
     register_service_routes(app, service)
-    register_ticket_routes(app, ticket_service)
+    register_ticket_routes(
+        app,
+        ticket_service,
+        message_service,
+        timeline_service,
+    )
 
     # ========= Healthcheck e Login==========
     @app.get("/")

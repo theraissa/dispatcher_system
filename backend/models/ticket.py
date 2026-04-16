@@ -109,3 +109,24 @@ class ListTicketMessageResponse(RootModel):
     """Modelo de listagem para o TicketMessageResponse."""
 
     root: List[TicketMessageResponse]
+
+
+# Models relacionada aos reviews do chamado.
+
+
+class CreateReviewRequest(BaseModel):
+    """Modelo de criação do review"""
+
+    user_id: int
+    rating: int
+    comment: Optional[str] = None
+
+
+class ReviewResponse(BaseModel):
+    """Modelo de resposta do review"""
+
+    id: int
+    ticket_id: int
+    rating: int
+    comment: Optional[str]
+    created_at: datetime
