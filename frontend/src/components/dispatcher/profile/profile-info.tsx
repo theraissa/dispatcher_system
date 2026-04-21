@@ -100,20 +100,6 @@ export default function ProfileInfo({ dispatcherId, userId }:
                     />
                 </div>
             </div>
-
-            {/* =========================
-                BOTÃO DE SALVAR (FLOATING)
-                ========================= */}
-            {isEditing && (
-                <div className="fixed bottom-8 right-8 z-50">
-                    <button
-                        type="submit"
-                        className="bg-green-600 text-white px-8 py-4 rounded-full font-bold shadow-2xl hover:bg-green-700 hover:scale-105 transition-all flex items-center gap-2"
-                    >
-                        Salvar Alterações
-                    </button>
-                </div>
-            )}
         </form>
     );
 }

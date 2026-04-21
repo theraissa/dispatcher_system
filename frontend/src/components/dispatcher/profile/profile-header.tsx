@@ -54,9 +54,9 @@ export default function ProfileHeader({
           {isEditing && (
             <button
               onClick={() => setIsEditing(false)}
-              className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-lg text-[15px] font-bold bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 transition-all active:scale-95 border border-red-100"
+              className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 transition-all active:scale-95 border border-red-100"
             >
-              <X size={20} />
+              <X size={18} />
               Cancelar
             </button>
           )}
@@ -65,14 +65,14 @@ export default function ProfileHeader({
           <button
             onClick={() => setIsEditing(!isEditing)}
             className={cn(
-              "cursor-pointer flex items-center gap-4 px-6 py-2 rounded-lg text-[15px] font-bold transition-all active:scale-95 shadow-sm",
+              "cursor-pointer flex items-center gap-4 px-6 py-2 rounded-lg text-sm font-bold transition-all active:scale-95 shadow-sm",
               isEditing
                 ? "bg-green-600 text-white hover:bg-green-700"
                 : "bg-[#21314D] text-white hover:bg-[#1A263D]"
             )}
           >
-            {isEditing ? <Save size={20} /> : <Edit3 size={20} />}
-            {isEditing ? "Salvar" : "Editar Perfil"}
+            {isEditing ? <Save size={18} /> : <Edit3 size={18} />}
+            {isEditing ? "Salvar Alterações" : "Editar Perfil"}
           </button>
         </div>
 

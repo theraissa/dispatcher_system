@@ -29,9 +29,8 @@ export function useDispatcherProfile(userId: number, dispatcherId: number) {
                 const profile = await getDispatcherProfile(dispatcherId)
                 setData(profile)
             } catch (error) {
-                console.error("ERRO AO BUSCAR PERFIL:", error)
+                console.error("Erro ao buscar perfil do despachante:", error)
             } finally {
-                console.log("FINALIZOU FETCH")
                 setLoading(false)
             }
         }

@@ -10,9 +10,7 @@ export function FormLabel({ children, className }: { children: React.ReactNode; 
 }
 
 // --- INPUT ---
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> { }
-
-export function FormInput({ className, ...props }: InputProps) {
+export function FormInput({ className, ...props }: React.InputHTMLAttributes<HTMLInputElement>) {
     return (
         <input
             {...props}

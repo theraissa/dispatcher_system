@@ -18,16 +18,13 @@ export function useSearchDispatchers(query: string) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!query) {
-      setData([]);
-      return;
-    }
-
     const fetchDispatchers = async () => {
       try {
         setLoading(true);
 
-        const result = await searchDispatchers(query);
+        // Se não houver query, busca dados iniciais
+        const result = await searchDispatchers(query || "");
+
         setData(result);
 
       } catch (error) {

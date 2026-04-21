@@ -1,5 +1,3 @@
-import { Save } from "lucide-react";
-
 import NavbarPage from "../../components/record/ui/navbar-page";
 import FormProfileClient from "@/components/client/profile/profile-client-form";
 import ProfileClientAvatar from "@/components/client/profile/profile-client-avatar";
@@ -8,14 +6,15 @@ import { useClientProfile } from "@/hooks/use-client-profile";
 import { useState } from "react";
 
 
+/**
+ * Componente responsável por gerenciar o perfil do cliente.
+ */
 export default function ProfileClient() {
     const storedUser = JSON.parse(localStorage.getItem("user") || "null");
     const [isEditing, setIsEditing] = useState(false);
     const { data, loading, handleChange, handleSubmit } = useClientProfile(storedUser?.id);
 
-    if (loading || !data) return <p className="text-center p-10">Carregando...</p>;
-
-    const handleSave = async (e) => {
+    const handleSave = async (e: React.FormEvent) => {
         if (e) e.preventDefault();
         await handleSubmit();
         setIsEditing(false);
@@ -26,36 +25,56 @@ export default function ProfileClient() {
             <NavbarPage title="Central do Cliente" shortTitle="C" links={clientLinksNavbar} />
 
             <main className="max-w-5xl mx-auto py-10 px-6">
-                <form onSubmit={handleSave}>
-                    <div className="flex flex-col gap-8">
-                        {/* Avatar/Header agora recebe o controle de edição */}
-                        <ProfileClientAvatar
-                            user={data.user}
-                            isEditing={isEditing}
-                            setIsEditing={setIsEditing}
-                        />
+                {/* A estrutura principal (Navbar e Main) sempre renderiza.
+                   O conteúdo interno é que alterna entre Skeleton e Formulário.
+                */}
+                <div className={`transition-opacity duration-500 ${loading ? 'opacity-70' : 'opacity-100'}`}>
+                    {loading || !data ? (
+                        <ProfileSkeleton />
+                    ) : (
+                        <form onSubmit={handleSave}>
+                            <div className="flex flex-col gap-8">
+                                <ProfileClientAvatar
+                                    user={data.user}
+                                    isEditing={isEditing}
+                                    setIsEditing={setIsEditing}
+                                />
 
-                        <FormProfileClient
-                            data={data}
-                            handleChange={handleChange}
-                            isEditing={isEditing}
-                        />
-                    </div>
-
-                    {/* Botão Flutuante de Salvar (Aparece apenas quando editando) */}
-                    {isEditing && (
-                        <div className="fixed bottom-8 right-8 z-50">
-                            <button
-                                type="submit"
-                                className="bg-green-600 text-white px-8 py-4 rounded-full font-bold shadow-2xl hover:bg-green-700 hover:scale-105 transition-all flex items-center gap-2"
-                            >
-                                <Save size={20} />
-                                Salvar Alterações
-                            </button>
-                        </div>
+                                <FormProfileClient
+                                    data={data}
+                                    handleChange={handleChange}
+                                    isEditing={isEditing}
+                                />
+                            </div>
+                        </form>
                     )}
-                </form>
+                </div>
             </main>
+        </div>
+    );
+}
+
+function ProfileSkeleton() {
+    return (
+        <div className="flex flex-col gap-8 animate-pulse">
+            {/* Skeleton do Avatar/Header */}
+            <div className="bg-white p-8 rounded-[32px] border border-zinc-100 flex flex-col items-center sm:flex-row sm:justify-start gap-6">
+                <div className="w-32 h-32 bg-zinc-200 rounded-full" />
+                <div className="flex-1 space-y-3">
+                    <div className="h-6 bg-zinc-200 rounded-lg w-48" />
+                    <div className="h-4 bg-zinc-200 rounded-lg w-32" />
+                </div>
+            </div>
+
+            {/* Skeleton do Formulário */}
+            <div className="bg-white p-8 rounded-[32px] border border-zinc-100 grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[1, 2, 3, 4, 5, 6].map((n) => (
+                    <div key={n} className="space-y-2">
+                        <div className="h-3 bg-zinc-100 rounded w-20" />
+                        <div className="h-12 bg-zinc-50 rounded-xl border border-zinc-100" />
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }

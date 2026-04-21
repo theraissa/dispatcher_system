@@ -26,7 +26,7 @@ type AsideProfileDispatcherProps = {
 export function AsideProfileDispatcher({ dispatcher, onOpenReview }: AsideProfileDispatcherProps) {
     return (
         <aside>
-            <div className="bg-white p-8 rounded-[32px] shadow-sm border border-zinc-100 sticky top-24">
+            <div className="bg-white p-8 rounded-[32px] shadow-sm border border-zinc-100 sticky top-24 border-t-[6px] border-t-[#21314D]">
 
                 {/* =========================
                    AVATAR + INDICADOR DE VERIFICAÇÃO
@@ -107,7 +107,7 @@ export function AsideProfileDispatcher({ dispatcher, onOpenReview }: AsideProfil
                     {/* Ação de envio de feedback */}
                     <Button
                         onClick={onOpenReview}
-                        className="w-full bg-[#21314D] hover:bg-[#1A263D] text-xs font-bold h-11 rounded-xl shadow-md transition-all active:scale-95"
+                        className="cursor-pointer w-full bg-[#21314D] hover:bg-[#1A263D] text-xs font-bold h-11 rounded-xl shadow-md transition-all active:scale-95"
                     >
                         Enviar Feedback
                     </Button>
