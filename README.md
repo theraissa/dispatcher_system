@@ -84,43 +84,6 @@ Isso irá iniciar em modo de desenvolvimento:
 ./dev.sh build
 ```
 
----
-
-### 5. Ver logs
-
-```bash
-./dev.sh logs
-```
-
-
-## 🐍 Ambiente Virtual (opcional - backend local)
-
-Caso queira rodar o backend fora do Docker:
-
-```
-./dev.sh venv
-```
-
-Isso irá:
-* Criar `.venv`
-* Instalar dependências
-* Atualizar o ambiente
-
-
-## 🗄️ Banco de Dados e Migrações
-
-### Criar nova migration
-
-```bash
-./dev.sh migrate
-```
-
-### Aplicar migrations
-
-```bash
-./dev.sh upgrade
-```
-
 
 ## 🔍 Funcionalidades atuais
 
