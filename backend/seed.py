@@ -53,14 +53,12 @@ def seed():
         user_id=user1.id,
         regis_crdd="CRDD123",
         date_exp_regis=datetime(2030, 7, 19),
-        status="pending",
     )
 
     dispatcher2 = DispatcherDB(
         user_id=user2.id,
         regis_crdd="CRDD456",
         date_exp_regis=datetime(2032, 5, 10),
-        status="pending",
     )
 
     db.session.add_all([dispatcher1, dispatcher2])

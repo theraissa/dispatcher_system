@@ -32,7 +32,7 @@ class AdminService:
             self.db.session.query(DispatcherDB)
             .options(joinedload(DispatcherDB.user))
             .filter(
-                DispatcherDB.status == "pending",
+                DispatcherDB.status == "pendente",
                 DispatcherDB.deleted_at.is_(None),
             )
             .all()

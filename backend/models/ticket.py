@@ -77,20 +77,22 @@ class TicketUserResponse(BaseModel):
     created_at: datetime
 
 
-class ListTicketResponse(BaseModel):
+class ListTicketUser(BaseModel):
     """Modelo de resposta de listagem de chamados do usuário"""
 
     id: int
     status: str
     name_service: str
-    name_dispatcher: str
+    name_dispatcher: Optional[str] = None
+    name_client: Optional[str] = None
+
     created_at: datetime
 
 
 class ListTicketUserResponse(RootModel):
-    """Modelo de listagem para o TicketResponse."""
+    """Modelo de listagem para o ListTicketUser."""
 
-    root: List[ListTicketResponse]
+    root: List[ListTicketUser]
 
 
 # Models relacionada as mensagems do chamado.

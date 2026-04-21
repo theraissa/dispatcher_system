@@ -2,6 +2,7 @@
 Docstrings
 """
 
+from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from database.tables import TicketTimelineDB, TicketDB
 from flask import abort
@@ -9,7 +10,10 @@ from models.timeline import (
     TimelineResponse,
     ListTimelineResponse,
     CreateTimelineRequest,
+    VALID_TRANSITIONS,
+    TicketTimeline,
 )
+from require_auth import request_context
 
 
 class TimelineService:
@@ -58,36 +62,54 @@ class TimelineService:
 
     def create_timeline(self, ticket_id: int, data: CreateTimelineRequest) -> TimelineResponse:
         """
-        Cria um novo evento na timeline de um chamado.
+        Cria um novo evento na timeline de um chamado e atualiza o status do ticket.
 
-        Esse método é utilizado para registrar ações relevantes,
-        como mudança de status ou atualizações no atendimento.
+        Regras:
+        - Valida transição de status
+        - Atualiza status do ticket
+        - Cria evento na timeline
 
         Args:
             ticket_id (int): ID do chamado.
             data (CreateTimelineRequest): Dados do evento.
-
         Returns:
-            dict: Evento criado.
+            TimelineResponse: Evento criado.
         """
         ticket = self.db.session.get(TicketDB, ticket_id)
         if not ticket:
             abort(404, description=f"Chamado com ID {ticket_id} não encontrado.")
 
-        event = TicketTimelineDB(
+        current_status_enum = TicketTimeline(ticket.status)
+        new_status_enum = data.status or current_status_enum
+
+        # Regra opcional: descrição obrigatória para encerrar
+        if new_status_enum not in VALID_TRANSITIONS.get(current_status_enum, []):
+            abort(400, description=f"Transição inválida de '{current_status_enum.value}' para '{new_status_enum.value}'")
+
+        # Atualiza status do ticket
+        ticket.status = new_status_enum.value
+
+        # Caso o novo timeline seja "Finalizado" ou "Encerrado", marca o ticket como deletado logicamente
+        if new_status_enum in [TicketTimeline.FINALIZADO, TicketTimeline.ENCERRADO]:
+            ticket.deleted_at = datetime.now()
+
+        action_by = request_context.user_id
+
+        # Cria evento
+        new_event = TicketTimelineDB(
             ticket_id=ticket_id,
             description=data.description,
-            action_by=data.action_by,
-            status=data.status or ticket.status,
+            action_by=action_by,
+            status=new_status_enum.value,
         )
 
-        self.db.session.add(event)
+        self.db.session.add(new_event)
         self.db.session.commit()
 
         return TimelineResponse(
-            id=event.id,
-            description=event.description,
-            status=event.status,
-            action_by=event.action_by,
-            created_at=event.created_at,
+            id=new_event.id,
+            description=new_event.description,
+            status=new_event.status,
+            action_by=new_event.action_by,
+            created_at=new_event.created_at,
         ).model_dump()

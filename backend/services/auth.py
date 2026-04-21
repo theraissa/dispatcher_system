@@ -50,7 +50,7 @@ class AuthService:
         dispatcher = DispatcherDB.query.filter_by(user_id=user.id).first()
 
         if dispatcher:
-            if dispatcher.status == "pending":
+            if dispatcher.status == "pendente":
                 abort(401, description="Seu registro está pendente.")
             elif dispatcher.status == "rejected":
                 abort(401, description="Seu registro foi rejeitado.")

@@ -18,9 +18,10 @@ from models.ticket import (
     ServiceDetailsInfo,
     DispatcherInfo,
     UserInfo,
-    ListTicketResponse,
+    ListTicketUser,
     CreateReviewRequest,
 )
+from models.timeline import TicketTimeline
 
 
 class TicketService:
@@ -57,7 +58,7 @@ class TicketService:
                 joinedload(TicketDB.dispatcher).joinedload(DispatcherDB.user),
                 joinedload(TicketDB.dispatcher).joinedload(DispatcherDB.office),
             )
-            .filter(TicketDB.id == ticket_id, TicketDB.deleted_at.is_(None))
+            .filter(TicketDB.id == ticket_id)
             .first()
         )
 
@@ -102,44 +103,57 @@ class TicketService:
         """
         Lista todos os chamados associados a um usuário.
 
-        Os resultados incluem informações resumidas do serviço e do despachante,
+        - Se o usuário for um cliente → retorna chamados criados por ele
+        - Se o usuário for um despachante → retorna chamados vinculados a ele
+
+        Os resultados incluem informações resumidas do serviço e da contraparte,
         sendo ordenados do mais recente para o mais antigo.
 
         Args:
             user_id (int): Identificador do usuário.
-        Returns:
-            ListTicketUserResponse: Lista de chamados do usuário.
-        """
 
-        user = UserDB.query.filter(UserDB.id == user_id, UserDB.deleted_at.is_(None)).first()
+        Returns:
+            ListTicketUserResponse: Lista de chamados.
+        """
+        user = (
+            UserDB.query.options(joinedload(UserDB.dispatcher))
+            .filter(
+                UserDB.id == user_id,
+                UserDB.deleted_at.is_(None),
+            )
+            .first()
+        )
         if not user:
             abort(404, description=f"Usuário com o ID '{user_id}' não foi encontrado.")
 
-        tickets = (
-            self.db.session.query(TicketDB)
-            .options(
-                joinedload(TicketDB.service_details).joinedload(ServiceDetailsDB.service),
-                joinedload(TicketDB.dispatcher).joinedload(DispatcherDB.user),
-            )
-            .filter(
-                TicketDB.user_id == user_id,
-                TicketDB.deleted_at.is_(None),
-            )
-            .order_by(TicketDB.created_at.desc())
-            .all()
+        is_dispatcher = user.dispatcher is not None
+
+        query = self.db.session.query(TicketDB).options(
+            joinedload(TicketDB.service_details).joinedload(ServiceDetailsDB.service),
+            joinedload(TicketDB.user),  # cliente
+            joinedload(TicketDB.dispatcher).joinedload(DispatcherDB.user),  # despachante
         )
 
+        # se for despachante, filtra pelos chamados vinculados a ele;
+        # se for cliente, filtra pelos chamados criados por ele.
+        if is_dispatcher:
+            query = query.filter(TicketDB.dispatcher_id == user.dispatcher.id)
+        else:
+            query = query.filter(TicketDB.user_id == user_id)
+
+        tickets = query.order_by(TicketDB.created_at.desc()).all()
+
         response = [
-            ListTicketResponse(
+            ListTicketUser(
                 id=ticket.id,
                 status=ticket.status,
                 created_at=ticket.created_at,
                 name_service=ticket.service_details.service.name,
-                name_dispatcher=ticket.dispatcher.user.name,
+                name_dispatcher=(ticket.dispatcher.user.name if not is_dispatcher else None),
+                name_client=(ticket.user.name if is_dispatcher else None),
             )
             for ticket in tickets
         ]
-
         return ListTicketUserResponse(root=response).model_dump()
 
     def create_ticket(self, data: CreateTicketRequest) -> TicketResponse:
@@ -179,7 +193,7 @@ class TicketService:
             ticket_id=ticket.id,
             description="Chamado criado e aguardando atendimento",
             action_by=data.user_id,
-            status="Pendente",
+            status="pendente",
         )
 
         self.db.session.add(timeline)
@@ -251,11 +265,11 @@ class TicketService:
             dict: Dados da avaliação criada.
         """
         ticket = self.db.session.get(TicketDB, ticket_id)
-        if not ticket or ticket.deleted_at is not None:
+        if not ticket:
             abort(404, description=f"Chamado com ID '{ticket_id}' não encontrado.")
 
         # valida status
-        if ticket.status != "completed":
+        if ticket.status != TicketTimeline.FINALIZADO:
             abort(400, description="O chamado precisa estar finalizado para ser avaliado.")
 
         # valida duplicidade

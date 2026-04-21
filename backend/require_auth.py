@@ -4,7 +4,7 @@ Módulo de autenticação para proteger rotas que exigem login.
 
 from functools import wraps
 import jwt
-from flask import request, jsonify, g
+from flask import request, jsonify, g, abort
 from storage import redis_client
 
 SECRET_KEY = "sua_chave_secreta"
@@ -45,3 +45,22 @@ def require_auth(f):
         return f(*args, **kwargs)
 
     return decorated
+
+
+class RequestContext:
+    """Docstring"""
+
+    @property
+    def user_id(self) -> int:
+        """Docstring"""
+        if not hasattr(g, "user_id"):
+            abort(401, description="Usuário não encontrado no contexto da requisição")
+        return g.user_id
+
+    @property
+    def user_role(self) -> str | None:
+        """Docstring"""
+        return getattr(g, "user_role", None)
+
+
+request_context = RequestContext()
