@@ -17,6 +17,7 @@ import CardProfileDispatcher from '@/pages/client/card-profile-dispatcher.tsx';
 import TicketDetails from '@/pages/client/called-details.tsx';
 import CalledDispatcher from '@/pages/dispatcher/called.tsx';
 import TicketDetailsDispatcher from '@/pages/dispatcher/called-details.tsx';
+import HomeDispatcher from '@/pages/dispatcher/home.tsx';
 
 /**
  * Componente responsável por definir as rotas da aplicação.
@@ -47,6 +48,10 @@ export function MainRoutes() {
         />
 
         // Dispatcher routes
+        <Route
+          path={FRONTEND_ROUTES.DISPATCHER.INITIAL}
+          element={<HomeDispatcher />}
+        />
         <Route
           path={FRONTEND_ROUTES.DISPATCHER.DISPATCHER_PROFILE}
           element={<ProfilePage />}

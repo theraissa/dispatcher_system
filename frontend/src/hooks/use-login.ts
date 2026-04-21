@@ -45,7 +45,7 @@ export function useLogin() {
              * Redirecionamento baseado no role
              */
             if (user.role === "dispatcher") {
-                navigate(FRONTEND_ROUTES.DISPATCHER.DISPATCHER_PROFILE)
+                navigate(FRONTEND_ROUTES.DISPATCHER.INITIAL)
             } else {
                 navigate(FRONTEND_ROUTES.CLIENT.SEARCH_DISPATCHER)
             }

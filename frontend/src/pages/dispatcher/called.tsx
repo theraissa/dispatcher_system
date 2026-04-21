@@ -4,12 +4,60 @@ import CalledContainer from "@/components/called/called-container";
 import { useAuth } from "@/hooks/use-auth";
 import { useTickets } from "@/hooks/use-ticket";
 import { dispatcherLinksNavbar, FRONTEND_ROUTES } from "@/routes/frontend-routes";
+import type { TicketFilters } from "@/types/ticket.types";
+import { useState } from "react";
+import { formatToInputDate } from "@/utils/formatters";
 
 
+/**
+ * Página responsável por exibir e gerenciar os chamados do despachante.
+ *
+ * Responsabilidades:
+ * - Buscar os chamados do usuário autenticado
+ * - Permitir filtragem dos chamados (por texto, ID e data)
+ * - Exibir lista de chamados filtrados
+ * - Integrar componentes de layout (Navbar, Filtro e Container)
+ * 
+ * @returns Página completa com listagem e filtros de chamados do cliente
+ */
 export default function CalledDispatcher() {
 
+    // Usuário autenticado (necessário para buscar os chamados)
     const { user } = useAuth();
+
+    // Hook responsável por buscar os chamados do usuário
     const { tickets, loading } = useTickets(user?.id);
+
+    // Estado que armazena os filtros definidos pelo usuário
+    const [filters, setFilters] = useState<TicketFilters>({});
+
+    /**
+     * Atualiza os filtros recebidos do componente de busca.
+     * Esse método é chamado pelo CalledClientFilter.
+     */
+    function handleSearch(newFilters: TicketFilters) {
+        setFilters(newFilters);
+    }
+
+    /**
+     * Aplica os filtros sobre a lista de chamados.).
+     */
+    const filteredTickets = tickets.filter(ticket => {
+        return (
+            // Busca por texto (nome do serviço)
+            (!filters.search ||
+                ticket.name_service
+                    ?.toLowerCase()
+                    .includes(filters.search.toLowerCase())) &&
+
+            // Filtro por ID
+            (!filters.id || ticket.id === Number(filters.id)) &&
+
+            // Filtro por data (normalizada para input type="date")
+            (!filters.date ||
+                formatToInputDate(ticket.created_at) === filters.date)
+        );
+    });
 
     if (loading) {
         return <div>Carregando chamados...</div>;
@@ -34,14 +82,55 @@ export default function CalledDispatcher() {
                 </header>
 
                 {/* BARRA DE FILTROS (Refatorada para ser mais compacta) */}
-                <CalledClientFilter />
+                <CalledClientFilter onSearch={handleSearch} />
+
 
                 {/* CONTAINER DOS CHAMADOS */}
-                <CalledContainer
-                    tickets={tickets}
-                    detailsRoute={FRONTEND_ROUTES.DISPATCHER.CALLED_DETAILS}
-                />
+                <div className="mt-8 transition-opacity duration-300">
+                    {loading ? (
+                        <CalledSkeleton />
+                    ) : (
+                        <CalledContainer
+                            tickets={filteredTickets}
+                            detailsRoute={FRONTEND_ROUTES.DISPATCHER.CALLED_DETAILS}
+                        />
+                    )}
+                </div>
             </main>
+        </div>
+    );
+}
+
+
+function CalledSkeleton() {
+    return (
+        <div className="space-y-4 w-full">
+            {[1, 2, 3].map((n) => (
+                <div
+                    key={n}
+                    className="flex flex-col lg:flex-row items-center justify-between p-5 rounded-[24px] border border-zinc-100 bg-white/50 animate-pulse"
+                >
+                    <div className="flex items-center gap-4 w-full lg:w-auto">
+                        {/* ID box skeleton */}
+                        <div className="w-12 h-12 bg-zinc-200 rounded-2xl shrink-0" />
+
+                        {/* Text skeleton */}
+                        <div className="space-y-2 w-full">
+                            <div className="h-4 bg-zinc-200 rounded-md w-48" />
+                            <div className="h-3 bg-zinc-200 rounded-md w-32" />
+                        </div>
+                    </div>
+
+                    {/* Right side skeleton */}
+                    <div className="hidden lg:flex items-center gap-8">
+                        <div className="space-y-2">
+                            <div className="h-3 bg-zinc-100 rounded-md w-20 ml-auto" />
+                            <div className="h-4 bg-zinc-200 rounded-md w-28" />
+                        </div>
+                        <div className="w-24 h-8 bg-zinc-200 rounded-full" />
+                    </div>
+                </div>
+            ))}
         </div>
     );
 }

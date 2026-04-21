@@ -62,7 +62,27 @@ def register_ticket_routes(
         )
         return jsonify(message), 201
 
+    @app.get("/api/dispatcher-system/ticket/<int:user_id>/statistics")
+    @require_auth
+    def get_dispatcher_ticket_statistics(user_id):
+        """Obtém estatísticas dos tickets do despachante"""
+        response = ticket_service.get_dispatcher_ticket_statistics(user_id)
+        return jsonify(response), 200
+
     # Rotas relacionado a tabela TicketReviewDB
+
+    @app.get("/api/dispatcher-system/ticket/<int:user_id>/review")
+    @require_auth
+    def list_dispatcher_reviews(user_id):
+        """Lista as avaliações do usuário despachante."""
+        return jsonify(ticket_service.list_dispatcher_reviews(user_id)), 200
+
+    @app.get("/api/dispatcher-system/ticket/<int:user_id>/review/summary")
+    @require_auth
+    def get_dispatcher_review_summary(user_id):
+        """Obtém a média das avaliações feitas ao usuário despachante."""
+        response = ticket_service.get_dispatcher_review_summary(user_id)
+        return jsonify(response), 200
 
     @app.post("/api/dispatcher-system/ticket/<int:ticket_id>/review")
     @require_auth

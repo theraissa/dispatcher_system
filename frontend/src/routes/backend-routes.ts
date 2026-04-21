@@ -52,10 +52,14 @@ export const BACKEND_ROUTES = {
         listMessagesTicket: (ticketId: number) => `/ticket/${ticketId}/messages`,
         createMessageTicket: (ticketId: number) => `/ticket/${ticketId}/messages`,
 
+        getReviewSummary: (userId: number) => `/ticket/${userId}/review/summary`,
+        listReviews: (userId: number) => `/ticket/${userId}/review`,
         createReviewTicket: (ticketId: number) => `/ticket/${ticketId}/review`,
 
         listTimelineTicket: (ticketId: number) => `/ticket/${ticketId}/timeline`,
         createTimelineTicket: (ticketId: number) => `/ticket/${ticketId}/timeline`,
+
+        getTicketStatistics: (userId: number) => `/ticket/${userId}/statistics`,
     },
 
     admin: {

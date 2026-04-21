@@ -91,16 +91,26 @@ export type TicketMessage = {
 export type ListTicketMessage = TicketMessage[]
 
 /*
-* Informações que contém na mensagem do chamado.
+* Informações que contém na review do chamado.
 */
 export type TicketReview = {
     id: number;
     ticket_id: number;
-    rating: string;
+    name_user: string;
+    rating: number;
     comment: string;
     created_at: string;
 }
+// Tipo para resposta da listagem de reviews do chamado.
+export type ListTicketReview = TicketReview[]
 
+/*
+* Informações que contém na média do review.
+*/
+export type TicketReviewSummary = {
+    average_rating: number;
+    total_reviews: number;
+}
 
 
 /*
@@ -134,3 +144,16 @@ export type TicketFilters = {
     date?: string;
     state?: string;
 };
+
+
+
+/**
+ * Informações sobre o rendimento mensal do despachante.
+ * Contendo informações sobre quantidades de tickets foram resolvidos...
+ */
+export type TicketStatisticsDispatcher = {
+    pending: number;
+    in_progress: number;
+    finished_month: number;
+    monthly_revenue: number;
+}

@@ -1,4 +1,4 @@
-import { ClipboardList, User, Search } from "lucide-react";
+import { ClipboardList, User, Search, Home } from "lucide-react";
 
 /**
  * Rotas da aplicação (frontend).
@@ -16,6 +16,7 @@ export const FRONTEND_ROUTES = {
     },
 
     DISPATCHER: {
+        INITIAL: "/dispatcher/initial",
         DISPATCHER_PROFILE: "/dispatcher/profile",
         CALLED: "/dispatcher/called",
         CALLED_DETAILS: "/dispatcher/called-details/:ticketId",
@@ -52,6 +53,7 @@ export const clientLinksNavbar = [
  * Cada link tem um rótulo, caminho e ícone associado.
  */
 export const dispatcherLinksNavbar = [
+    { label: "Início", path: "/dispatcher/initial", icon: Home },
     { label: "Chamados", path: "/dispatcher/called", icon: ClipboardList },
     { label: "Perfil", path: "/dispatcher/profile", icon: User },
 ];

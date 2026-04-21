@@ -250,6 +250,7 @@ class TicketReviewDB(db.Model):
     ticket_id = Column(Integer, ForeignKey("ticket.id"), nullable=False, unique=True)
     dispatcher_id = Column(Integer, ForeignKey("dispatcher.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    name_user = Column(String)
     rating = Column(Integer, nullable=False)
     comment = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

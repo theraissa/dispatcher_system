@@ -129,6 +129,7 @@ class ReviewResponse(BaseModel):
 
     id: int
     ticket_id: int
+    name_user: str
     rating: int
     comment: Optional[str]
     created_at: datetime

@@ -1,6 +1,6 @@
 import { apiClient } from "./api-client";
 import { BACKEND_ROUTES } from "../routes/backend-routes";
-import type { CreateTicketRequest, ListTicketMessage, ListTicketUserResponse, TicketUserResponse, TicketMessage, TicketReview, ListTimelineResponse, CreateTimelineRequest } from "@/types/ticket.types";
+import type { TicketStatisticsDispatcher, CreateTicketRequest, ListTicketMessage, ListTicketUserResponse, TicketUserResponse, TicketMessage, TicketReview, ListTimelineResponse, CreateTimelineRequest, ListTicketReview, TicketReviewSummary } from "@/types/ticket.types";
 
 
 /**
@@ -40,6 +40,18 @@ export async function createMessage(ticketId: number, data: {
 
 
 /**
+ * Obtém a média das avaliações recebidas pelo despachante.
+ */
+export async function getReviewSummaryDispatcher(userId: number): Promise<TicketReviewSummary> {
+    return apiClient.get(BACKEND_ROUTES.tickets.getReviewSummary(userId))
+}
+/**
+ * Lista as avalições do usuário despachante pelo o ID do seu usuário.
+ */
+export async function listReviewsDispatcher(userId: number): Promise<ListTicketReview> {
+    return apiClient.get(BACKEND_ROUTES.tickets.listReviews(userId));
+}
+/**
  * Cria um review ao final do chamado para o despachante.
  */
 export async function createReview(ticketId: number, data: {
@@ -60,4 +72,12 @@ export async function listTimelineByIdTicket(ticketId: number): Promise<ListTime
  */
 export async function createTimelineByTicket(ticketId: number, data: CreateTimelineRequest) {
     return apiClient.post(BACKEND_ROUTES.tickets.createTimelineTicket(ticketId), data);
+}
+
+
+/**
+ * Obtém as estáticas dos chamados do despachante.
+ */
+export async function getDispatcherTicketStatistics(userId: number): Promise<TicketStatisticsDispatcher> {
+    return apiClient.get(BACKEND_ROUTES.tickets.getTicketStatistics(userId))
 }

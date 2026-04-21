@@ -183,6 +183,7 @@ def upgrade():
         sa.Column("ticket_id", sa.Integer(), nullable=False),
         sa.Column("dispatcher_id", sa.Integer(), nullable=False),
         sa.Column("user_id", sa.Integer(), nullable=False),
+        sa.Column("name_user", sa.String(), nullable=True),
         sa.Column("rating", sa.Integer(), nullable=False),
         sa.Column("comment", sa.String(), nullable=True),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=True),
