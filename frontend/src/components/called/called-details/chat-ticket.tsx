@@ -60,7 +60,7 @@ export function TicketChat({ userId, ticket }: TicketChatProps) {
     }
 
     return (
-        <section className="bg-white rounded-[32px] shadow-sm border border-zinc-100 overflow-hidden flex flex-col h-[550px]">
+        <section className="bg-white rounded-[32px] shadow-sm border border-zinc-100 overflow-hidden flex flex-col h-[550px] border-t-[6px] border-t-[#21314D]">
 
             {/* =========================
                HEADER DO CHAT

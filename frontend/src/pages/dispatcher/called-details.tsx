@@ -1,5 +1,5 @@
 import NavbarPage from "../../components/record/ui/navbar-page";
-import { clientLinksNavbar } from "@/routes/frontend-routes";
+import { dispatcherLinksNavbar } from "@/routes/frontend-routes";
 import { useAuth } from '@/hooks/use-auth';
 import { AsideProfileDispatcher } from '@/components/client/card-profile-dispatcher/aside-profile';
 import { TimelineTicket } from '@/components/called/called-details/timeline-ticket';
@@ -13,31 +13,8 @@ import { ReviewModal } from "@/components/called/modal/review-modal";
 import { toast } from "sonner";
 
 
-/**
- * Página de detalhes de um chamado (TicketDetails).
- *
- * Responsabilidades:
- * - Buscar os dados completos de um chamado pelo ID da rota
- * - Exibir informações detalhadas do serviço e do cliente
- * - Permitir comunicação via chat entre cliente e despachante
- * - Exibir informações do despachante responsável
- * - Exibir timeline do chamado (status/histórico)
- *
- * Fluxo:
- * 1. Obtém `ticketId` via params da URL
- * 2. Busca os dados do chamado via hook `useTickets`
- * 3. Renderiza estados:
- *    - Loading
- *    - Não encontrado
- *    - Conteúdo completo
- *
- * Componentes envolvidos:
- * - InfoServiceAndUser → Dados do chamado + cliente
- * - TicketChat → Chat entre cliente e despachante
- * - AsideProfileDispatcher → Perfil do despachante
- * - TimelineTicket → Histórico do chamado
- */
-export default function TicketDetails() {
+
+export default function TicketDetailsDispatcher() {
 
     // Usuário autenticado
     const { user } = useAuth();
@@ -116,11 +93,11 @@ export default function TicketDetails() {
     return (
         <div className="min-h-screen bg-[#F3EDE2]">
 
-            {/* Navbar principal da área do cliente */}
+            {/* Navbar */}
             <NavbarPage
-                title="Central do Cliente"
-                shortTitle="C"
-                links={clientLinksNavbar}
+                title="Central do Despachante"
+                shortTitle="D"
+                links={dispatcherLinksNavbar}
             />
 
             <main className="max-w-6xl mx-auto py-10 px-6">
@@ -128,7 +105,7 @@ export default function TicketDetails() {
                 {/* =========================
                    HEADER DO CHAMADO
                    ========================= */}
-                <header className="mb-12">
+                <header className="mb-8">
                     <div className="flex justify-between items-start">
                         <div>
                             <h1 className="text-3xl md:text-4xl font-extrabold text-[#1E1E1E] tracking-tight">
@@ -160,7 +137,10 @@ export default function TicketDetails() {
                         <InfoServiceAndUser ticket={selectedTicket} />
 
                         {/* Timeline do chamado */}
-                        <TimelineTicket ticketId={Number(ticketId)} />
+                        <TimelineTicket
+                            ticketId={Number(ticketId)}
+                            isDispatcher={true}
+                        />
 
                         {/* Chat do chamado */}
                         <TicketChat
@@ -190,6 +170,7 @@ export default function TicketDetails() {
                         />
                     </aside>
                 </div>
+
             </main>
         </div>
     );

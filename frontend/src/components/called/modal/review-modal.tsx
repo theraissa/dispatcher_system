@@ -111,7 +111,7 @@ export function ReviewModal({ isOpen, onClose, onSubmit, loading }: ReviewModalP
                             <button
                                 key={star}
                                 onClick={() => setRating(star)}
-                                className="transition-transform active:scale-90"
+                                className="cursor-pointer transition-transform active:scale-90"
                             >
                                 <Star
                                     size={32}
@@ -147,7 +147,7 @@ export function ReviewModal({ isOpen, onClose, onSubmit, loading }: ReviewModalP
                     <button
                         onClick={handleSend}
                         disabled={loading}
-                        className="w-full bg-[#21314D] text-white h-12 rounded-xl font-bold hover:bg-[#1A263D] disabled:opacity-50 transition-all"
+                        className="cursor-pointer w-full bg-[#21314D] text-white h-12 rounded-xl font-bold hover:bg-[#1A263D] disabled:opacity-50 transition-all"
                     >
                         {loading ? "Enviando..." : "Enviar Avaliação"}
                     </button>

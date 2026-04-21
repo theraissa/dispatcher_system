@@ -58,6 +58,6 @@ export async function listTimelineByIdTicket(ticketId: number): Promise<ListTime
 /**
  * Cria um novo timeline para o chamado.
  */
-export async function createTimeline(ticketId: number, data: CreateTimelineRequest) {
+export async function createTimelineByTicket(ticketId: number, data: CreateTimelineRequest) {
     return apiClient.post(BACKEND_ROUTES.tickets.createTimelineTicket(ticketId), data);
 }

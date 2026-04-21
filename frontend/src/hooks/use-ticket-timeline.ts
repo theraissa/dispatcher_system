@@ -1,4 +1,4 @@
-import { listTimelineByIdTicket } from "@/services/ticket-service";
+import { listTimelineByIdTicket, createTimelineByTicket } from "@/services/ticket-service";
 import type { TimelineResponse } from "@/types/ticket.types";
 import { useCallback, useEffect, useState } from "react";
 
@@ -44,6 +44,22 @@ export function useTicketTimeline(ticketId: number) {
         }
     }, [ticketId]);
 
+
+    async function createTimeline(data: {
+        status: string; description: string;
+    }) {
+        try {
+            await createTimelineByTicket(ticketId, data);
+
+            // 🔥 Atualiza timeline
+            await fetchTimeline();
+
+        } catch (error: any) {
+            setError(error?.message);
+            throw error;
+        }
+    }
+
     /**
      * Effect responsável por disparar a busca automaticamente
      * sempre que o ticketId mudar.
@@ -67,5 +83,6 @@ export function useTicketTimeline(ticketId: number) {
         loading,
         error,
         refetch: fetchTimeline,
+        createTimeline,
     };
 }

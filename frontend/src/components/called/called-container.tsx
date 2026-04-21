@@ -1,0 +1,189 @@
+import { Clock, PlayCircle, CheckCircle2, AlertCircle, XCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
+import type { ListTicketResponse } from "@/types/ticket.types";
+import { formatDate } from "@/utils/formatters";
+import { useState } from "react";
+
+/**
+ * Props do componente responsável por listar os chamados do cliente.
+ */
+type CalledContainerProps = {
+    tickets: ListTicketResponse[];
+    detailsRoute: string;
+};
+
+
+// Definimos os tipos de abas para evitar erros de digitação
+type TabType = "em andamento" | "finalizados";
+
+
+/**
+ * Componente responsável por renderizar a lista de chamados do usuário.
+ *
+ * Responsabilidades:
+ * - Exibir os chamados em formato de lista (cards)
+ * - Permitir navegação para a tela de detalhes ao clicar em um chamado
+ * - Apresentar informações resumidas (serviço, data, despachante, status)
+ */
+export default function CalledContainer({ tickets, detailsRoute }: CalledContainerProps) {
+    const [activeTab, setActiveTab] = useState<TabType>("em andamento");
+
+    const filteredTickets = tickets.filter((ticket) => {
+        const isFinished =
+            ticket.status.toLowerCase().includes("concluído") ||
+            ticket.status.toLowerCase().includes("finalizado") ||
+            ticket.status.toLowerCase().includes("encerrado");
+
+        return activeTab === "finalizados" ? isFinished : !isFinished;
+    });
+
+    return (
+        <div className="bg-white p-4 md:p-8 rounded-[40px] border border-zinc-100 shadow-sm min-h-[400px] relative border-t-[6px] border-t-[#21314D]">
+
+            {/* --- CABEÇALHO DAS ABAS --- */}
+            <div className="flex gap-2 mb-8 bg-zinc-100/50 p-1.5 rounded-[20px] w-fit">
+                {(["em andamento", "finalizados"] as TabType[]).map((tab) => (
+                    <button
+                        key={tab}
+                        onClick={() => setActiveTab(tab)}
+                        className={cn(
+                            "cursor-pointer px-6 py-2.5 rounded-[16px] text-xs font-black uppercase tracking-widest transition-all duration-300",
+                            activeTab === tab
+                                ? "bg-[#21314D] text-white shadow-md scale-105"
+                                : "text-zinc-400 hover:text-zinc-600 hover:bg-zinc-200/50"
+                        )}
+                    >
+                        {tab === "em andamento" ? "Em Andamento" : "Finalizados"}
+                    </button>
+                ))}
+            </div>
+
+            <div className="space-y-4">
+                {filteredTickets.map((ticket) => {
+                    const relatedName = ticket.name_dispatcher ?? ticket.name_client;
+                    const relatedLabel = ticket.name_dispatcher ? "Despachante" : "Cliente";
+                    const theme = getStatusTheme(ticket.status);
+
+                    return (
+                        <Link
+                            key={ticket.id}
+                            to={detailsRoute.replace(":ticketId", ticket.id.toString())}
+                            className={cn(
+                                "group flex flex-col lg:flex-row lg:items-center justify-between p-5 rounded-[28px] border border-zinc-100 bg-zinc-50/40 transition-all duration-300",
+                                "hover:bg-white hover:shadow-xl hover:shadow-zinc-200/50 hover:-translate-y-1",
+                                theme.cardHover
+                            )}
+                        >
+                            {/* ESQUERDA: IDENTIFICAÇÃO E SERVIÇO */}
+                            <div className="flex flex-col md:flex-row md:items-center gap-5">
+                                <div className="w-14 h-14 bg-white rounded-2xl flex flex-col items-center justify-center text-[#21314D] shadow-sm border border-zinc-100 group-hover:border-[#21314D]/20 transition-colors">
+                                    <span className="text-[10px] font-black opacity-40 uppercase">ID</span>
+                                    <span className="font-black text-sm">#{ticket.id}</span>
+                                </div>
+
+                                <div>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <h4 className="text-sm font-black text-[#1E1E1E] uppercase tracking-tight">
+                                            {ticket.name_service}
+                                        </h4>
+                                    </div>
+                                    <div className="flex items-center gap-3 text-xs text-zinc-400 font-bold uppercase tracking-wider">
+                                        <span className="flex items-center gap-1.5 bg-white px-2 py-1 rounded-md border border-zinc-100">
+                                            <Clock size={12} className="text-[#21314D]" />
+                                            {formatDate(ticket.created_at)}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* DIREITA: INFO E STATUS */}
+                            <div className="flex items-center justify-between lg:justify-end gap-10 mt-5 lg:mt-0 pt-5 lg:pt-0 border-t lg:border-t-0 border-zinc-100">
+                                <div className="text-right hidden sm:block">
+                                    <p className="text-[9px] text-zinc-400 font-black uppercase tracking-[0.2em] mb-1">
+                                        {relatedLabel}
+                                    </p>
+                                    <p className="text-sm font-extrabold text-[#21314D] group-hover:text-black transition-colors">
+                                        {relatedName}
+                                    </p>
+                                </div>
+
+                                <div className="flex items-center gap-3">
+                                    <div
+                                        className={cn(
+                                            "flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all",
+                                            theme.badge
+                                        )}
+                                    >
+                                        {theme.icon}
+                                        {ticket.status}
+                                    </div>
+                                </div>
+                            </div>
+                        </Link>
+                    );
+                })}
+
+                {/* ESTADO VAZIO */}
+                {!filteredTickets.length && (
+                    <div className="flex flex-col items-center justify-center py-24 bg-zinc-50/50 rounded-[40px] border-2 border-dashed border-zinc-200">
+                        <div className="w-16 h-16 bg-white rounded-3xl flex items-center justify-center shadow-sm mb-4 border border-zinc-100">
+                            <Clock size={32} className="text-zinc-200" />
+                        </div>
+                        <p className="text-zinc-400 text-sm font-bold uppercase tracking-widest">
+                            Nenhum chamado {activeTab}
+                        </p>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+/**
+ * Mapeamento de Temas por Status
+ * Centraliza a identidade visual para ser usada no card
+ */
+const getStatusTheme = (status: string) => {
+    const s = status.toLowerCase();
+
+    if (s.includes("pendente") || s.includes("recusado")) {
+        return {
+            icon: <AlertCircle size={14} />,
+            badge: "bg-amber-50 text-amber-600 border-amber-200/50",
+            dot: "bg-amber-500",
+            cardHover: "hover:border-amber-200"
+        };
+    }
+    if (s.includes("andamento")) {
+        return {
+            icon: <PlayCircle size={14} />,
+            badge: "bg-blue-50 text-blue-600 border-blue-200/50",
+            dot: "bg-blue-500",
+            cardHover: "hover:border-blue-200"
+        };
+    }
+    if (s.includes("concluído") || s.includes("finalizado")) {
+        return {
+            icon: <CheckCircle2 size={14} />,
+            badge: "bg-emerald-50 text-emerald-600 border-emerald-200/50",
+            dot: "bg-emerald-500",
+            cardHover: "hover:border-emerald-200"
+        };
+    }
+    if (s.includes("encerrado")) {
+        return {
+            icon: <XCircle size={14} />,
+            badge: "bg-zinc-100 text-zinc-500 border-zinc-200",
+            dot: "bg-zinc-400",
+            cardHover: "hover:border-zinc-300"
+        };
+    }
+
+    return {
+        icon: <Clock size={14} />,
+        badge: "bg-zinc-50 text-zinc-400 border-zinc-100",
+        dot: "bg-zinc-300",
+        cardHover: "hover:border-zinc-200"
+    };
+};

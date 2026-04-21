@@ -68,7 +68,8 @@ export type ListTicketResponse = {
     id: number;
     status: string;
     name_service: string;
-    name_dispatcher: string;
+    name_dispatcher?: string | null;
+    name_client?: string | null;
     created_at: string;
 }
 
@@ -107,7 +108,6 @@ export type TicketReview = {
 */
 export type CreateTimelineRequest = {
     description: string;
-    action_by?: number;
     status: string;
 }
 /*
@@ -123,3 +123,14 @@ export type TimelineResponse = {
 
 // Tipo para resposta da listagem de timeline do chamado.
 export type ListTimelineResponse = TimelineResponse[]
+
+
+/**
+ * Meios de buscar o chamado.
+ */
+export type TicketFilters = {
+    search?: string;
+    id?: string;
+    date?: string;
+    state?: string;
+};

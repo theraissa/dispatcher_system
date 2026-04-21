@@ -15,13 +15,15 @@ export const FRONTEND_ROUTES = {
         DISPATCHER: "/register/dispatcher",
     },
 
-    INITIAL: {
-        SEARCH_DISPATCHER: "/client/search-dispatcher",
+    DISPATCHER: {
         DISPATCHER_PROFILE: "/dispatcher/profile",
+        CALLED: "/dispatcher/called",
+        CALLED_DETAILS: "/dispatcher/called-details/:ticketId",
     },
 
     CLIENT: {
         PROFILE: "/client/profile",
+        SEARCH_DISPATCHER: "/client/search-dispatcher",
         CALLED: "/client/called",
         CALLED_DETAILS: "/client/called-details/:ticketId",
         CARD_PROFILE_DISPATCHER: "/client/profile-dispatcher/:userId",
@@ -39,9 +41,9 @@ export const FRONTEND_ROUTES = {
  * Cada link tem um rótulo, caminho e ícone associado.
  */
 export const clientLinksNavbar = [
-    { label: "Buscar Despachante", path: "/client/search-dispatcher", icon: Search },
-    { label: "Meus Chamados", path: "/client/called", icon: ClipboardList },
-    { label: "Meu Perfil", path: "/client/profile", icon: User },
+    { label: "Buscar Despachantes", path: "/client/search-dispatcher", icon: Search },
+    { label: "Chamados", path: "/client/called", icon: ClipboardList },
+    { label: "Perfil", path: "/client/profile", icon: User },
 ];
 
 
@@ -50,5 +52,6 @@ export const clientLinksNavbar = [
  * Cada link tem um rótulo, caminho e ícone associado.
  */
 export const dispatcherLinksNavbar = [
-    { label: "Meu Perfil", path: "/dispatcher/profile", icon: User },
+    { label: "Chamados", path: "/dispatcher/called", icon: ClipboardList },
+    { label: "Perfil", path: "/dispatcher/profile", icon: User },
 ];

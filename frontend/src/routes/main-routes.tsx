@@ -15,6 +15,8 @@ import CalledClient from '@/pages/client/called.tsx';
 import AdminServices from '@/pages/admin/admin-service.tsx';
 import CardProfileDispatcher from '@/pages/client/card-profile-dispatcher.tsx';
 import TicketDetails from '@/pages/client/called-details.tsx';
+import CalledDispatcher from '@/pages/dispatcher/called.tsx';
+import TicketDetailsDispatcher from '@/pages/dispatcher/called-details.tsx';
 
 /**
  * Componente responsável por definir as rotas da aplicação.
@@ -44,17 +46,25 @@ export function MainRoutes() {
           element={<DispatcherRecord />}
         />
 
-        // Initial routes
+        // Dispatcher routes
         <Route
-          path={FRONTEND_ROUTES.INITIAL.SEARCH_DISPATCHER}
-          element={<InitialSearchDisp />}
+          path={FRONTEND_ROUTES.DISPATCHER.DISPATCHER_PROFILE}
+          element={<ProfilePage />}
         />
         <Route
-          path={FRONTEND_ROUTES.INITIAL.DISPATCHER_PROFILE}
-          element={<ProfilePage />}
+          path={FRONTEND_ROUTES.DISPATCHER.CALLED}
+          element={<CalledDispatcher />}
+        />
+        <Route
+          path={FRONTEND_ROUTES.DISPATCHER.CALLED_DETAILS}
+          element={<TicketDetailsDispatcher />}
         />
 
         // Client routes
+        <Route
+          path={FRONTEND_ROUTES.CLIENT.SEARCH_DISPATCHER}
+          element={<InitialSearchDisp />}
+        />
         <Route
           path={FRONTEND_ROUTES.CLIENT.PROFILE}
           element={<ProfileClient />}

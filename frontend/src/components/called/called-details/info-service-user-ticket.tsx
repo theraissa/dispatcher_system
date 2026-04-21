@@ -1,6 +1,8 @@
+import { useTicketTimeline } from "@/hooks/use-ticket-timeline";
 import type { TicketUserResponse } from "@/types/ticket.types";
 import { formatDate } from "@/utils/formatters";
 import { FileText, XCircle } from "lucide-react";
+import { toast } from "sonner";
 
 
 /**
@@ -11,7 +13,6 @@ import { FileText, XCircle } from "lucide-react";
  */
 type InfoServiceAndUserProps = {
     ticket: TicketUserResponse;
-    onCancel?: (id: number) => void;
 };
 
 
@@ -23,7 +24,23 @@ type InfoServiceAndUserProps = {
  * - Exibir informações do solicitante (usuário)
  * - Mostrar descrição/observações do serviço
  */
-export function InfoServiceAndUser({ ticket, onCancel }: InfoServiceAndUserProps) {
+export function InfoServiceAndUser({ ticket }: InfoServiceAndUserProps) {
+
+    const { createTimeline, refetch } = useTicketTimeline(ticket.id);
+
+    async function handleCancel() {
+        try {
+            await createTimeline({
+                status: "encerrado",
+                description: "Chamado encerrado pelo usuário",
+            });
+            await refetch();
+            toast.info("Chamado encerrado.");
+
+        } catch (error) {
+            console.error("Erro ao encerrar chamado:", error);
+        }
+    }
 
     return (
         <section className="bg-white rounded-[32px] shadow-sm border border-zinc-100 overflow-hidden">
@@ -85,8 +102,8 @@ export function InfoServiceAndUser({ ticket, onCancel }: InfoServiceAndUserProps
                 <div className="flex justify-end items-center pt-4">
                     {ticket.status.toLowerCase() !== "cancelado" && (
                         <button
-                            onClick={() => onCancel?.(ticket.id)}
-                            className="flex items-center gap-2 bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white px-4 py-2 rounded-xl text-xs font-bold transition-all border border-red-500/20 active:scale-95"
+                            onClick={handleCancel}
+                            className="cursor-pointer flex items-center gap-2 bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white px-4 py-2 rounded-xl text-xs font-bold transition-all border border-red-500/20 active:scale-95"
                         >
                             <XCircle size={16} />
                             Encerrar Chamado
