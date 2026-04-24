@@ -1,13 +1,15 @@
 """
-Módulo com implementação do serviço DispatcherService.
+Serviço responsável pelo gerenciamento de despachantes no sistema.
 """
 
 from datetime import datetime
 from typing import Any
 
-from database.tables import DispatcherDB, OfficeDB, ServiceDetailsDB, UserDB, ProfileDB, ServiceDB
 from flask import abort
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import or_
+
+from database.tables import DispatcherDB, OfficeDB, ProfileDB, ServiceDB, ServiceDetailsDB, UserDB
 from models.dispatcher import (
     CreateDispatcherFullRequest,
     CreateDispatcherFullResponse,
@@ -17,15 +19,20 @@ from models.dispatcher import (
     ProfileResponse,
 )
 from models.user import UserResponse
-from sqlalchemy import or_
 
 
 class DispatcherService:
     """
-    Serviço para gerenciar despachante no banco de dados.
+    Serviço de domínio responsável pela gestão de despachantes.
+
+    Este serviço orquestra múltiplas entidades relacionadas ao despachante:
+        - Usuário (User)
+        - Despachante (Dispatcher)
+        - Escritório (Office)
+        - Perfil (Profile)
 
     Args:
-        db (SQLAlchemy): Sessão de banco de dados usada para persistência.
+        db (SQLAlchemy): Sessão do SQLAlchemy utilizada para persistência.
     """
 
     def __init__(self, db: SQLAlchemy):
@@ -33,11 +40,18 @@ class DispatcherService:
 
     def list_dispatcher(self) -> ListDispatcherResponse:
         """
-        Recupera todos os despachantes ativos (não deletados).
+        Lista todos os despachantes ativos no sistema.
+
+        Considera apenas registros não deletados (soft delete).
 
         Returns:
-            ListDispatcherResponse: Lista de despachantes.
-            Retorna uma lista vazia quando nenhum despachante estiver cadastrado.
+            ListDispatcherResponse: Lista de despachantes contendo:
+                - Dados do usuário
+                - Dados do despachante
+                - Informações do escritório
+                - Perfil
+
+            Retorna lista vazia caso não existam registros.
         """
         results = (
             self.db.session.query(DispatcherDB, UserDB, OfficeDB, ProfileDB)
@@ -62,18 +76,24 @@ class DispatcherService:
 
     def get_dispatcher_by_id(self, dispatcher_id: str) -> dict:
         """
-        Recupera um despachante a partir do ID do usuário associado.
+        Recupera os dados completos de um despachante pelo ID do usuário associado.
 
         Args:
             dispatcher_id (str): ID do usuário vinculado ao despachante.
+
         Returns:
-            dict: Dados serializados do despachante encontrado.
+            dict: Estrutura contendo:
+                - user
+                - dispatcher
+                - office (opcional)
+                - profile
         """
         dispatcher = (
             self.db.session.query(DispatcherDB).filter(DispatcherDB.user_id == dispatcher_id, DispatcherDB.deleted_at.is_(None)).first()
         )
+
         if not dispatcher:
-            abort(404, description="Dispatcher with ID {dispatcher_id} not found")
+            abort(404, description=f"Dispatcher with ID {dispatcher_id} not found")
 
         user = self.db.session.query(UserDB).filter(UserDB.id == dispatcher.user_id).first()
         office = self.db.session.query(OfficeDB).filter(OfficeDB.dispatcher_id == dispatcher.id).first()
@@ -88,12 +108,23 @@ class DispatcherService:
 
     def create_dispatcher(self, dispatcher_data: CreateDispatcherFullRequest) -> dict[str, Any]:
         """
-        Cria um novo usuário, despachante, estabelecimento e perfil.
+        Cria um novo despachante com todas as entidades relacionadas.
+
+        Este processo inclui:
+            - Criação do usuário
+            - Criação do despachante
+            - Criação do escritório
+
+        A operação é transacional (rollback em caso de erro).
 
         Args:
-            dispatcher_data (CreateDispatcherRequest): O modelo Pydantic com os dados.
+            dispatcher_data (CreateDispatcherFullRequest): Dados completos para criação.
+
         Returns:
-            dict[str, Any]: Um dicionário serializado contendo o objeto recém-criado.
+            dict[str, Any]: Identificadores das entidades criadas:
+                - user_id
+                - dispatcher_id
+                - office_id
         """
         try:
             new_user = UserDB(
@@ -143,19 +174,27 @@ class DispatcherService:
 
     def update_dispatcher_full(self, user_id: int, data: CreateDispatcherFullRequest) -> dict:
         """
-        Atualiza o despachante existente por seu ID.
+        Atualiza os dados completos de um despachante.
+
+        Permite atualização parcial das seguintes entidades:
+            - Usuário
+            - Despachante
+            - Escritório
+
+        Apenas campos informados são atualizados.
 
         Args:
-            user_id: O ID do despachante a ser atualizado.
-            dispatcher_data: O modelo Pydantic com os dados atualizados do despachante.
+            user_id (int): ID do usuário associado ao despachante.
+            data (CreateDispatcherFullRequest): Dados atualizados.
+
         Returns:
-            dict[str, Any]: Um dicionário serializado contendo o objeto atualizado.
+            dict: Mensagem de sucesso da operação.
         """
         try:
-
             user = UserDB.query.filter(UserDB.id == user_id, UserDB.deleted_at.is_(None)).first()
             if not user:
                 abort(404, description="User not found")
+
             for key, value in data.user.model_dump(exclude_unset=True).items():
                 setattr(user, key, value)
 
@@ -176,16 +215,23 @@ class DispatcherService:
             self.db.session.rollback()
             raise e
 
-    def delete_dispatcher(self, dispatcher_id: str) -> str:
+    def delete_dispatcher(self, dispatcher_id: str) -> dict:
         """
-        Deleta logicamente (soft delete) um despachante ativo por seu ID.
+        Realiza a exclusão lógica (soft delete) de um despachante.
+
+        O registro não é removido fisicamente, apenas marcado com timestamp.
 
         Args:
-            dispatcher_id: O ID do despachante a ser marcado como deletada.
+            dispatcher_id (str): ID do despachante.
+
         Returns:
-            dict[str, Any]: Um dicionário serializado contendo o objeto marcado como deletado.
+            dict: Dados do despachante após marcação de exclusão.
         """
-        dispatcher_to_delete = DispatcherDB.query.filter(DispatcherDB.id == dispatcher_id, DispatcherDB.deleted_at.is_(None)).first()
+        dispatcher_to_delete = DispatcherDB.query.filter(
+            DispatcherDB.id == dispatcher_id,
+            DispatcherDB.deleted_at.is_(None),
+        ).first()
+
         if not dispatcher_to_delete:
             abort(404, description=f"Dispatcher with ID '{dispatcher_id}' not found.")
 
@@ -196,14 +242,18 @@ class DispatcherService:
 
     def search_dispatchers(self, query: str | None) -> ListDispatcherResponse:
         """
-        Busca despachantes com filtros opcionais por nome, cidade e serviço.
+        Busca despachantes com base em um termo de pesquisa.
+
+        O filtro é aplicado de forma flexível (ILIKE) nos seguintes campos:
+            - Nome do usuário
+            - Cidade do escritório
+            - Nome do serviço associado
 
         Args:
-            name (str | None): Filtro por nome do despachante.
-            city (str | None): Filtro por cidade do escritório do despachante.
-            service (str | None): Filtro por serviço oferecido no perfil do despachante.
+            query (str | None): Termo de busca.
+
         Returns:
-            ListDispatcherResponse: Lista de despachantes que correspondem aos filtros.
+            ListDispatcherResponse: Lista de despachantes que correspondem ao filtro.
         """
         base_query = (
             self.db.session.query(DispatcherDB, UserDB, OfficeDB, ProfileDB)
@@ -228,7 +278,6 @@ class DispatcherService:
                 )
             )
 
-        # paginação
         base_query = base_query.offset(0).limit(10)
 
         results = base_query.all()

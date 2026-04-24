@@ -1,22 +1,20 @@
 """
-Docstrings
+Serviço responsável pela gestão de mensagens de chamados (tickets).
 """
 
-from flask_sqlalchemy import SQLAlchemy
-from database.tables import TicketMessageDB, TicketDB
 from flask import abort
-from models.ticket import (
-    ListTicketMessageResponse,
-    TicketMessageResponse,
-)
+from flask_sqlalchemy import SQLAlchemy
+
+from database.tables import TicketDB, TicketMessageDB
+from models.message import CreateMessageRequest, ListTicketMessageResponse, TicketMessageResponse
 
 
 class MessageService:
     """
-    Docstrings
+    Serviço de domínio para manipulação de mensagens de chamados.
 
     Args:
-        db (SQLAlchemy): Instância de acesso ao banco de dados.
+        db (SQLAlchemy): Sessão de banco de dados usada para persistência.
     """
 
     def __init__(self, db: SQLAlchemy):
@@ -24,20 +22,14 @@ class MessageService:
 
     def list_messages_by_ticket(self, ticket_id: int) -> ListTicketMessageResponse:
         """
-        Lista todas as mensagens associadas a um chamado.
-
-        A consulta retorna apenas mensagens ativas (não deletadas),
-        ordenadas cronologicamente da mais antiga para a mais recente.
+        Recupera todas as mensagens ativas de um chamado.
 
         Args:
-            ticket_id (int): Identificador do chamado.
+            ticket_id (int): ID do chamado a ser consultado.
 
         Returns:
-            List[dict]: Lista de mensagens do chamado, contendo:
-                - id (int): Identificador da mensagem
-                - user_id (int): ID do usuário que enviou a mensagem
-                - message (str): Conteúdo da mensagem
-                - created_at (datetime): Data de criação da mensagem
+            dict: Estrutura serializada contendo a lista de mensagens,
+            no formato definido por ListTicketMessageResponse.
         """
         ticket = self.db.session.get(TicketDB, ticket_id)
         if not ticket:
@@ -45,7 +37,10 @@ class MessageService:
 
         messages = (
             self.db.session.query(TicketMessageDB)
-            .filter(TicketMessageDB.ticket_id == ticket_id, TicketMessageDB.deleted_at.is_(None))
+            .filter(
+                TicketMessageDB.ticket_id == ticket_id,
+                TicketMessageDB.deleted_at.is_(None),
+            )
             .order_by(TicketMessageDB.created_at.asc())
             .all()
         )
@@ -62,32 +57,31 @@ class MessageService:
 
         return ListTicketMessageResponse(root=response).model_dump()
 
-    def create_message(self, ticket_id: int, user_id: int, message: str) -> TicketMessageResponse:
+    def create_message(self, ticket_id: int, data: CreateMessageRequest) -> TicketMessageResponse:
         """
-        Cria uma nova mensagem vinculada a um chamado.
-
-        A mensagem é associada ao usuário remetente e persistida no banco de dados.
+        Cria e persiste uma nova mensagem para um chamado.
 
         Args:
-            ticket_id (int): Identificador do chamado ao qual a mensagem pertence.
-            user_id (int): Identificador do usuário que está enviando a mensagem.
-            message (str): Conteúdo textual da mensagem.
+            ticket_id (int): ID do chamado ao qual a mensagem será associada.
+            user_id (int): ID do usuário remetente da mensagem.
+            message (str): Conteúdo da mensagem.
 
         Returns:
-            dict: Objeto com os dados da mensagem criada, contendo:
-                - id (int): Identificador da mensagem
-                - user_id (int): ID do usuário remetente
-                - message (str): Conteúdo da mensagem
-                - created_at (datetime): Data de criação da mensagem
+            dict: Estrutura serializada contendo os dados da mensagem criada,
+            conforme definido por TicketMessageResponse.
         """
         ticket = self.db.session.get(TicketDB, ticket_id)
         if not ticket:
             abort(404, description=f"Chamado com ID {ticket_id} não encontrado.")
 
-        if not message or not message.strip():
+        if not data.message or not data.message.strip():
             abort(400, description="Mensagem não pode ser vazia.")
 
-        new_message = TicketMessageDB(ticket_id=ticket_id, user_id=user_id, message=message)
+        new_message = TicketMessageDB(
+            ticket_id=ticket_id,
+            user_id=data.user_id,
+            message=data.message,
+        )
 
         self.db.session.add(new_message)
         self.db.session.commit()

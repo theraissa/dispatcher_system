@@ -1,22 +1,26 @@
 """
-Módulo com implementação do serviço UserService.
+Serviço responsável pelo gerenciamento de usuários no sistema.
 """
 
-from typing import Any
 from datetime import datetime
+from typing import Any
 
-from flask_sqlalchemy import SQLAlchemy
-from database.tables import AddressDB, UserDB
-from models.user import CreateUserRequest, UpdateUserRequest, UserResponse, ListUserResponse, AddressResponse, ListUserFullResponse
 from flask import abort
+from flask_sqlalchemy import SQLAlchemy
+
+from database.tables import AddressDB, UserDB
+from models.user import AddressResponse, CreateUserRequest, ListUserFullResponse, ListUserResponse, UpdateUserRequest, UserResponse
 
 
 class UserService:
     """
-    Serviço para gerenciar usuários no banco de dados.
+    Serviço de domínio responsável pela gestão de usuários.
 
+    Este serviço gerencia:
+        - Dados básicos do usuário
+        - Endereço associado (quando existente)
     Args:
-        db (SQLAlchemy): Sessão de banco de dados usada para persistência.
+        db (SQLAlchemy): Sessão do SQLAlchemy utilizada para persistência.
     """
 
     def __init__(self, db: SQLAlchemy):
@@ -24,11 +28,15 @@ class UserService:
 
     def list_user(self) -> ListUserResponse:
         """
-        Recupera todos os usuários ativos (não deletados).
+        Lista todos os usuários ativos no sistema.
+
+        Considera apenas registros não deletados (soft delete).
 
         Returns:
-            ListUserClientResponse: Lista de usuários.
-            Retorna uma lista vazia quando nenhum usuário estiver cadastrado.
+            ListUserResponse: Lista de usuários cadastrados.
+
+        Notes:
+            - Retorna lista vazia caso não existam usuários.
         """
         list_users = UserDB.query.filter(UserDB.deleted_at.is_(None)).all()
         response = ListUserResponse(root=[UserResponse.model_validate(user) for user in list_users])
@@ -36,12 +44,21 @@ class UserService:
 
     def get_user_by_id(self, user_id: str) -> dict:
         """
-        Recupera um usuário a partir do ID.
+        Recupera os dados completos de um usuário pelo ID.
+
+        Inclui informações básicas e endereço associado (quando existir).
 
         Args:
             user_id (str): ID do usuário.
+
         Returns:
-            dict: Dados serializados do usuário encontrado.
+            dict: Estrutura contendo:
+                - user
+                - address (opcional)
+
+        Raises:
+            HTTPException:
+                - 404: Caso o usuário não seja encontrado.
         """
         user = UserDB.query.filter(UserDB.id == user_id, UserDB.deleted_at.is_(None)).first()
         if not user:
@@ -56,12 +73,16 @@ class UserService:
 
     def create_user(self, user_data: CreateUserRequest) -> dict[str, Any]:
         """
-        Cria um novo usuário.
+        Cria um novo usuário no sistema.
 
         Args:
-            user_data (CreateUserRequest): O modelo Pydantic com os dados do novo usuário.
+            user_data (CreateUserRequest): Dados validados para criação do usuário.
+
         Returns:
-            dict[str, Any]: Um dicionário serializado contendo o objeto recém-criado.
+            dict[str, Any]: Representação serializada do usuário criado.
+
+        Raises:
+            Exception: Erros de persistência podem ser propagados.
         """
         new_user = UserDB(**user_data.model_dump(mode="json"))
 
@@ -72,13 +93,28 @@ class UserService:
 
     def update_user(self, user_id: str, user_data: UpdateUserRequest) -> dict[str, Any]:
         """
-        Atualiza usuário existente por seu ID.
+        Atualiza os dados de um usuário existente.
+
+        Permite atualização parcial de:
+            - Dados do usuário
+            - Endereço (criação ou atualização)
+
+        Comportamento:
+            - Se endereço existir → atualiza
+            - Se não existir → cria novo
 
         Args:
-            client_id: O ID do usuário a ser atualizado.
-            user_data: O modelo Pydantic com os dados atualizados do usuário.
+            user_id (str): ID do usuário.
+            user_data (UpdateUserRequest): Dados atualizados.
+
         Returns:
-            dict[str, Any]: Um dicionário serializado contendo o objeto  atualizado.
+            dict[str, Any]: Estrutura contendo:
+                - user atualizado
+                - address atualizado (ou None)
+
+        Raises:
+            HTTPException:
+                - 404: Caso o usuário não seja encontrado.
         """
         user_to_update = UserDB.query.filter(UserDB.id == user_id, UserDB.deleted_at.is_(None)).first()
         if not user_to_update:
@@ -91,6 +127,7 @@ class UserService:
 
         # Atualizar ou criar endereço
         address = AddressDB.query.filter(AddressDB.user_id == user_id, AddressDB.deleted_at.is_(None)).first()
+
         if user_data.address:
             if address:
                 # UPDATE
@@ -99,14 +136,19 @@ class UserService:
                 address.updated_at = datetime.now()
             else:
                 # CREATE
-                new_address = AddressDB(user_id=user_id, **user_data.address.model_dump(exclude_unset=True))
+                new_address = AddressDB(
+                    user_id=user_id,
+                    **user_data.address.model_dump(exclude_unset=True),
+                )
                 self.db.session.add(new_address)
 
         user_to_update.updated_at = datetime.now()
         self.db.session.commit()
 
-        # Buscar address atualizado
-        updated_address = AddressDB.query.filter(AddressDB.user_id == user_id, AddressDB.deleted_at.is_(None)).first()
+        updated_address = AddressDB.query.filter(
+            AddressDB.user_id == user_id,
+            AddressDB.deleted_at.is_(None),
+        ).first()
 
         return {
             "user": UserResponse.model_validate(user_to_update).model_dump(),
@@ -115,14 +157,25 @@ class UserService:
 
     def delete_user(self, user_id: str) -> dict[str, Any]:
         """
-        Deleta logicamente (soft delete) um usuário ativo por seu ID.
+        Realiza a exclusão lógica (soft delete) de um usuário.
+
+        O registro não é removido fisicamente, apenas marcado com timestamp.
 
         Args:
-            user_id: O ID do usuário a ser marcado como deletada.
+            user_id (str): ID do usuário.
+
         Returns:
-            dict[str, Any]: Um dicionário serializado contendo o objeto marcado como deletado.
+            dict[str, Any]: Dados do usuário após marcação de exclusão.
+
+        Raises:
+            HTTPException:
+                - 404: Caso o usuário não seja encontrado.
         """
-        user_to_delete = UserDB.query.filter(UserDB.id == user_id, UserDB.deleted_at.is_(None)).first()
+        user_to_delete = UserDB.query.filter(
+            UserDB.id == user_id,
+            UserDB.deleted_at.is_(None),
+        ).first()
+
         if not user_to_delete:
             abort(404, description=f"User with ID '{user_id}' not found.")
 

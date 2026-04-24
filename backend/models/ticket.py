@@ -4,6 +4,7 @@ Modelos Pydantic relacionados ao TicketService.
 
 from datetime import datetime
 from typing import List, Optional
+
 from pydantic import BaseModel, ConfigDict, RootModel
 
 
@@ -93,43 +94,3 @@ class ListTicketUserResponse(RootModel):
     """Modelo de listagem para o ListTicketUser."""
 
     root: List[ListTicketUser]
-
-
-# Models relacionada as mensagems do chamado.
-
-
-class TicketMessageResponse(BaseModel):
-    """Modelo de resposta da mensagem"""
-
-    id: int
-    user_id: int
-    message: str
-    created_at: datetime
-
-
-class ListTicketMessageResponse(RootModel):
-    """Modelo de listagem para o TicketMessageResponse."""
-
-    root: List[TicketMessageResponse]
-
-
-# Models relacionada aos reviews do chamado.
-
-
-class CreateReviewRequest(BaseModel):
-    """Modelo de criação do review"""
-
-    user_id: int
-    rating: int
-    comment: Optional[str] = None
-
-
-class ReviewResponse(BaseModel):
-    """Modelo de resposta do review"""
-
-    id: int
-    ticket_id: int
-    name_user: str
-    rating: int
-    comment: Optional[str]
-    created_at: datetime

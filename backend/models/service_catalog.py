@@ -8,7 +8,7 @@ from typing import List, Optional
 from pydantic import BaseModel, ConfigDict, RootModel
 
 
-class CreateServiceRequest(BaseModel):
+class CreateServiceCatologRequest(BaseModel):
     """Modelo de criação do Service."""
 
     name: Optional[str] = None
@@ -17,7 +17,7 @@ class CreateServiceRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
-class ServiceResponse(BaseModel):
+class ServiceCatalogResponse(BaseModel):
     """Modelo de resposta para o Service."""
 
     id: int
@@ -30,7 +30,7 @@ class ServiceResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class ListServiceResponse(RootModel):
+class ListServiceCatalogResponse(RootModel):
     """Modelo de listagem para o Service."""
 
-    root: List[ServiceResponse]
+    root: List[ServiceCatalogResponse]

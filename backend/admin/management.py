@@ -3,10 +3,12 @@ Módulo principal do Administrador
 """
 
 from datetime import datetime
-from database.tables import DispatcherDB
-from flask_sqlalchemy import SQLAlchemy
+
 from flask import abort
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import joinedload
+
+from database.tables import DispatcherDB
 from models.auth import StatusType
 
 

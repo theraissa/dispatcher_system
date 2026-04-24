@@ -18,10 +18,10 @@
         "editor.defaultFormatter": "ms-python.black-formatter",
         "editor.formatOnSave": true
     },
-    "black-formatter.path": [
-        "./.venv/bin/black"
-    ],
     "pylint.args": [
         "--rcfile=pyproject.toml"
-    ]
+    ],
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
 }

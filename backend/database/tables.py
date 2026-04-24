@@ -1,13 +1,45 @@
 """
-Módulo com as tabelas do banco de dados
+Módulo com as tabelas do banco de dados.
+
+📌 Sobre os relacionamentos (SQLAlchemy ORM)
+
+Este projeto utiliza o SQLAlchemy ORM para mapear tabelas do banco em classes Python.
+Abaixo estão alguns conceitos importantes para entender este arquivo:
+
+🔗 relationship(...)
+Define um relacionamento entre duas tabelas (ex: User → Address).
+
+🔄 back_populates
+Cria um relacionamento bidirecional entre duas entidades.
+
+Exemplo:
+    User.address  <->  Address.user
+
+Isso significa que:
+    user.address acessa o endereço
+    address.user acessa o usuário
+
+⚠️ IMPORTANTE:
+Ambos os lados do relacionamento devem declarar o mesmo "back_populates".
+
+---
+
+📦 uselist=False
+Indica que o relacionamento é 1:1 (um-para-um), e não uma lista.
+
+Exemplo:
+    user.dispatcher → retorna um único objeto (não uma lista)
+
+Sem isso:
+    user.ticket → retorna uma lista (1:N)
 """
 
 # pylint: disable=not-callable
 
-from database import db
-from sqlalchemy import Column, DateTime, Integer, Numeric
-from sqlalchemy import String, ForeignKey
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, Numeric, String
 from sqlalchemy.sql import func
+
+from database import db
 
 
 class UserDB(db.Model):
@@ -26,16 +58,9 @@ class UserDB(db.Model):
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True))
 
-    # Um UserDB tem um relacionamento com AddressDB, acessível pelo atributo address
     address = db.relationship("AddressDB", back_populates="user", uselist=False)
-
-    # Um UserDB tem um relacionamento com DispatcherDB, acessível pelo atributo dispatcher
     dispatcher = db.relationship("DispatcherDB", back_populates="user", uselist=False)
-
-    # Um UserDB tem um relacionamento com TicketDB, acessível pelo atributo ticket
     ticket = db.relationship("TicketDB", back_populates="user")
-
-    # Um UserDB tem um relacionamento com TicketMessageDB, acessível pelo atributo messages
     messages = db.relationship("TicketMessageDB", back_populates="user")
 
 
@@ -57,7 +82,6 @@ class AddressDB(db.Model):
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True))
 
-    # Um AddressDB tem um relacionamento com UserDB, acessível pelo atributo user
     user = db.relationship("UserDB", back_populates="address")
 
 
@@ -75,19 +99,10 @@ class DispatcherDB(db.Model):
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True))
 
-    # Um DispatcherDB tem um relacionamento com UserDB, acessível pelo atributo user
     user = db.relationship("UserDB", back_populates="dispatcher")
-
-    # Um DispatcherDB tem um relacionamento com ProfileDB, acessível pelo atributo profile
     profile = db.relationship("ProfileDB", back_populates="dispatcher", uselist=False)
-
-    # Um DispatcherDB tem um relacionamento com OfficeDB, acessível pelo atributo office
     office = db.relationship("OfficeDB", back_populates="dispatcher", uselist=False)
-
-    # Um DispatcherDB tem um relacionamento com ServiceDetailsDB, acessível pelo atributo service_details
     service_details = db.relationship("ServiceDetailsDB", back_populates="dispatcher")
-
-    # Um DispatcherDB tem um relacionamento com TicketDB, acessível pelo atributo ticket
     ticket = db.relationship("TicketDB", back_populates="dispatcher")
 
 
@@ -106,7 +121,6 @@ class ProfileDB(db.Model):
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True))
 
-    # Um ProfileDB tem um relacionamento com DispatcherDB, acessível pelo atributo dispatcher
     dispatcher = db.relationship("DispatcherDB", back_populates="profile")
 
 
@@ -128,7 +142,6 @@ class OfficeDB(db.Model):
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True))
 
-    # Um OfficeDB tem um relacionamento com DispatcherDB, acessível pelo atributo dispatcher
     dispatcher = db.relationship("DispatcherDB", back_populates="office")
 
 
@@ -144,7 +157,6 @@ class ServiceDB(db.Model):
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True))
 
-    # Um ServiceDB tem um relacionamento com ServiceDetailsDB, acessível pelo atributo service_details
     service_details = db.relationship("ServiceDetailsDB", back_populates="service")
 
 
@@ -161,13 +173,8 @@ class ServiceDetailsDB(db.Model):
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True))
 
-    # Um ServiceDetailsDB tem um relacionamento com ServiceDB, acessível pelo atributo service
     service = db.relationship("ServiceDB", back_populates="service_details")
-
-    # Um ServiceDetailsDB tem um relacionamento com DispatcherDB, acessível pelo atributo dispatcher
     dispatcher = db.relationship("DispatcherDB", back_populates="service_details")
-
-    # Um ServiceDetailsDB tem um relacionamento com TicketDB, acessível pelo atributo ticket
     ticket = db.relationship("TicketDB", back_populates="service_details")
 
 
@@ -185,22 +192,11 @@ class TicketDB(db.Model):
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True))
 
-    # Um TicketDB tem um relacionamento com UserDB, acessível pelo atributo user
     user = db.relationship("UserDB", back_populates="ticket")
-
-    # Um TicketDB tem um relacionamento com DispatcherDB, acessível pelo atributo dispatcher
     dispatcher = db.relationship("DispatcherDB", back_populates="ticket")
-
-    # Um TicketDB tem um relacionamento com ServiceDetailsDB, acessível pelo atributo service_details
     service_details = db.relationship("ServiceDetailsDB", back_populates="ticket")
-
-    # Um TicketDB tem um relacionamento com TicketTimelineDB, acessível pelo atributo timeline
     timeline = db.relationship("TicketTimelineDB", back_populates="ticket")
-
-    # Um TicketDB tem um relacionamento com TicketMessageDB, acessível pelo atributo messages
     messages = db.relationship("TicketMessageDB", back_populates="ticket")
-
-    # Um TicketDB tem um relacionamento com TicketReviewDB, acessível pelo atributo review
     review = db.relationship("TicketReviewDB", back_populates="ticket", uselist=False)
 
 
@@ -217,7 +213,6 @@ class TicketTimelineDB(db.Model):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
-    # Um TicketTimelineDB tem um relacionamento com TicketDB, acessível pelo atributo ticket
     ticket = db.relationship("TicketDB", back_populates="timeline")
 
 
@@ -234,10 +229,7 @@ class TicketMessageDB(db.Model):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     deleted_at = Column(DateTime(timezone=True))
 
-    # Um TicketMessageDB tem um relacionamento com TicketDB, acessível pelo atributo ticket
     ticket = db.relationship("TicketDB", back_populates="messages")
-
-    # Um TicketMessageDB tem um relacionamento com UserDB, acessível pelo atributo user
     user = db.relationship("UserDB", back_populates="messages")
 
 
@@ -255,5 +247,4 @@ class TicketReviewDB(db.Model):
     comment = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    # Um TicketReviewDB tem um relacionamento com TicketDB, acessível pelo atributo ticket
     ticket = db.relationship("TicketDB", back_populates="review")

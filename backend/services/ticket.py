@@ -7,23 +7,23 @@ a chamados, incluindo criação, consulta detalhada e listagem por usuário.
 
 # pylint: disable=not-callable
 
-from sqlalchemy import func
 from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import joinedload
-from database.tables import TicketDB, UserDB, ServiceDetailsDB, DispatcherDB, TicketReviewDB, TicketTimelineDB
+
 from flask import abort
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
+from sqlalchemy.orm import joinedload
+
+from database.tables import DispatcherDB, ServiceDetailsDB, TicketDB, TicketTimelineDB, UserDB
 from models.ticket import (
     CreateTicketRequest,
-    ReviewResponse,
-    TicketResponse,
-    TicketUserResponse,
+    DispatcherInfo,
+    ListTicketUser,
     ListTicketUserResponse,
     ServiceDetailsInfo,
-    DispatcherInfo,
+    TicketResponse,
+    TicketUserResponse,
     UserInfo,
-    ListTicketUser,
-    CreateReviewRequest,
 )
 from models.timeline import TicketTimeline
 
@@ -302,139 +302,3 @@ class TicketService:
             "finished_month": finished_month,
             "monthly_revenue": float(revenue),
         }
-
-    # Métodos relacionado a tabela TicketReviewDB
-
-    def list_dispatcher_reviews(self, user_id: int) -> list[ReviewResponse]:
-        """
-        Lista todas as avaliações (reviews) vinculadas a um despachante.
-
-        Este método recupera as avaliações associadas aos chamados de um
-        despachante específico, permitindo exibição de feedbacks no frontend.
-
-        Args:
-            user_id (int): ID do usuário (despachante)
-        Returns:
-            list[ReviewResponse]: Lista de avaliações.
-        """
-        # Busca usuário com relação ao dispatcher
-        user = UserDB.query.options(joinedload(UserDB.dispatcher)).filter(UserDB.id == user_id).first()
-        if not user or not user.dispatcher:
-            abort(404, description="Despachante com o ID {user_id} não encontrado.")
-
-        dispatcher_id = user.dispatcher.id
-
-        # Busca avaliações vinculadas ao despachante
-        reviews = (
-            self.db.session.query(TicketReviewDB)
-            .filter(TicketReviewDB.dispatcher_id == dispatcher_id)
-            .order_by(TicketReviewDB.created_at.desc())
-            .all()
-        )
-
-        # Serializa resposta
-        return [
-            ReviewResponse(
-                id=review.id,
-                ticket_id=review.ticket_id,
-                name_user=review.name_user,
-                rating=review.rating,
-                comment=review.comment,
-                created_at=review.created_at,
-            ).model_dump()
-            for review in reviews
-        ]
-
-    def get_dispatcher_review_summary(self, user_id: int) -> dict:
-        """
-        Calcula o resumo das avaliações de um despachante.
-
-        Retorna a média das notas e a quantidade total de avaliações,
-        permitindo exibição de reputação no perfil do despachante.
-
-        Args:
-            user_id (int): ID do usuário (despachante)
-        Returns:
-            dict: Média das avaliações.
-        """
-        user = UserDB.query.options(joinedload(UserDB.dispatcher)).filter(UserDB.id == user_id).first()
-        if not user or not user.dispatcher:
-            abort(404, description="Despachante com o ID {user_id} não encontrado.")
-
-        dispatcher_id = user.dispatcher.id
-
-        # Query agregada (1 ida ao banco só 🚀)
-        result = (
-            self.db.session.query(func.avg(TicketReviewDB.rating), func.count(TicketReviewDB.id))
-            .filter(TicketReviewDB.dispatcher_id == dispatcher_id)
-            .one()
-        )
-
-        average_rating, total_reviews = result
-
-        return {
-            "average_rating": round(float(average_rating), 1) if average_rating else 0.0,
-            "total_reviews": total_reviews,
-        }
-
-    def create_review(self, ticket_id: int, data: CreateReviewRequest) -> ReviewResponse:
-        """
-        Cria uma avaliação para um chamado finalizado.
-
-        Este método permite que o cliente avalie o despachante responsável
-        após a conclusão do serviço.
-
-        Regras de validação:
-            - O chamado deve existir
-            - O chamado deve pertencer ao usuário
-            - O chamado deve estar finalizado
-            - O chamado não pode já possuir avaliação
-            - A nota deve estar entre 1 e 5
-
-        Args:
-            ticket_id (int): ID do chamado a ser avaliado.
-            user_id (int): ID do usuário que está avaliando.
-            rating (int): Nota atribuída ao despachante (1 a 5).
-            comment (str | None): Comentário opcional da avaliação.
-
-        Returns:
-            dict: Dados da avaliação criada.
-        """
-        ticket = self.db.session.get(TicketDB, ticket_id)
-        if not ticket:
-            abort(404, description=f"Chamado com ID '{ticket_id}' não encontrado.")
-
-        # valida status
-        if ticket.status != TicketTimeline.FINALIZADO:
-            abort(400, description="O chamado precisa estar finalizado para ser avaliado.")
-
-        # valida duplicidade
-        if ticket.review:
-            abort(400, description="Este chamado já foi avaliado.")
-
-        # valida rating
-        if data.rating < 1 or data.rating > 5:
-            abort(400, description="A avaliação deve estar entre 1 e 5.")
-
-        user = self.db.session.get(UserDB, data.user_id)
-
-        review = TicketReviewDB(
-            ticket_id=ticket.id,
-            dispatcher_id=ticket.dispatcher_id,
-            user_id=data.user_id,
-            name_user=user.name,
-            rating=data.rating,
-            comment=data.comment,
-        )
-
-        self.db.session.add(review)
-        self.db.session.commit()
-
-        return ReviewResponse(
-            id=review.id,
-            ticket_id=review.ticket_id,
-            name_user=review.name_user,
-            rating=review.rating,
-            comment=review.comment,
-            created_at=review.created_at,
-        ).model_dump()

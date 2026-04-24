@@ -1,27 +1,28 @@
 """Módulo principal do backend"""
 
-from flask import Flask, Response, jsonify, request, g
+from flask import Flask, Response, g, jsonify, request
 from flask_cors import CORS
 from flask_migrate import upgrade
-
-from database import db, migrate
-from routes.management import register_admin_routes
-from routes.dispatcher import register_dispatcher_routes
-from routes.user import register_users_routes
-from routes.service import register_service_routes
-from routes.ticket import register_ticket_routes
-from services.dispatcher import DispatcherService
-from services.user import UserService
-from services.auth import AuthService
-from services.service import Service
-from services.ticket import TicketService
-from services.message import MessageService
-from services.timeline import TimelineService
-from seed import seed
-from admin.management import AdminService
 from werkzeug.exceptions import HTTPException
-from require_auth import require_auth
+
+from admin.management import AdminService
+from admin.service_catalog import ServiceCatalogService
+from database import db, migrate
 from models.auth import LoginUserRequest
+from require_auth import require_auth
+from routes.dispatcher import register_dispatcher_routes
+from routes.management import register_admin_routes
+from routes.ticket import register_ticket_routes
+from routes.user import register_users_routes
+from seed import seed
+from services.associate_service_dispatcher import AssociateServiceDispatcherService
+from services.auth import AuthService
+from services.dispatcher import DispatcherService
+from services.message import MessageService
+from services.review import TicketReviewService
+from services.ticket import TicketService
+from services.timeline import TicketTimelineService
+from services.user import UserService
 
 
 def create_app():
@@ -50,21 +51,27 @@ def create_app():
     user_service = UserService(db)
     dispatcher_service = DispatcherService(db)
     auth_service = AuthService(db)
-    service = Service(db)
-    timeline_service = TimelineService(db)
+    associate_service = AssociateServiceDispatcherService(db)
+    timeline_service = TicketTimelineService(db)
     ticket_service = TicketService(db)
     message_service = MessageService(db)
+    review_service = TicketReviewService(db)
+    catalog_service = ServiceCatalogService(db)
 
     # ========= Rotas ==========
-    register_admin_routes(app, admin_service)
+    register_admin_routes(app, admin_service, catalog_service)
     register_users_routes(app, user_service)
-    register_dispatcher_routes(app, dispatcher_service)
-    register_service_routes(app, service)
+    register_dispatcher_routes(
+        app,
+        dispatcher_service,
+        associate_service,
+    )
     register_ticket_routes(
         app,
         ticket_service,
         message_service,
         timeline_service,
+        review_service,
     )
 
     # ========= Healthcheck e Login==========

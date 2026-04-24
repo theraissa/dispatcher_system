@@ -1,35 +1,54 @@
 """
 Módulo de rotas relacionadas aos despachantes.
+
+Este módulo agrupa endpoints responsáveis por:
+    - Gerenciamento de despachantes (CRUD)
+    - Busca e filtros
+    - Associação entre despachantes e serviços
 """
 
 from flask import Flask, Response, jsonify, request
+
 from models.dispatcher import CreateDispatcherFullRequest
-from services.dispatcher import DispatcherService
 from require_auth import require_auth
+from services.associate_service_dispatcher import AssociateServiceDispatcherService
+from services.dispatcher import DispatcherService
 
 
 def register_dispatcher_routes(
     app: Flask,
     dispatcher_service: DispatcherService,
+    associate_service: AssociateServiceDispatcherService,
 ) -> None:
-    """Registra as rotas dos despachantes na aplicação Flask."""
+    """
+    Registra as rotas relacionadas ao domínio de despachantes.
+
+    Args:
+        app (Flask): Instância da aplicação Flask.
+        dispatcher_service (DispatcherService): Serviço responsável pelas regras de negócio dos despachantes.
+        associate_service (AssociateServiceDispatcherService): Serviço responsável pelo vínculo entre despachantes e serviços.
+    """
+
+    # ==========================================================
+    # DESPACHANTES (CRUD)
+    # ==========================================================
 
     @app.get("/api/dispatcher-system/dispatcher")
     def list_dispatcher() -> Response:
-        """Listar despachantes no banco de dados"""
+        """Lista todos os despachantes cadastrados."""
         dispatchers = dispatcher_service.list_dispatcher()
         return jsonify(dispatchers), 200
 
     @app.get("/api/dispatcher-system/dispatcher/<int:dispatcher_id>")
     @require_auth
     def get_dispatcher_by_id(dispatcher_id) -> Response:
-        """Obter despachantes no banco de dados pelo seu identificador"""
+        """Obtém os dados de um despachante pelo ID."""
         dispatcher = dispatcher_service.get_dispatcher_by_id(dispatcher_id)
         return jsonify(dispatcher), 200
 
     @app.post("/api/dispatcher-system/dispatcher")
     def create_dispatcher() -> Response:
-        """Cria um despachante no banco de dados"""
+        """Cria um novo despachante."""
         body = CreateDispatcherFullRequest.model_validate(request.get_json())
         created_dispatcher = dispatcher_service.create_dispatcher(body)
         return jsonify(created_dispatcher), 201
@@ -37,7 +56,7 @@ def register_dispatcher_routes(
     @app.put("/api/dispatcher-system/dispatcher/<int:user_id>")
     @require_auth
     def update_dispatcher(user_id):
-        """Atualiza um despachante no banco de dados"""
+        """Atualiza os dados de um despachante."""
         data = request.get_json()
         result = dispatcher_service.update_dispatcher_full(user_id, CreateDispatcherFullRequest(**data))
         return jsonify(result), 200
@@ -45,14 +64,57 @@ def register_dispatcher_routes(
     @app.delete("/api/dispatcher-system/dispatcher/<int:dispatcher_id>")
     @require_auth
     def delete_dispatcher(dispatcher_id) -> Response:
-        """Deleta um despachante no banco de dados"""
+        """Remove um despachante do sistema."""
         deleted_dispatcher = dispatcher_service.delete_dispatcher(dispatcher_id)
         return jsonify(deleted_dispatcher), 200
+
+    # ==========================================================
+    # BUSCA DE DESPACHANTES
+    # ==========================================================
 
     @app.get("/api/dispatcher-system/dispatcher/search")
     @require_auth
     def search_dispatchers() -> Response:
-        """Busca despachantes com filtro único"""
+        """Busca despachantes com base em um filtro (query)."""
         query = request.args.get("query")
         dispatchers = dispatcher_service.search_dispatchers(query)
         return jsonify(dispatchers), 200
+
+    # ==========================================================
+    # VÍNCULO DESPACHANTE ↔ SERVIÇOS
+    # ==========================================================
+
+    @app.get("/api/dispatcher-system/dispatcher/<int:dispatcher_id>/services")
+    @require_auth
+    def get_services_from_dispatcher(dispatcher_id):
+        """Lista todos os serviços associados a um despachante."""
+        services = associate_service.get_services_from_dispatcher(dispatcher_id)
+        return jsonify(services), 200
+
+    @app.post("/api/dispatcher-system/dispatcher/<int:dispatcher_id>/service/<int:service_id>")
+    @require_auth
+    def add_service_for_dispatcher(dispatcher_id, service_id):
+        """Vincula um serviço ao despachante."""
+        result = associate_service.add_service_for_dispatcher(dispatcher_id, service_id)
+        return jsonify(result), 201
+
+    @app.put("/api/dispatcher-system/dispatcher/<int:dispatcher_id>/service/<int:service_id>")
+    @require_auth
+    def update_dispatcher_service(dispatcher_id, service_id):
+        """
+        Atualiza os dados do vínculo entre despachante e serviço.
+
+        Exemplo de uso:
+            - Alterar preço específico
+            - Atualizar prazo ou disponibilidade
+        """
+        body = request.get_json()
+        result = associate_service.update_dispatcher_service(dispatcher_id, service_id, body)
+        return jsonify(result), 200
+
+    @app.delete("/api/dispatcher-system/dispatcher/<int:dispatcher_id>/service/<int:service_id>")
+    @require_auth
+    def remove_dispatcher_service(dispatcher_id, service_id):
+        """Remove o vínculo entre um serviço e um despachante."""
+        result = associate_service.remove_dispatcher_service(dispatcher_id, service_id)
+        return jsonify(result), 200

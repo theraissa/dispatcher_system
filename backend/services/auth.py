@@ -2,15 +2,15 @@
 Módulo com implementação do serviço AuthService.
 """
 
+import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Any
-import uuid
 
 import jwt
-
-from database.tables import DispatcherDB, UserDB
 from flask import abort
 from flask_sqlalchemy import SQLAlchemy
+
+from database.tables import DispatcherDB, UserDB
 from models.auth import LoginUserRequest, LoginUserResponse, RoleType
 from storage import redis_client
 
