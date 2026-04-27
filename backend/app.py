@@ -1,5 +1,7 @@
 """Módulo principal do backend"""
 
+import os
+
 from flask import Flask, Response, g, jsonify, request
 from flask_cors import CORS
 from flask_migrate import upgrade
@@ -31,7 +33,8 @@ def create_app():
     app = Flask(__name__)
 
     # ========= Configuração do banco ==========
-    app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://admin:admin@database:5432/db-system"
+    database_url = os.getenv("DATABASE_URL")
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_url
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     # ========= Inicialização das extensões ==========
