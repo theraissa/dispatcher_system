@@ -9,12 +9,14 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    environment:
+      VITE_API_URL: https://dispatcher-system-mmw5.onrender.com
     ports:
       - "8080:80"
 
   database:
     image: postgres:16
-    environment:
+    environment: 
       POSTGRES_DB: db-system
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin

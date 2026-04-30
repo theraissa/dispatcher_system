@@ -1,4 +1,4 @@
-import { FRONTEND_ROUTES } from "@/routes/frontend-routes"
+import { FRONTEND_ROUTES } from "@/routes/frontend-routes";
 
 /**
  * Cliente HTTP centralizado da aplicação.
@@ -8,8 +8,8 @@ import { FRONTEND_ROUTES } from "@/routes/frontend-routes"
  * - Padronizar headers
  * - Tratar erros da API
  */
+const BASE_URL = import.meta.env.VITE_API_URL;
 
-const BASE_URL = "http://localhost:5000/api/dispatcher-system"
 
 /**
  * Função genérica para realizar requisições HTTP.

@@ -1,7 +1,7 @@
+import { useAuth } from "@/hooks/auth/use-auth"
 import { useNavigate } from "react-router-dom"
-import { logoutRequest } from "../services/logout-request"
 import { FRONTEND_ROUTES } from "../routes/frontend-routes"
-import { useAuth } from "@/hooks/use-auth"
+import { logoutRequest } from "../services/logout-request"
 
 /**
  * Hook responsável pelo logout do usuário.

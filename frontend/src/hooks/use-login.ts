@@ -1,9 +1,9 @@
+import { useAuth } from "@/hooks/auth/use-auth"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { loginRequest } from "../services/login-request"
 import { FRONTEND_ROUTES } from "../routes/frontend-routes"
+import { loginRequest } from "../services/login-request"
 import type { LoginRequest } from "../types/type"
-import { useAuth } from "@/hooks/use-auth"
 
 /**
  * Hook responsável pelo fluxo de autenticação do usuário.
