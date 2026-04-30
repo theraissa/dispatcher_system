@@ -1,10 +1,9 @@
-import { User, Mail, MapPin, CreditCard, Calendar, Phone, Lock, Hash, Milestone, Navigation, Globe } from "lucide-react";
-import type { Address, UserType } from "@/types/type";
-import TitleTemplate from "@/components/ui/title";
-import LabelForm from "@/components/record/ui/label-form";
-import InputForm from "@/components/record/ui/input-form";
-import InlineFields from "@/components/layout/inline-fields-form";
 import InlineField from "@/components/layout/inline-field-form";
+import InlineFields from "@/components/layout/inline-fields-form";
+import InputForm from "@/components/record/ui/input-form";
+import LabelForm from "@/components/record/ui/label-form";
+import TitleTemplate from "@/components/ui/title";
+import { Calendar, CreditCard, Globe, Hash, Lock, Mail, MapPin, Milestone, Navigation, Phone, User } from "lucide-react";
 
 
 /**
@@ -16,13 +15,13 @@ import InlineField from "@/components/layout/inline-field-form";
  */
 type FormProfileClientProps = {
     data: {
-        user: UserType;
-        address: Address;
+        user: Record<string, any>;
+        address: Record<string, any>;
     };
     handleChange: (
         entity: "user" | "address",
-        field: string,
-        value: string
+        field: any,
+        value: any
     ) => void;
     isEditing: boolean;
 };

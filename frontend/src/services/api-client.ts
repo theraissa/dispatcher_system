@@ -14,10 +14,10 @@ const BASE_URL = "http://localhost:5000/api/dispatcher-system"
 /**
  * Função genérica para realizar requisições HTTP.
  */
-async function request<T>(
+async function request<TResponse>(
     endpoint: string,
     options?: RequestInit
-): Promise<T> {
+): Promise<TResponse> {
 
     // Inclui token de autenticação, se disponível
     const token = localStorage.getItem("token")
@@ -65,32 +65,37 @@ async function request<T>(
 export const apiClient = {
 
     // Método GET com suporte a query params
-    get: <T>(endpoint: string, params?: Record<string, string | number | boolean | null | undefined>) => {
-        const url = new URL(`${BASE_URL}${endpoint}`);
+    get: <TResponse>(
+        endpoint: string,
+        params?: Record<string, string | number | boolean | null | undefined>
+    ) => {
+        const url = new URL(`${BASE_URL}${endpoint}`)
+
         if (params) {
             Object.entries(params).forEach(([key, value]) => {
                 if (value !== "" && value != null) {
-                    url.searchParams.append(key, String(value));
+                    url.searchParams.append(key, String(value))
                 }
-            });
+            })
         }
-        return request<T>(endpoint + url.search);
+
+        return request<TResponse>(endpoint + url.search)
     },
 
-    post: <T>(endpoint: string, body?: Record<string, string | number | boolean | null | undefined>) =>
-        request<T>(endpoint, {
+    post: <TResponse, TBody = unknown>(endpoint: string, body?: TBody) =>
+        request<TResponse>(endpoint, {
             method: "POST",
-            body: JSON.stringify(body)
+            body: body ? JSON.stringify(body) : undefined
         }),
 
-    put: <T>(endpoint: string, body?: Record<string, string | number | boolean | null | undefined>) =>
-        request<T>(endpoint, {
+    put: <TResponse, TBody = unknown>(endpoint: string, body?: TBody) =>
+        request<TResponse>(endpoint, {
             method: "PUT",
-            body: JSON.stringify(body)
+            body: body ? JSON.stringify(body) : undefined
         }),
 
-    delete: <T>(endpoint: string) =>
-        request<T>(endpoint, {
+    delete: <TResponse>(endpoint: string) =>
+        request<TResponse>(endpoint, {
             method: "DELETE"
         })
 }

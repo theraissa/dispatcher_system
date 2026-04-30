@@ -1,10 +1,13 @@
 import { useState } from "react"
-import FormCommercial from "./form-dispatcher/form-commercial"
-import FormPersonal from "./form-dispatcher/form-personal"
+import { useRegisterDispatcher } from "../../../hooks/use-register-dispatcher"
+import FormsContainer from "../../layout/form-container"
 import FormSubmit from "../../layout/form-submit"
 import ButtonSubmitForm from "../ui/button-submit-form"
-import FormsContainer from "../../layout/form-container"
-import { useRegisterDispatcher } from "../../../hooks/use-register-dispatcher"
+import FormCommercial from "./form-dispatcher/form-commercial"
+import FormPersonal from "./form-dispatcher/form-personal"
+
+type FormSection = "user" | "dispatcher" | "office";
+
 
 export default function FormDispatcher() {
   const { register, error, loading } = useRegisterDispatcher()
@@ -34,7 +37,7 @@ export default function FormDispatcher() {
     }
   })
 
-  function handleChange(section: string, field: string, value: string) {
+  function handleChange(section: FormSection, field: string, value: string) {
     setFormData(prev => ({
       ...prev,
       [section]: {

@@ -1,13 +1,13 @@
-import type { Dispatcher, Office, Profile, UserType } from "./type"
+import type { CreateDispatcher, CreateOffice, CreateUserType, Dispatcher, Office, Profile, UserType } from "./type";
 
 
 /**
  * Formulário de cadastro de despachante (frontend).
  */
 export type RegisterDispatcherRequest = {
-  user: UserType
-  dispatcher: Dispatcher
-  office: Office
+  user: CreateUserType;
+  dispatcher: CreateDispatcher;
+  office: CreateOffice;
 }
 
 /**

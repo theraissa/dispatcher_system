@@ -1,9 +1,9 @@
 import { HomeBannerDispatcher } from "@/components/dispatcher/home/banner";
 import { HomeReviewDispatcher } from "@/components/dispatcher/home/review";
 import { HomeStaticsDispatcher } from "@/components/dispatcher/home/statistics";
-import { dispatcherLinksNavbar } from "@/routes/frontend-routes";
 import NavbarPage from "@/components/record/ui/navbar-page";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuthRequired } from "@/hooks/auth/auth-requirered";
+import { dispatcherLinksNavbar } from "@/routes/frontend-routes";
 
 
 /**
@@ -12,7 +12,7 @@ import { useAuth } from "@/hooks/use-auth";
 export default function HomeDispatcher() {
 
     // Obtém o usuário autenticado
-    const { user } = useAuth();
+    const { user } = useAuthRequired();
 
     return (
         <div className="min-h-screen bg-[#F3EDE2]">

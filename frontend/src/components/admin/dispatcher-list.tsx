@@ -1,5 +1,5 @@
+import { Coffee, Loader2, ShieldCheck } from "lucide-react";
 import AdminDispatcherCard from "./dispatcher-card";
-import { Coffee, ShieldCheck, Loader2 } from "lucide-react";
 
 interface Dispatcher {
     id: number;

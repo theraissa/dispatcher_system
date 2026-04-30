@@ -4,14 +4,23 @@ import { createContext } from "react";
  * Representa os dados do usuário.
 */
 export type UserType = {
-    id: number
-    name: string
-    cpf?: string
-    email: string
-    date_birth?: string
-    contact?: string
-    password?: string
-    confirm_password?: string
+    id: number;
+    name: string;
+    cpf?: string;
+    email: string;
+    date_birth?: string;
+    contact?: string;
+    password?: string;
+    confirm_password?: string;
+}
+export type CreateUserType = {
+    name: string;
+    cpf?: string;
+    email: string;
+    date_birth?: string;
+    contact?: string;
+    password?: string;
+    confirm_password?: string;
 }
 
 /**
@@ -19,23 +28,35 @@ export type UserType = {
 */
 export type Address = {
     id: number;
-    contact: string
-    address: string
-    number: string
-    neighborhood: string
-    zip_code: string
-    city: string
-    state: string
+    contact: string;
+    address: string;
+    number: string;
+    neighborhood: string;
+    zip_code: string;
+    city: string;
+    state: string;
 }
-
+export type CreateAddress = {
+    contact: string;
+    address: string;
+    number: string;
+    neighborhood: string;
+    zip_code: string;
+    city: string;
+    state: string;
+}
 
 /*
 * Representa os dados específicos do despachante.
 */
 export type Dispatcher = {
     id: number;
-    regis_crdd: string
-    date_exp_regis: string
+    regis_crdd: string;
+    date_exp_regis: string;
+}
+export type CreateDispatcher = {
+    regis_crdd: string;
+    date_exp_regis: string;
 }
 
 /*
@@ -43,13 +64,22 @@ export type Dispatcher = {
 */
 export type Office = {
     id: number;
-    contact: string
-    address: string
-    number: string
-    neighborhood: string
-    zip_code: string
-    city: string
-    state: string
+    contact: string;
+    address: string;
+    number: string;
+    neighborhood: string;
+    zip_code: string;
+    city: string;
+    state: string;
+}
+export type CreateOffice = {
+    contact: string;
+    address: string;
+    number: string;
+    neighborhood: string;
+    zip_code: string;
+    city: string;
+    state: string;
 }
 
 /*
@@ -118,8 +148,8 @@ export type UserContext = {
 }
 
 export type AuthContextType = {
-    user: UserContext;
-    token: string;
+    user: UserContext | null;
+    token: string | null;
     isAuthenticated: boolean;
     signIn: (user: UserContext, token: string) => void;
     signOut: () => void;

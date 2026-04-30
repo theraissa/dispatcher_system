@@ -1,16 +1,16 @@
-import NavbarPage from "../../components/record/ui/navbar-page";
-import { clientLinksNavbar } from "@/routes/frontend-routes";
-import { useAuth } from '@/hooks/use-auth';
-import { AsideProfileDispatcher } from '@/components/client/card-profile-dispatcher/aside-profile';
-import { TimelineTicket } from '@/components/called/called-details/timeline-ticket';
-import { useTickets } from "@/hooks/use-ticket";
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { TicketChat } from '@/components/called/called-details/chat-ticket';
 import { InfoServiceAndUser } from "@/components/called/called-details/info-service-user-ticket";
-import { useTicketReview } from "@/hooks/use-ticket-review";
+import { TimelineTicket } from '@/components/called/called-details/timeline-ticket';
 import { ReviewModal } from "@/components/called/modal/review-modal";
+import { AsideProfileDispatcher } from '@/components/client/card-profile-dispatcher/aside-profile';
+import { useAuthRequired } from '@/hooks/auth/auth-requirered';
+import { useTickets } from "@/hooks/use-ticket";
+import { useTicketReview } from "@/hooks/use-ticket-review";
+import { clientLinksNavbar } from "@/routes/frontend-routes";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { toast } from "sonner";
+import NavbarPage from "../../components/record/ui/navbar-page";
 
 
 /**
@@ -40,7 +40,7 @@ import { toast } from "sonner";
 export default function TicketDetails() {
 
     // Usuário autenticado
-    const { user } = useAuth();
+    const { user } = useAuthRequired();
 
     // ID do chamado vindo da rota (/called-details/:ticketId)
     const { ticketId } = useParams();

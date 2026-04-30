@@ -1,4 +1,4 @@
-import { Box, Title, Center, Container } from '@mantine/core';
+import { Center, Container, Paper, Title } from '@mantine/core';
 
 type NavbarProps = {
     title: string;
@@ -6,7 +6,7 @@ type NavbarProps = {
 
 export default function NavbarTemplate({ title }: NavbarProps) {
     return (
-        <Box
+        <Paper
             component="header"
             bg="#213555"
             h={70}
@@ -25,6 +25,6 @@ export default function NavbarTemplate({ title }: NavbarProps) {
                     </Title>
                 </Center>
             </Container>
-        </Box>
+        </Paper>
     );
 }

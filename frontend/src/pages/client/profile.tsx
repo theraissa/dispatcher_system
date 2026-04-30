@@ -1,9 +1,9 @@
-import NavbarPage from "../../components/record/ui/navbar-page";
-import FormProfileClient from "@/components/client/profile/profile-client-form";
 import ProfileClientAvatar from "@/components/client/profile/profile-client-avatar";
-import { clientLinksNavbar } from "@/routes/frontend-routes";
+import FormProfileClient from "@/components/client/profile/profile-client-form";
 import { useClientProfile } from "@/hooks/use-client-profile";
+import { clientLinksNavbar } from "@/routes/frontend-routes";
 import { useState } from "react";
+import NavbarPage from "../../components/record/ui/navbar-page";
 
 
 /**

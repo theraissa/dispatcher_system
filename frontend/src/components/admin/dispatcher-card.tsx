@@ -1,7 +1,20 @@
-import { CheckCircle, XCircle, Mail, User } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CheckCircle, Mail, User, XCircle } from "lucide-react";
 
-export default function AdminDispatcherCard({ dispatcher, onApprove, onReject }) {
+interface Dispatcher {
+  id: number;
+  name: string;
+  email: string;
+}
+
+type AdminDispatcherCardProps = {
+  dispatcher: Dispatcher;
+  onApprove: (id: number) => void;
+  onReject: (id: number) => void;
+};
+
+
+export default function AdminDispatcherCard({ dispatcher, onApprove, onReject }: AdminDispatcherCardProps) {
   return (
     <div className="w-full bg-white p-5 rounded-[32px] border border-zinc-100 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 transition-all hover:shadow-md">
 

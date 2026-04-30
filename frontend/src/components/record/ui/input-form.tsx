@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 interface InputFormProps extends React.InputHTMLAttributes<HTMLInputElement> {
     icon?: ReactNode; // Permite passar um ícone do Lucide

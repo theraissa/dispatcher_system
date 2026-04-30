@@ -1,12 +1,12 @@
-import NavbarPage from "../../components/record/ui/navbar-page";
-import CalledClientFilter from "@/components/called/called-filter";
 import CalledContainer from "@/components/called/called-container";
-import { useAuth } from "@/hooks/use-auth";
+import CalledClientFilter from "@/components/called/called-filter";
+import { useAuthRequired } from "@/hooks/auth/auth-requirered";
 import { useTickets } from "@/hooks/use-ticket";
 import { clientLinksNavbar, FRONTEND_ROUTES } from "@/routes/frontend-routes";
 import type { TicketFilters } from "@/types/ticket.types";
-import { useState } from "react";
 import { formatToInputDate } from "@/utils/formatters";
+import { useState } from "react";
+import NavbarPage from "../../components/record/ui/navbar-page";
 
 
 /**
@@ -23,7 +23,7 @@ import { formatToInputDate } from "@/utils/formatters";
 export default function CalledClient() {
 
     // Usuário autenticado (necessário para buscar os chamados)
-    const { user } = useAuth();
+    const { user } = useAuthRequired();
 
     // Hook responsável por buscar os chamados do usuário
     const { tickets, loading } = useTickets(user?.id);

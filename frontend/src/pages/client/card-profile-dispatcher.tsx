@@ -1,10 +1,10 @@
-import { useParams } from "react-router-dom";
-import { useDispatcherProfile } from "@/hooks/use-dispatcher-profile";
-import { clientLinksNavbar } from "@/routes/frontend-routes";
+import AccordionServiceDispatcher from "@/components/client/card-profile-dispatcher/accordion-service";
 import { AsideProfileDispatcher } from "@/components/client/card-profile-dispatcher/aside-profile";
 import NavbarPage from "@/components/record/ui/navbar-page";
-import AccordionServiceDispatcher from "@/components/client/card-profile-dispatcher/accordion-service";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuthRequired } from "@/hooks/auth/auth-requirered";
+import { useDispatcherProfile } from "@/hooks/use-dispatcher-profile";
+import { clientLinksNavbar } from "@/routes/frontend-routes";
+import { useParams } from "react-router-dom";
 
 
 /**
@@ -21,7 +21,7 @@ export default function CardProfileDispatcher() {
     const { userId } = useParams();
     const dispatcherId = Number(userId);
 
-    const { user } = useAuth();
+    const { user } = useAuthRequired();
     const { data, loading } = useDispatcherProfile(user.id, dispatcherId!);
 
     if (loading) {
@@ -55,7 +55,12 @@ export default function CardProfileDispatcher() {
                 <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-8">
 
                     {/* ASIDE: Informações do despachante */}
-                    <AsideProfileDispatcher dispatcher={data} />
+                    <AsideProfileDispatcher
+                        dispatcher={data}
+                        onOpenReview={() => {
+                            console.log("Abrir modal de avaliação");
+                        }}
+                    />
 
                     {/* CONTEÚDO: Serviços disponíveis */}
                     <AccordionServiceDispatcher

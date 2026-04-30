@@ -1,6 +1,6 @@
-import { apiClient } from "./api-client"
 import { BACKEND_ROUTES } from "../routes/backend-routes"
 import type { RegisterDispatcherRequest, RegisterDispatcherResponse } from "../types/dispatcher.types"
+import { apiClient } from "./api-client"
 
 
 /**

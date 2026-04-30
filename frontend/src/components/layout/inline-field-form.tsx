@@ -1,6 +1,11 @@
-export default function InlineField({ children }: { children: React.ReactNode }) {
+type InlineFieldProps = {
+    children: React.ReactNode;
+    className?: string;
+};
+
+export default function InlineField({ children, className }: InlineFieldProps) {
     return (
-        <div className="flex-1 w-full">
+        <div className={className}>
             {children}
         </div>
     );

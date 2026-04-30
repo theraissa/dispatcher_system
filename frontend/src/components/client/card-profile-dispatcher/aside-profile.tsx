@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { User, MapPin, Phone, ShieldCheck, Mail, Star } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { Mail, MapPin, Phone, ShieldCheck, Star, User } from "lucide-react";
 
 
 /**

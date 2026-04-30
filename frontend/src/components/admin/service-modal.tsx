@@ -1,20 +1,24 @@
-import { useState, useEffect } from "react";
-import { X, Save } from "lucide-react";
+import { Save, X } from "lucide-react";
+import { useState } from "react";
+
+type Service = {
+    id?: number;
+    name: string;
+    description?: string;
+};
+
+type ServiceModalProps = {
+    isOpen: boolean;
+    onClose: () => void;
+    onSave: (data: { name: string; description: string }) => void;
+    editingService: Service | null;
+};
 
 
-export default function ServiceModal({ isOpen, onClose, onSave, editingService }) {
-    const [name, setName] = useState("");
-    const [description, setDescription] = useState("");
+export default function ServiceModal({ isOpen, onClose, onSave, editingService }: ServiceModalProps) {
 
-    useEffect(() => {
-        if (editingService) {
-            setName(editingService.name);
-            setDescription(editingService.description || "");
-        } else {
-            setName("");
-            setDescription("");
-        }
-    }, [editingService, isOpen]);
+    const [name, setName] = useState(editingService?.name ?? "");
+    const [description, setDescription] = useState(editingService?.description ?? "");
 
     if (!isOpen) return null;
 

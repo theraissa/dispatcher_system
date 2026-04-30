@@ -1,15 +1,24 @@
+import type { CreateUserType } from "@/types/type"
+import { Calendar, CreditCard, Lock, Mail, Phone, User } from "lucide-react"
 import InlineField from "../../../layout/inline-field-form"
 import InlineFields from "../../../layout/inline-fields-form"
 import SectionForm from "../../../layout/section-form"
-import LabelForm from "../../ui/label-form"
-import InputForm from "../../ui/input-form"
-import ButtonAppendForm from "../../ui/button-append-form"
 import TitleTemplate from "../../../ui/title"
-import { User, CreditCard, Calendar, Phone, Mail, Lock } from "lucide-react";
+import ButtonAppendForm from "../../ui/button-append-form"
+import InputForm from "../../ui/input-form"
+import LabelForm from "../../ui/label-form"
 
-export default function FormPersonal({ user, onChange, readOnly }) {
 
-  function handleUserChange(event) {
+type FormPersonalProps = {
+  user: CreateUserType;
+  onChange: (section: "user", field: any, value: string) => void;
+  readOnly: boolean;
+}
+
+
+export default function FormPersonal({ user, onChange, readOnly }: FormPersonalProps) {
+
+  function handleUserChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target
     onChange("user", name, value)
   }

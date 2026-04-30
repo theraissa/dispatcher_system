@@ -1,12 +1,13 @@
+import { getClientProfile, updateClientProfile } from "@/services/client-service"
+import type { ProfileUser } from "@/types/user.types"
+import { useEffect, useState } from "react"
+
+
 /**
  * Hook responsável por gerenciar o perfil do usuário.
  */
-import { useEffect, useState } from "react"
-import type { ProfileClient } from "../types/type"
-import { getClientProfile, updateClientProfile } from "@/services/client-service"
-
 export function useClientProfile(userId: string) {
-    const [data, setData] = useState<ProfileClient | null>(null)
+    const [data, setData] = useState<ProfileUser | null>(null)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
@@ -33,10 +34,10 @@ export function useClientProfile(userId: string) {
 
     // Função genérica para atualizar campos do perfil
     function handleChange<
-        T extends keyof ProfileClient
+        T extends keyof ProfileUser
     >(
         entity: T,
-        field: keyof ProfileClient[T],
+        field: keyof ProfileUser[T],
         value: any
     ) {
         setData(prev => {

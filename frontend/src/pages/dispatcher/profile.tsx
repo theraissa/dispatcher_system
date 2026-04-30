@@ -1,11 +1,11 @@
+import { useAuthRequired } from "@/hooks/auth/auth-requirered"
+import { cn } from "@/lib/utils"
+import { dispatcherLinksNavbar } from "@/routes/frontend-routes"
+import { Briefcase, UserCircle } from "lucide-react"
 import { useState } from "react"
-import NavbarPage from "../../components/record/ui/navbar-page"
 import ProfileInfo from "../../components/dispatcher/profile/profile-info"
 import ProfileServices from "../../components/dispatcher/profile/profile-services"
-import { cn } from "@/lib/utils"
-import { UserCircle, Briefcase } from "lucide-react"
-import { dispatcherLinksNavbar } from "@/routes/frontend-routes"
-import { useAuth } from "@/hooks/use-auth"
+import NavbarPage from "../../components/record/ui/navbar-page"
 
 
 /**
@@ -21,7 +21,7 @@ export default function ProfilePage() {
   // Controla a aba ativa da página de perfil.
   const [tab, setTab] = useState<"info" | "services">("info")
 
-  const { user } = useAuth();
+  const { user } = useAuthRequired();
 
   if (!user?.dispatcherId) {
     return <div>Carregando usuário...</div>;

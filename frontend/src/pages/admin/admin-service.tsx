@@ -1,25 +1,26 @@
-import { useState, useEffect } from "react";
-import { Plus, Search, ArrowLeft, Edit2, Trash2, LayoutGrid } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import ServiceModal from "@/components/admin/service-modal";
 import { FRONTEND_ROUTES } from "@/routes/frontend-routes";
 import { adminService } from "@/services/admin-service";
-import ServiceModal from "@/components/admin/service-modal";
-import type { CreateServiceRequest } from "@/types/service.types";
+import type { CreateServiceRequest, ServiceResponse } from "@/types/service.types";
+import { ArrowLeft, Edit2, LayoutGrid, Plus, Search, Trash2 } from "lucide-react";
+import { useCallback, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 
 export default function AdminServices() {
+
     const navigate = useNavigate();
-    const [services, setServices] = useState([]);
+
+    const [services, setServices] = useState<ServiceResponse[]>([]);
+    const [editingService, setEditingService] = useState<ServiceResponse | null>(null);
+
     const [search, setSearch] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingService, setEditingService] = useState(null);
 
-    const loadServices = async () => {
+    const loadServices = useCallback(async () => {
         const response = await adminService.listServices();
         setServices(response || []);
-    };
-
-    useEffect(() => { loadServices(); }, []);
+    }, []);
 
     const handleSave = async (data: CreateServiceRequest) => {
         if (editingService) {
@@ -31,7 +32,7 @@ export default function AdminServices() {
         loadServices();
     };
 
-    const handleDelete = async (id) => {
+    const handleDelete = async (id: number) => {
         if (confirm("Deseja realmente excluir este serviço?")) {
             await adminService.deleteService(id);
             loadServices();
@@ -108,6 +109,7 @@ export default function AdminServices() {
             </div>
 
             <ServiceModal
+                key={editingService?.id ?? "new"}
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onSave={handleSave}

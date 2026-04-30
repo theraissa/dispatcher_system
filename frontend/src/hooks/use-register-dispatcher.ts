@@ -1,11 +1,11 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { FRONTEND_ROUTES } from "../routes/frontend-routes"
+import { registerDispatcher } from "../services/register-dispatcher"
 import type {
     RegisterDispatcherRequest,
     RegisterDispatcherResponse
 } from "../types/dispatcher.types"
-import { registerDispatcher } from "../services/register-dispatcher"
-import { FRONTEND_ROUTES } from "../routes/frontend-routes"
 import type { ApiError } from "../types/type"
 
 
@@ -40,15 +40,7 @@ export function useRegisterDispatcher() {
                 throw new Error("As senhas não coincidem")
             }
 
-            // remove campo que não deve ir para API
-            const { confirm_password, ...userWithoutConfirm } = formData.user
-
-            const payload = {
-                ...formData,
-                user: userWithoutConfirm
-            }
-
-            const result = await registerDispatcher(payload)
+            const result = await registerDispatcher(formData)
 
             // redirecionamento após sucesso
             navigate(FRONTEND_ROUTES.LOGIN)

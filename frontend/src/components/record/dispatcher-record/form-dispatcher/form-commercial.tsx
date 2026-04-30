@@ -1,29 +1,39 @@
-import InlineField from "../../../layout/inline-field-form"
-import InlineFields from "../../../layout/inline-fields-form"
-import SectionForm from "../../../layout/section-form"
-import LabelForm from "../../ui/label-form"
-import InputForm from "../../ui/input-form"
-import ButtonAppendForm from "../../ui/button-append-form"
-import TitleTemplate from "../../../ui/title"
+import type { CreateDispatcher, CreateOffice } from "@/types/type"
 import {
   Briefcase,
   Calendar,
-  Phone,
-  MapPin,
-  Hash,
-  Navigation,
   Globe,
-  Milestone
-} from "lucide-react";
+  Hash,
+  MapPin,
+  Milestone,
+  Navigation,
+  Phone
+} from "lucide-react"
+import InlineField from "../../../layout/inline-field-form"
+import InlineFields from "../../../layout/inline-fields-form"
+import SectionForm from "../../../layout/section-form"
+import TitleTemplate from "../../../ui/title"
+import ButtonAppendForm from "../../ui/button-append-form"
+import InputForm from "../../ui/input-form"
+import LabelForm from "../../ui/label-form"
 
-export default function FormCommercial({ dispatcher, office, onChange, readOnly }) {
 
-  function handleDispatcherChange(event) {
+type FormCommercialProps = {
+  dispatcher: CreateDispatcher;
+  office: CreateOffice;
+  onChange: (section: "dispatcher" | "office", field: any, value: string) => void;
+  readOnly: boolean;
+};
+
+
+export default function FormCommercial({ dispatcher, office, onChange, readOnly }: FormCommercialProps) {
+
+  function handleDispatcherChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target
     onChange("dispatcher", name, value)
   }
 
-  function handleOfficeChange(event) {
+  function handleOfficeChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target
     onChange("office", name, value)
   }
