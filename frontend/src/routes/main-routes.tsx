@@ -43,6 +43,11 @@ export function MainRoutes() {
         <Route path={FRONTEND_ROUTES.REGISTER.CLIENT} element={<ClientRecord />} />
         <Route path={FRONTEND_ROUTES.REGISTER.DISPATCHER} element={<DispatcherRecord />} />
 
+        {/* -------- ADMIN (POR ENQUANTO) -------- */}
+        <Route path={FRONTEND_ROUTES.ADMIN.ROOT} element={<AdminDashboard />} />
+        <Route path={FRONTEND_ROUTES.ADMIN.DISPATCHERS} element={<AdminDispatchers />} />
+        <Route path={FRONTEND_ROUTES.ADMIN.SERVICES} element={<AdminServices />} />
+
         {/* =========================
             ROTAS PROTEGIDAS
         ========================= */}
@@ -60,12 +65,6 @@ export function MainRoutes() {
           <Route path={FRONTEND_ROUTES.DISPATCHER.DISPATCHER_PROFILE} element={<ProfilePage />} />
           <Route path={FRONTEND_ROUTES.DISPATCHER.CALLED} element={<CalledDispatcher />} />
           <Route path={FRONTEND_ROUTES.DISPATCHER.CALLED_DETAILS} element={<TicketDetailsDispatcher />} />
-
-          {/* -------- ADMIN -------- */}
-          <Route path={FRONTEND_ROUTES.ADMIN.ROOT} element={<AdminDashboard />} />
-          <Route path={FRONTEND_ROUTES.ADMIN.DISPATCHERS} element={<AdminDispatchers />} />
-          <Route path={FRONTEND_ROUTES.ADMIN.SERVICES} element={<AdminServices />} />
-
         </Route>
 
       </Routes>
