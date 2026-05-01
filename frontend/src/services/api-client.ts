@@ -8,7 +8,7 @@ import { FRONTEND_ROUTES } from "@/routes/frontend-routes";
  * - Padronizar headers
  * - Tratar erros da API
  */
-const BASE_URL = "https://dispatcher-system-mmw5.onrender.com"
+const BASE_URL = "https://dispatcher-system-mmw5.onrender.com/api/dispatcher-system"
 
 
 /**
