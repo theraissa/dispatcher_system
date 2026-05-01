@@ -9,8 +9,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    environment:
-      VITE_API_URL: https://dispatcher-system-mmw5.onrender.com
+      args:
+        VITE_API_URL: https://dispatcher-system-mmw5.onrender.com
     ports:
       - "8080:80"
 
