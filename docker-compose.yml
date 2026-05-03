@@ -2,8 +2,10 @@ services:
 
   backend:
     build: ./backend
+    environment:
+      REDIS_URL: redis://red-d7rqjta8qa3s73dn05ig:6379
     ports:
-      - "5000:5000"
+    - "5000:5000"
 
   frontend:
     build:

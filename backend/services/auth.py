@@ -86,7 +86,7 @@ class AuthService:
             now = datetime.now(timezone.utc).timestamp()
             ttl = int(exp - now)
 
-            if ttl > 0:
+            if redis_client and ttl > 0:
                 # Armazenamos o JTI no Redis. O valor pode ser qualquer um ("true").
                 # O segredo é o 'ex=ttl', que deleta a chave do Redis automaticamente
                 # quando o token expiraria naturalmente.

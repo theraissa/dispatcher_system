@@ -3,10 +3,20 @@ Módulo que configura o Redis.
 """
 
 import os
+
 import redis
 
-REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
-REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
+REDIS_URL = os.getenv("REDIS_URL")
 
-# Instância única para todo o projeto
-redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0, decode_responses=True)
+redis_client = None
+
+if REDIS_URL:
+    try:
+        redis_client = redis.from_url(REDIS_URL, decode_responses=True)
+        redis_client.ping()  # testa conexão
+        print("Redis conectado")
+    except Exception as e:
+        print("Erro ao conectar no Redis:", e)
+        redis_client = None
+else:
+    print("REDIS_URL não definida")

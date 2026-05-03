@@ -3,8 +3,10 @@ Módulo de autenticação para proteger rotas que exigem login.
 """
 
 from functools import wraps
+
 import jwt
-from flask import request, jsonify, g, abort
+from flask import abort, g, jsonify, request
+
 from storage import redis_client
 
 SECRET_KEY = "sua_chave_secreta"
@@ -29,7 +31,7 @@ def require_auth(f):
 
             # 3. VERIFICAÇÃO DO REDIS (Blacklist)
             jti = payload.get("jti")
-            if redis_client.exists(f"blacklist:{jti}"):
+            if redis_client and redis_client.exists(f"blacklist:{jti}"):
                 return jsonify({"message": "Token revogado. Faça login novamente."}), 401
 
             # 4. Salva no contexto global da requisição (Flask g)
