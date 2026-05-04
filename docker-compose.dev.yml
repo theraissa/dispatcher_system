@@ -12,12 +12,11 @@ services:
     volumes:
       - ./backend:/app
     environment:
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
       PYTHONDONTWRITEBYTECODE: 1 # impede criação de __pycache__
       PYTHONUNBUFFERED: 1 # logs em tempo real
       FLASK_ENV: development
       FLASK_DEBUG: 1
+      REDIS_URL: redis://redis:6379
       DATABASE_URL: postgresql://admin:admin@database:5432/db-system
     command: python app.py
     depends_on:
@@ -25,17 +24,16 @@ services:
       - redis
 
   frontend:
-    image: node:20-alpine 
     build:
       context: ./frontend
-      args:
-        VITE_API_URL: http://localhost:5000/api/dispatcher-system
-    ports:
-      - "5173:5173"
+      dockerfile: Dockerfile.dev
     volumes:
       - ./frontend:/app
       - /app/node_modules
-    command: sh -c "npm install && npm run dev -- --host"
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:5000/api/dispatcher-system
     depends_on:
       - backend
 
@@ -47,13 +45,3 @@ services:
       POSTGRES_PASSWORD: admin
     ports:
       - "5432:5432"
-
-  pgadmin:
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-    ports:
-      - "5050:80"
-    depends_on:
-      - database
