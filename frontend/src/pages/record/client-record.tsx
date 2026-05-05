@@ -1,6 +1,6 @@
 import CardInfo from "../../components/record/client-record/card-info"
-import Navbar from "../../components/record/ui/navbar-with-title"
 import { FormClient } from "../../components/record/client-record/form-client"
+import Navbar from "../../components/record/ui/navbar-with-title"
 
 export default function ClientRecord() {
   return (

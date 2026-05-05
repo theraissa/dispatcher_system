@@ -1,12 +1,14 @@
-import { useState } from "react"
-import { useRegisterUser } from "../../../hooks/use-register-user"
 import { Card, CardContent } from "@/components/ui/card"
-import { User, CreditCard, Mail, Lock } from "lucide-react"
+import InputPassword from "@/components/ui/input-password"
+import { FRONTEND_ROUTES } from "@/routes/frontend-routes"
+import { cpfMask } from "@/utils/masks"
+import { CreditCard, Mail, User } from "lucide-react"
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { useRegisterUser } from "../../../hooks/use-register-user"
+import ButtonSubmitForm from "../ui/button-submit-form"
 import InputForm from "../ui/input-form"
 import LabelForm from "../ui/label-form"
-import ButtonSubmitForm from "../ui/button-submit-form"
-import { useNavigate } from "react-router-dom"
-import { FRONTEND_ROUTES } from "@/routes/frontend-routes"
 
 export function FormClient() {
   const { register, error, loading } = useRegisterUser()
@@ -51,85 +53,75 @@ export function FormClient() {
   }
 
   return (
-    <Card className="w-full max-w-[600px] border-none shadow-sm rounded-[40px] p-8">
-      <CardContent>
-        {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
+    <Card className="w-full max-w-[600px] border-none shadow-sm 
+      rounded-[24px] md:rounded-[40px] 
+      p-4 md:p-8 bg-white">
+      <CardContent className="p-2 md:p-6">
+        {error && (
+          <div className="p-3 mb-4 bg-red-50 border border-red-100 rounded-xl text-center">
+            <p className="text-red-500 text-sm">{error}</p>
+          </div>
+        )}
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-2 md:gap-4">
 
           {/* Nome */}
           <div className="space-y-1">
             <LabelForm title="Nome Completo" />
-            <div className="relative">
-              <InputForm
-                type="text"
-                name="name"
-                icon={<User size={18} />}
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="Digite seu nome completo"
-                readOnly={false}
-              />
-            </div>
-
+            <InputForm
+              name="name"
+              icon={<User size={18} />}
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Digite seu nome completo"
+            />
           </div>
 
           {/* CPF */}
           <div className="space-y-1">
             <LabelForm title="CPF" />
-            <div className="relative">
-              <InputForm
-                type="text"
-                name="cpf"
-                icon={<CreditCard size={18} />}
-                value={formData.cpf}
-                onChange={handleChange}
-                placeholder="000.000.000-00"
-                className="pl-10 h-11 bg-white rounded-xl border-zinc-200"
-              />
-            </div>
+            <InputForm
+              name="cpf"
+              icon={<CreditCard size={18} />}
+              value={cpfMask(formData.cpf)}
+              onChange={handleChange}
+              placeholder="000.000.000-00"
+              maxLength={14}
+            />
           </div>
 
           {/* Email */}
           <div className="space-y-1">
             <LabelForm title="Email" />
-            <div className="relative">
-              <InputForm
-                type="email"
-                name="email"
-                icon={<Mail size={18} />}
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="seu@email.com"
-                readOnly={false}
-              />
-            </div>
+            <InputForm
+              type="email"
+              name="email"
+              icon={<Mail size={18} />}
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="seu@email.com"
+            />
           </div>
 
-          {/* Senhas em Grid para economizar espaço vertical */}
+          {/* Senhas em Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
               <LabelForm title="Senha" />
-              <div className="relative">
-                <InputForm
-                  type="password"
-                  name="password"
-                  icon={<Lock size={18} />}
-                  value={formData.password}
-                  onChange={handleChange}
-                  readOnly={false}
-                />
-              </div>
+              <InputPassword
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="••••••••"
+              />
             </div>
 
             <div className="space-y-1">
               <LabelForm title="Confirmar Senha" />
-              <InputForm
-                type="password"
+              <InputPassword
                 name="confirmar_senha"
                 value={formData.confirmar_senha}
                 onChange={handleChange}
-                className="h-11 bg-white rounded-xl border-zinc-200"
+                placeholder="••••••••"
               />
             </div>
           </div>
@@ -138,9 +130,9 @@ export function FormClient() {
             <ButtonSubmitForm
               title="Cadastrar"
               loading={loading}
+              className="w-full md:w-auto min-w-[200px]"
             />
           </div>
-
         </form>
       </CardContent>
     </Card>
