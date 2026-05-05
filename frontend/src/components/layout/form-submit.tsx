@@ -5,7 +5,10 @@ interface FormSubmitProps {
 
 export default function FormSubmit({ onSubmit, children }: FormSubmitProps) {
     return (
-        <form onSubmit={onSubmit} className="flex flex-col w-full">
+        <form
+            onSubmit={onSubmit}
+            className="flex flex-col w-full items-center"
+        >
             {children}
         </form>
     )

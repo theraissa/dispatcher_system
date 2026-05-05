@@ -8,7 +8,7 @@ export default function LabelForm({ title, className, ...props }: LabelFormProps
     return (
         <label
             className={cn(
-                "block text-base text-left font-bold mt-5 ml-1 font-sans",
+                "block text-sm md:text-base text-left font-bold mt-4 mb-1.5 ml-1 text-zinc-700",
                 className
             )}
             {...props}

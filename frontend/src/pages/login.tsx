@@ -1,8 +1,9 @@
-import { Eye, EyeOff, Lock, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useLogin } from "../hooks/use-login";
 
+import InputPassword from "@/components/ui/input-password";
 import ButtonSubmitForm from "../components/record/ui/button-submit-form";
 import InputForm from "../components/record/ui/input-form";
 import LabelForm from "../components/record/ui/label-form";
@@ -17,9 +18,6 @@ import { Card, CardContent } from "../components/ui/card";
 export default function Login() {
     const location = useLocation();
     const { login, error, loading } = useLogin();
-
-    // Estado para alternar visibilidade da senha
-    const [showPassword, setShowPassword] = useState(false);
 
     // Estado do formulário iniciando com o e-mail vindo da Home, se existir
     const [formData, setFormData] = useState({
@@ -82,27 +80,13 @@ export default function Login() {
                             {/* Campo de Senha */}
                             <div className="space-y-2">
                                 <LabelForm title="Senha" />
-                                <div className="relative">
-                                    <InputForm
-                                        type={showPassword ? "text" : "password"}
-                                        name="password"
-                                        icon={<Lock size={18} className="text-zinc-400" />}
-                                        value={formData.password}
-                                        onChange={handleChange}
-                                        placeholder="••••••••"
-                                        readOnly={false}
-                                    />
-
-                                    {/* Botão de Mostrar/Esconder Senha: Posição fixa no canto direito */}
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-[#21314D] transition-colors p-1"
-                                        aria-label={showPassword ? "Esconder senha" : "Mostrar senha"}
-                                    >
-                                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                    </button>
-                                </div>
+                                <InputPassword
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    placeholder="••••••••"
+                                    readOnly={false}
+                                />
                             </div>
 
                             {/* Ações do Formulário:*/}

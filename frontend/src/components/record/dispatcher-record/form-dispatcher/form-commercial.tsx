@@ -1,19 +1,22 @@
+import { Separator } from "@/components/ui/separator"
 import type { CreateDispatcher, CreateOffice } from "@/types/type"
+import { ESTADOS_BR } from "@/utils/constants"
+import { phoneMask, zipCodeMask } from "@/utils/masks"
 import {
   Briefcase,
   Calendar,
-  Globe,
   Hash,
   MapPin,
   Milestone,
   Navigation,
   Phone
 } from "lucide-react"
+import { useEffect, useState } from "react"
 import InlineField from "../../../layout/inline-field-form"
 import InlineFields from "../../../layout/inline-fields-form"
 import SectionForm from "../../../layout/section-form"
 import TitleTemplate from "../../../ui/title"
-import ButtonAppendForm from "../../ui/button-append-form"
+import { CommandForm } from "../../ui/command-form"
 import InputForm from "../../ui/input-form"
 import LabelForm from "../../ui/label-form"
 
@@ -37,6 +40,40 @@ export default function FormCommercial({ dispatcher, office, onChange, readOnly 
     const { name, value } = event.target
     onChange("office", name, value)
   }
+
+  const [cities, setCities] = useState<{ value: string; label: string }[]>([]);
+  const [loadingCities, setLoadingCities] = useState(false);
+
+  // Efeito que dispara sempre que o estado (UF) mudar
+  useEffect(() => {
+    if (!office.state) {
+      setCities([]);
+      return;
+    }
+
+    async function fetchCities() {
+      setLoadingCities(true);
+      try {
+        const response = await fetch(
+          `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${office.state}/municipios?orderBy=nome`
+        );
+        const data = await response.json();
+
+        const formattedCities = data.map((city: any) => ({
+          value: city.nome,
+          label: city.nome,
+        }));
+
+        setCities(formattedCities);
+      } catch (error) {
+        console.error("Erro ao carregar cidades:", error);
+      } finally {
+        setLoadingCities(false);
+      }
+    }
+
+    fetchCities();
+  }, [office.state]); // Monitora o estado
 
   return (
     <SectionForm>
@@ -70,7 +107,7 @@ export default function FormCommercial({ dispatcher, office, onChange, readOnly 
           <InputForm
             name="contact"
             icon={<Phone size={18} />}
-            value={office.contact}
+            value={phoneMask(office.contact)}
             onChange={handleOfficeChange}
             placeholder="(55) 9 9999-9999"
             readOnly={readOnly}
@@ -78,9 +115,7 @@ export default function FormCommercial({ dispatcher, office, onChange, readOnly 
         </InlineField>
       </InlineFields>
 
-      <ButtonAppendForm title="Anexar Registro CRDD" />
-
-      <hr className="border-zinc-100 my-6" />
+      <Separator className="my-8 opacity-100" />
 
       <TitleTemplate title="Endereço do Comércio" />
 
@@ -128,7 +163,7 @@ export default function FormCommercial({ dispatcher, office, onChange, readOnly 
           <InputForm
             name="zip_code"
             icon={<Milestone size={18} />}
-            value={office.zip_code}
+            value={zipCodeMask(office.zip_code)}
             onChange={handleOfficeChange}
             placeholder="00000-000"
             readOnly={readOnly}
@@ -137,26 +172,32 @@ export default function FormCommercial({ dispatcher, office, onChange, readOnly 
       </InlineFields>
 
       <InlineFields>
-        <InlineField>
-          <LabelForm title="Cidade" />
-          <InputForm
-            name="city"
-            icon={<Globe size={18} />}
-            value={office.city}
-            onChange={handleOfficeChange}
-            placeholder="Cidade"
-            readOnly={readOnly}
-          />
-        </InlineField>
         <InlineField className="md:flex-[0.4]">
           <LabelForm title="Estado" />
-          <InputForm
-            name="state"
-            value={office.state}
-            onChange={handleOfficeChange}
+          <CommandForm
+            options={ESTADOS_BR} // Aquela lista estática que criamos
+            value={office.state || ""}
             placeholder="UF"
-            readOnly={readOnly}
-            maxLength={2}
+            disabled={readOnly}
+            onChange={(val) => {
+              // Atualiza o estado
+              handleOfficeChange({ target: { name: "state", value: val } } as any)
+              // Limpa a cidade selecionada anteriormente
+              onChange("office", "city", "")
+            }}
+          />
+        </InlineField>
+
+        <InlineField>
+          <LabelForm title="Cidade" />
+          <CommandForm
+            options={cities} // Cidades vindas da API do IBGE (via useEffect)
+            value={office.city || ""}
+            placeholder={loadingCities ? "Carregando..." : "Selecione a cidade"}
+            disabled={readOnly || !office.state || loadingCities}
+            onChange={(val) =>
+              handleOfficeChange({ target: { name: "city", value: val } } as any)
+            }
           />
         </InlineField>
       </InlineFields>

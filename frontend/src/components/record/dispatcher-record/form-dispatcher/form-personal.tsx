@@ -1,12 +1,14 @@
-import type { CreateUserType } from "@/types/type"
-import { Calendar, CreditCard, Lock, Mail, Phone, User } from "lucide-react"
-import InlineField from "../../../layout/inline-field-form"
-import InlineFields from "../../../layout/inline-fields-form"
-import SectionForm from "../../../layout/section-form"
-import TitleTemplate from "../../../ui/title"
-import ButtonAppendForm from "../../ui/button-append-form"
-import InputForm from "../../ui/input-form"
-import LabelForm from "../../ui/label-form"
+import InputPassword from "@/components/ui/input-password";
+import { Separator } from "@/components/ui/separator";
+import type { CreateUserType } from "@/types/type";
+import { cpfMask, phoneMask } from "@/utils/masks";
+import { Calendar, CreditCard, Lock, Mail, Phone, User } from "lucide-react";
+import InlineField from "../../../layout/inline-field-form";
+import InlineFields from "../../../layout/inline-fields-form";
+import SectionForm from "../../../layout/section-form";
+import TitleTemplate from "../../../ui/title";
+import InputForm from "../../ui/input-form";
+import LabelForm from "../../ui/label-form";
 
 
 type FormPersonalProps = {
@@ -22,8 +24,8 @@ export default function FormPersonal({ user, onChange, readOnly }: FormPersonalP
     const { name, value } = event.target
     onChange("user", name, value)
   }
-  return (
 
+  return (
 
     <SectionForm>
       <TitleTemplate title="Informações Pessoais" />
@@ -44,7 +46,7 @@ export default function FormPersonal({ user, onChange, readOnly }: FormPersonalP
           <InputForm
             name="cpf"
             icon={<CreditCard size={18} />}
-            value={user.cpf}
+            value={cpfMask(user.cpf)}
             onChange={handleUserChange}
             placeholder="000.000.000-00"
             readOnly={readOnly}
@@ -70,7 +72,7 @@ export default function FormPersonal({ user, onChange, readOnly }: FormPersonalP
           <InputForm
             name="contact"
             icon={<Phone size={18} />}
-            value={user.contact}
+            value={phoneMask(user.contact)}
             onChange={handleUserChange}
             placeholder="(55) 9 9999-9999"
             readOnly={readOnly}
@@ -78,9 +80,7 @@ export default function FormPersonal({ user, onChange, readOnly }: FormPersonalP
         </InlineField>
       </InlineFields>
 
-      <ButtonAppendForm title="Anexar Identidade" />
-
-      <hr className="border-zinc-100 my-6" /> {/* Linha sutil de separação */}
+      <Separator className="my-8 opacity-100" />
 
       <TitleTemplate title="Informações de Login" />
 
@@ -99,8 +99,7 @@ export default function FormPersonal({ user, onChange, readOnly }: FormPersonalP
       <InlineFields>
         <InlineField>
           <LabelForm title="Senha" />
-          <InputForm
-            type="password"
+          <InputPassword
             name="password"
             icon={<Lock size={18} />}
             value={user.password}
@@ -111,8 +110,7 @@ export default function FormPersonal({ user, onChange, readOnly }: FormPersonalP
 
         <InlineField>
           <LabelForm title="Confirmar Senha" />
-          <InputForm
-            type="password"
+          <InputPassword
             name="confirm_password"
             icon={<Lock size={18} />}
             value={user.confirm_password}

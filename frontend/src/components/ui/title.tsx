@@ -8,7 +8,7 @@ interface TitleTemplateProps {
 export default function TitleTemplate({ title, className }: TitleTemplateProps) {
     return (
         <h3 className={cn(
-            "text-2xl font-bold text-center py-4 text-[#1E1E1E] font-sans tracking-tight",
+            "text-xl md:text-2xl font-bold text-center py-2 md:py-4 text-[#1E1E1E] tracking-tight",
             className
         )}>
             {title}
