@@ -35,7 +35,7 @@ export default function Search({ input, setInput, onSearch }: SearchProps) {
     <div className="w-full max-w-3xl mx-auto mb-12 px-4">
 
       {/* Container principal da barra de busca */}
-      <div className="flex items-center gap-3 bg-white p-2 rounded-full shadow-sm border border-zinc-100">
+      <div className="flex items-center gap-2 bg-white p-1.5 sm:p-2 rounded-full shadow-sm border border-zinc-100">
 
         {/* Campo de input */}
         <div className="relative flex-1 group">
@@ -49,19 +49,20 @@ export default function Search({ input, setInput, onSearch }: SearchProps) {
           {/* Input controlado */}
           <input
             value={input}
-            onChange={(e) => setInput(e.target.value)} // Atualiza estado no componente pai
-            placeholder="Buscar por nome, serviço ou cidade..."
-            className="w-full h-12 pl-12 pr-4 bg-transparent outline-none text-sm font-medium placeholder:text-zinc-400"
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Nome, serviço ou cidade..."
+            className="w-full h-10 sm:h-12 pl-11 sm:pl-12 pr-2 bg-transparent outline-none text-sm font-medium placeholder:text-zinc-400"
           />
         </div>
 
         {/* Botão de busca */}
         <button
-          onClick={onSearch} // Dispara busca definida pelo componente pai
-          className="cursor-pointer px-8 h-12 bg-[#21314D] text-white rounded-full font-bold text-sm hover:bg-[#1A263D] transition-all shadow-md active:scale-95 flex items-center gap-2"
+          onClick={onSearch}
+          className="cursor-pointer h-10 w-10 sm:h-12 sm:w-auto sm:px-8 bg-[#21314D] text-white rounded-full font-bold text-sm hover:bg-[#1A263D] transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 flex-shrink-0"
         >
-          <SearchIcon size={16} />
-          Buscar
+          <SearchIcon size={18} />
+          <span className="hidden sm:block">Buscar</span>
+
         </button>
       </div>
     </div>

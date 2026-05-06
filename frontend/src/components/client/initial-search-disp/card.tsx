@@ -1,6 +1,6 @@
 import { FRONTEND_ROUTES } from "@/routes/frontend-routes";
 import type { ProfileDispatcher } from "@/types/dispatcher.types";
-import { User, MapPin } from "lucide-react";
+import { MapPin, User } from "lucide-react";
 import { Link } from "react-router-dom";
 
 
@@ -64,7 +64,7 @@ export default function CardDispatcher({ dispatchers, loading, hasSearched }: Ca
     );
   }
   return (
-    <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 w-full max-w-7xl mx-auto px-6 pb-20">
+    <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 w-full max-w-7xl mx-auto px-4 md:px-6 pb-20">
       {dispatchers.map((dispatcher) => (
 
         /**
@@ -74,11 +74,11 @@ export default function CardDispatcher({ dispatchers, loading, hasSearched }: Ca
         <Link
           key={dispatcher.user.id}
           to={FRONTEND_ROUTES.CLIENT.CARD_PROFILE_DISPATCHER.replace(":userId", dispatcher.user.id.toString())}
-          className="group bg-white p-4 rounded-[32px] shadow-sm border border-zinc-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+          className="group bg-white p-4 rounded-[28px] md:rounded-[32px] shadow-sm border border-zinc-100 hover:shadow-xl transition-all duration-300"
         >
 
           {/* Foto */}
-          <div className="relative w-full aspect-square bg-zinc-100 rounded-[24px] overflow-hidden mb-4">
+          <div className="relative w-full aspect-video sm:aspect-square bg-zinc-100 rounded-[20px] md:rounded-[24px] overflow-hidden mb-4">
             <div className="w-full h-full flex items-center justify-center text-zinc-300">
               <User size={48} strokeWidth={1.5} />
             </div>
@@ -86,9 +86,9 @@ export default function CardDispatcher({ dispatchers, loading, hasSearched }: Ca
 
           {/* Informações principais do despachante */}
 
-          <div className="px-2 space-y-1">
+          <div className="px-1 space-y-1">
             {/* Nome do despachante */}
-            <h4 className="font-extrabold text-[#1E1E1E] text-lg tracking-tight group-hover:text-[#21314D] transition-colors">
+            <h4 className="font-extrabold text-[#1E1E1E] text-base md:text-lg truncate">
               {dispatcher.user.name}
             </h4>
 
