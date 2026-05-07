@@ -1,6 +1,6 @@
-import { Camera, Edit3, Save, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { UserType } from "@/types/type";
+import { Camera, Edit3, Save, X } from "lucide-react";
 
 
 /**
@@ -29,17 +29,16 @@ type ProfileClientAvatarProps = {
 export default function ProfileClientAvatar({ user, isEditing, setIsEditing, onSave }: ProfileClientAvatarProps) {
 
     return (
-        <div className="w-full relative bg-white p-6 md:p-8 rounded-[32px] shadow-sm border border-zinc-100 flex flex-col md:flex-row items-center gap-6">
+        <div className="w-full relative bg-white p-6 md:p-8 rounded-[24px] md:rounded-[32px] shadow-sm border border-zinc-100 flex flex-col md:flex-row items-center gap-6">
 
             {/* Container de Botões no Canto */}
-            <div className="absolute top-8 right-8 flex items-center gap-2">
+            <div className="order-3 md:order-none md:absolute md:top-8 md:right-8 flex items-center gap-2 w-full md:w-auto mt-4 md:mt-0">
 
                 {/* Botão Cancelar (Aparece apenas quando está editando) */}
                 {isEditing && (
                     <button
                         onClick={() => setIsEditing(false)}
-                        className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 transition-all active:scale-95 border border-red-100"
-                    >
+                        className="flex-1 md:flex-none cursor-pointer flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold bg-red-50 text-red-600 border border-red-100"                    >
                         <X size={18} />
                         Cancelar
                     </button>
@@ -48,42 +47,38 @@ export default function ProfileClientAvatar({ user, isEditing, setIsEditing, onS
                 {/* Botão de Editar/Salvar */}
                 <button
                     onClick={() => {
-                        if (isEditing && onSave) {
-                            onSave(); // Se houver uma função de salvar, executa
-                        }
+                        if (isEditing && onSave) onSave();
                         setIsEditing(!isEditing);
                     }}
                     className={cn(
-                        "cursor-pointer flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-bold transition-all active:scale-95 shadow-sm",
-                        isEditing
-                            ? "bg-green-600 text-white hover:bg-green-700"
-                            : "bg-[#21314D] text-white hover:bg-[#1A263D]"
+                        "flex-1 md:flex-none cursor-pointer flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold transition-all shadow-sm",
+                        isEditing ? "bg-green-600 text-white" : "bg-[#21314D] text-white"
                     )}
                 >
                     {isEditing ? <Save size={18} /> : <Edit3 size={18} />}
-                    {isEditing ? "Salvar Alterações" : "Editar Perfil"}
+                    {isEditing ? "Salvar" : "Editar Perfil"}
                 </button>
             </div>
 
             {/* Foto com Overlay */}
-            <div className="relative group">
+            <div className="relative group shrink-0">
                 <div
-                    className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-zinc-100 border-4 border-white shadow-md overflow-hidden bg-cover bg-center transition-all"
+                    className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-zinc-100 border-4 border-white shadow-md overflow-hidden bg-cover bg-center"
                     style={{ backgroundImage: `url(${'https://via.placeholder.com/150'})` }}
                 />
                 {isEditing && (
-                    <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center cursor-pointer hover:bg-black/50 transition-colors">
+                    <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center cursor-pointer">
                         <Camera className="text-white" size={24} />
                     </div>
                 )}
             </div>
 
             {/* Informações do usuário */}
-            <div className="text-center md:text-left pt-4 md:pt-0">
-                <h2 className="text-xl md:text-2xl font-extrabold text-[#1E1E1E] tracking-tight">
+            <div className="text-center md:text-left">
+                <h2 className="text-lg md:text-2xl font-extrabold text-[#1E1E1E] tracking-tight">
                     {user.name}
                 </h2>
-                <p className="text-zinc-500 font-medium">{user.email}</p>
+                <p className="text-zinc-500 text-sm md:text-base font-medium">{user.email}</p>
             </div>
         </div>
     );

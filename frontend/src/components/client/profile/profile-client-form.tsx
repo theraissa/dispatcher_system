@@ -2,6 +2,7 @@ import InlineField from "@/components/layout/inline-field-form";
 import InlineFields from "@/components/layout/inline-fields-form";
 import InputForm from "@/components/record/ui/input-form";
 import LabelForm from "@/components/record/ui/label-form";
+import { Separator } from "@/components/ui/separator";
 import TitleTemplate from "@/components/ui/title";
 import { Calendar, CreditCard, Globe, Hash, Lock, Mail, MapPin, Milestone, Navigation, Phone, User } from "lucide-react";
 
@@ -48,7 +49,7 @@ export default function FormProfileClient({ data, handleChange, isEditing }: For
     };
 
     return (
-        <section className="flex-1 bg-white md:p-12 rounded-[32px] border border-zinc-100 shadow-sm">
+        <section className="flex-1 bg-white p-6 md:p-12 rounded-[24px] md:rounded-[32px] border border-zinc-100 shadow-sm">
 
             {/* INFORMAÇÕES PESSOAIS */}
             <TitleTemplate title="Informações Pessoais" />
@@ -88,7 +89,7 @@ export default function FormProfileClient({ data, handleChange, isEditing }: For
                 </InlineField>
             </InlineFields>
 
-            <hr className="border-zinc-100 my-8" />
+            <Separator className="my-8 opacity-100" />
 
             {/* CONTATO E LOGIN */}
             <TitleTemplate title="Contato e Login" />
@@ -154,7 +155,7 @@ export default function FormProfileClient({ data, handleChange, isEditing }: For
                 </InlineFields>
             )}
 
-            <hr className="border-zinc-100 my-8" />
+            <Separator className="my-10 opacity-100" />
 
             {/* ENDEREÇO RESIDENCIAL */}
             <TitleTemplate title="Endereço Residencial" />

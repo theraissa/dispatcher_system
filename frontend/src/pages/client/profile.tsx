@@ -24,7 +24,7 @@ export default function ProfileClient() {
         <div className="min-h-screen bg-[#F3EDE2]">
             <NavbarPage title="Central do Cliente" shortTitle="C" links={clientLinksNavbar} />
 
-            <main className="max-w-5xl mx-auto py-10 px-6">
+            <main className="max-w-4xl mx-auto py-6 md:py-10 px-4 md:px-6">
                 {/* A estrutura principal (Navbar e Main) sempre renderiza.
                    O conteúdo interno é que alterna entre Skeleton e Formulário.
                 */}
@@ -33,7 +33,7 @@ export default function ProfileClient() {
                         <ProfileSkeleton />
                     ) : (
                         <form onSubmit={handleSave}>
-                            <div className="flex flex-col gap-8">
+                            <div className="flex flex-col gap-6 md:gap-8">
                                 <ProfileClientAvatar
                                     user={data.user}
                                     isEditing={isEditing}
