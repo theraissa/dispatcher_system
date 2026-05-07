@@ -12,6 +12,7 @@ type AsideProfileDispatcherProps = {
         office: Record<string, any>;
     };
     onOpenReview: () => void;
+    canReview?: boolean;
 };
 
 /**
@@ -23,17 +24,16 @@ type AsideProfileDispatcherProps = {
  * - Indicação de credenciamento
  * - Área de avaliação do atendimento
  */
-export function AsideProfileDispatcher({ dispatcher, onOpenReview }: AsideProfileDispatcherProps) {
+export function AsideProfileDispatcher({ dispatcher, onOpenReview, canReview = false }: AsideProfileDispatcherProps) {
     return (
-        <aside>
-            <div className="bg-white p-8 rounded-[32px] shadow-sm border border-zinc-100 sticky top-24 border-t-[6px] border-t-[#21314D]">
-
+        <aside className="w-full">
+            <div className="bg-white p-6 md:p-8 rounded-[28px] md:rounded-[32px] shadow-sm border border-zinc-100 lg:sticky lg:top-24 border-t-[6px] border-t-[#21314D]">
                 {/* =========================
                    AVATAR + INDICADOR DE VERIFICAÇÃO
                    ========================= */}
-                <div className="relative w-28 h-28 mx-auto mb-6">
+                <div className="relative w-20 h-20 md:w-28 md:h-28 mx-auto mb-4 md:mb-6">
                     {/* Avatar padrão (fallback visual) */}
-                    <div className="w-full h-full bg-zinc-50 rounded-[24px] flex items-center justify-center text-zinc-300 border border-zinc-100 overflow-hidden">
+                    <div className="w-full h-full bg-zinc-50 rounded-[20px] md:rounded-[24px] flex items-center justify-center text-zinc-300 border border-zinc-100">
                         <User size={48} strokeWidth={1.5} />
                     </div>
 
@@ -47,12 +47,12 @@ export function AsideProfileDispatcher({ dispatcher, onOpenReview }: AsideProfil
                    IDENTIDADE DO PROFISSIONAL
                    ========================= */}
                 <div className="text-center mb-6">
-                    <h2 className="text-xl font-bold tracking-tight">
+                    <h2 className="text-lg md:text-xl font-bold tracking-tight text-[#1E1E1E]">
                         {dispatcher.user.name}
                     </h2>
 
                     {/* Label institucional para reforçar confiança */}
-                    <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mt-1">
+                    <p className="text-[9px] md:text-[10px] font-bold text-zinc-400 uppercase tracking-widest mt-1">
                         Profissional Credenciado
                     </p>
                 </div>
@@ -82,36 +82,40 @@ export function AsideProfileDispatcher({ dispatcher, onOpenReview }: AsideProfil
                     />
                 </div>
 
-                <Separator className="my-8 opacity-100" />
+                {canReview && (
+                    <>
+                        <Separator className="my-6 md:my-8" />
 
-                {/* =========================
-                   SEÇÃO DE AVALIAÇÃO
-                   ========================= */}
-                <div className="space-y-4">
-                    <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest text-center">
-                        Avalie o Atendimento
-                    </p>
+                        {/* =========================
+                            SEÇÃO DE AVALIAÇÃO
+                            ========================= */}
+                        <div className="space-y-4">
+                            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest text-center">
+                                Avalie o Atendimento
+                            </p>
 
-                    {/* Rating visual (interativo no futuro) */}
-                    <div className="flex justify-center gap-1">
-                        {[1, 2, 3, 4, 5].map((s) => (
-                            <Star
-                                key={s}
-                                size={22}
+                            {/* Rating visual (interativo no futuro) */}
+                            <div className="flex justify-center gap-2">
+                                {[1, 2, 3, 4, 5].map((s) => (
+                                    <Star
+                                        key={s}
+                                        size={22}
+                                        onClick={onOpenReview}
+                                        className="text-zinc-200 hover:text-yellow-400 cursor-pointer transition-colors"
+                                    />
+                                ))}
+                            </div>
+
+                            {/* Ação de envio de feedback */}
+                            <Button
                                 onClick={onOpenReview}
-                                className="text-zinc-200 hover:text-yellow-400 cursor-pointer transition-colors"
-                            />
-                        ))}
-                    </div>
-
-                    {/* Ação de envio de feedback */}
-                    <Button
-                        onClick={onOpenReview}
-                        className="cursor-pointer w-full bg-[#21314D] hover:bg-[#1A263D] text-xs font-bold h-11 rounded-xl shadow-md transition-all active:scale-95"
-                    >
-                        Enviar Feedback
-                    </Button>
-                </div>
+                                className="cursor-pointer w-full h-12 bg-[#21314D] hover:bg-[#1A263D] text-xs font-bold h-11 rounded-2xl shadow-md transition-all active:scale-95"
+                            >
+                                Enviar Feedback
+                            </Button>
+                        </div>
+                    </>
+                )}
             </div>
         </aside>
     );
