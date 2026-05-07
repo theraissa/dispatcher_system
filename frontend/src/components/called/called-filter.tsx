@@ -1,7 +1,7 @@
-import { Search as SearchIcon, SlidersHorizontal, Hash } from "lucide-react";
-import { useState } from "react";
 import { cn } from "@/lib/utils";
 import type { TicketFilters } from "@/types/ticket.types";
+import { Hash, Search as SearchIcon, SlidersHorizontal } from "lucide-react";
+import { useState } from "react";
 
 
 /**
@@ -50,47 +50,41 @@ export default function CalledClientFilter({ onSearch }: CalledClientFilterProps
 
     return (
         <div className="w-full max-w-10xl mx-auto mb-8 space-y-3">
-            {/* =========================
-                BARRA PRINCIPAL DE BUSCA
-               ========================= */}
-            <div className="flex items-center gap-2 bg-white p-2 rounded-[24px] shadow-sm border border-zinc-100 transition-all focus-within:border-[#21314D]/30 focus-within:shadow-md">
 
-                {/* Campo de busca textual */}
+            {/* Barra Principal */}
+            <div className="flex items-center gap-2 bg-white p-1.5 sm:p-2 rounded-full shadow-sm border border-zinc-100 transition-all focus-within:border-[#21314D]/30">
+
+                {/* Input: Placeholder menor no mobile para não empurrar os botões */}
                 <div className="relative flex-1 group">
-                    <SearchIcon
-                        className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-[#21314D] transition-colors"
-                        size={20}
-                    />
+                    <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
                     <input
                         type="text"
-                        placeholder="Buscar por serviço, cliente ou profissional..."
-                        className="w-full h-12 pl-12 pr-4 bg-transparent outline-none text-sm font-medium placeholder:text-zinc-400"
+                        placeholder="Buscar serviço..."
+                        className="w-full h-10 sm:h-12 pl-11 pr-2 bg-transparent outline-none text-sm font-medium placeholder:text-zinc-400"
                         value={filters.search}
                         onChange={(e) => handleChange("search", e.target.value)}
                     />
                 </div>
 
-                {/* Botão que exibe/oculta filtros avançados */}
+                {/* Botão Filtros: Texto some no mobile */}
                 <button
                     onClick={() => setShowFilters(!showFilters)}
                     className={cn(
-                        "cursor-pointer flex items-center gap-2 px-4 h-12 rounded-full font-bold text-xs uppercase tracking-widest transition-all",
-                        showFilters
-                            ? "bg-zinc-100 text-[#21314D]"
-                            : "text-zinc-400 hover:bg-zinc-50 hover:text-zinc-600"
+                        "cursor-pointer flex items-center justify-center gap-2 h-10 w-10 sm:w-auto sm:px-4 rounded-full font-bold text-[10px] uppercase tracking-widest transition-all shrink-0",
+                        showFilters ? "bg-zinc-100 text-[#21314D]" : "text-zinc-400 hover:bg-zinc-50"
                     )}
                 >
                     <SlidersHorizontal size={18} />
-                    <span className="hidden sm:inline">Filtros</span>
+                    <span className="hidden md:inline">Filtros</span>
                 </button>
 
-                {/* Botão que dispara a busca */}
+                {/* Botão Buscar: Vira ícone no mobile */}
                 <button
                     onClick={() => onSearch(filters)}
-                    className="cursor-pointer px-8 h-12 bg-[#21314D] text-white rounded-full font-bold text-sm hover:opacity-90 transition-all shadow-lg active:scale-95 flex items-center gap-2"
+                    className="cursor-pointer h-10 w-10 sm:h-12 sm:w-auto sm:px-8 bg-[#21314D] text-white rounded-full font-bold text-sm hover:opacity-90 transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 shrink-0"
                 >
                     <SearchIcon size={18} />
-                    <span>Buscar</span>
+                    <span className="hidden sm:inline">Buscar</span>
                 </button>
             </div>
 
@@ -98,16 +92,14 @@ export default function CalledClientFilter({ onSearch }: CalledClientFilterProps
                 FILTROS AVANÇADOS
                ========================= */}
             <div className={cn(
-                "grid grid-cols-1 sm:grid-cols-3 gap-3 overflow-hidden transition-all duration-300 ease-in-out",
-                showFilters ? "max-h-[200px] opacity-100 mt-4" : "max-h-0 opacity-0 pointer-events-none"
+                "grid grid-cols-1 sm:grid-cols-2 gap-3 overflow-hidden transition-all",
+                showFilters ? "max-h-[300px] opacity-100 mt-4" : "max-h-0 opacity-0 pointer-events-none"
             )}>
-
-                {/* Filtro por ID */}
                 <div className="relative group">
                     <input
                         type="text"
                         placeholder="ID do Chamado"
-                        className="w-full h-11 pl-8 bg-white border border-zinc-200 rounded-xl text-sm font-bold focus:border-[#21314D] outline-none transition-all"
+                        className="w-full h-11 pl-4 pr-10 bg-white border border-zinc-200 rounded-2xl text-sm font-bold focus:border-[#21314D] outline-none"
                         value={filters.id}
                         onChange={(e) => handleChange("id", e.target.value)}
                     />
@@ -118,7 +110,7 @@ export default function CalledClientFilter({ onSearch }: CalledClientFilterProps
                 <div className="relative group">
                     <input
                         type="date"
-                        className="cursor-text w-full h-11 pl-8 pr-4 bg-white border border-zinc-200 rounded-xl text-sm focus:border-[#21314D] outline-none transition-all"
+                        className="w-full h-11 px-4 bg-white border border-zinc-200 rounded-2xl text-sm focus:border-[#21314D] outline-none"
                         value={filters.date}
                         onChange={(e) => handleChange("date", e.target.value)}
                     />

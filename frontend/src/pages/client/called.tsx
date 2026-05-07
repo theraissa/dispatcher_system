@@ -69,14 +69,13 @@ export default function CalledClient() {
                 links={clientLinksNavbar}
             />
 
-            <main className="max-w-6xl mx-auto py-10 px-6">
-
+            <main className="max-w-6xl mx-auto py-8 md:py-10 px-4 md:px-6">
                 {/* Cabeçalho da página */}
-                <header className="mb-10 text-center lg:text-left">
-                    <h1 className="text-3xl font-extrabold text-[#1E1E1E] tracking-tight">
+                <header className="mb-8 md:mb-10 text-center sm:text-left">
+                    <h1 className="text-2xl md:text-3xl font-extrabold text-[#1E1E1E] tracking-tight">
                         Seus <span className="text-[#21314D]">Chamados</span>
                     </h1>
-                    <p className="text-zinc-500 text-sm font-medium mt-1">
+                    <p className="text-zinc-500 text-xs md:text-sm font-medium mt-1">
                         Acompanhe em tempo real o status das suas solicitações.
                     </p>
                 </header>
@@ -85,7 +84,7 @@ export default function CalledClient() {
                 <CalledClientFilter onSearch={handleSearch} />
 
                 {/* Lista de chamados já filtrados */}
-                <div className="mt-8 transition-opacity duration-300">
+                <div className="mt-6 md:mt-8 transition-opacity duration-300">
                     {loading ? (
                         <CalledSkeleton />
                     ) : (
@@ -106,26 +105,26 @@ function CalledSkeleton() {
             {[1, 2, 3].map((n) => (
                 <div
                     key={n}
-                    className="flex flex-col lg:flex-row items-center justify-between p-5 rounded-[24px] border border-zinc-100 bg-white/50 animate-pulse"
+                    className="flex items-center justify-between p-4 md:p-5 rounded-[24px] border border-zinc-100 bg-white/50 animate-pulse"
                 >
-                    <div className="flex items-center gap-4 w-full lg:w-auto">
-                        {/* ID box skeleton */}
-                        <div className="w-12 h-12 bg-zinc-200 rounded-2xl shrink-0" />
+                    <div className="flex items-center gap-3 md:gap-4 w-full">
+                        {/* ID box */}
+                        <div className="w-10 h-10 md:w-12 md:h-12 bg-zinc-200 rounded-xl md:rounded-2xl shrink-0" />
 
-                        {/* Text skeleton */}
-                        <div className="space-y-2 w-full">
-                            <div className="h-4 bg-zinc-200 rounded-md w-48" />
-                            <div className="h-3 bg-zinc-200 rounded-md w-32" />
+                        {/* Textos */}
+                        <div className="space-y-2 w-full max-w-[150px] md:max-w-xs">
+                            <div className="h-4 bg-zinc-200 rounded-md w-full" />
+                            <div className="h-3 bg-zinc-200 rounded-md w-2/3" />
                         </div>
                     </div>
 
-                    {/* Right side skeleton */}
-                    <div className="hidden lg:flex items-center gap-8">
+                    {/* Lado direito (Status/Data) - Escondido em telas muito pequenas se necessário */}
+                    <div className="hidden sm:flex items-center gap-4 md:gap-8 shrink-0">
                         <div className="space-y-2">
-                            <div className="h-3 bg-zinc-100 rounded-md w-20 ml-auto" />
-                            <div className="h-4 bg-zinc-200 rounded-md w-28" />
+                            <div className="h-3 bg-zinc-100 rounded-md w-16 ml-auto" />
+                            <div className="h-4 bg-zinc-200 rounded-md w-24" />
                         </div>
-                        <div className="w-24 h-8 bg-zinc-200 rounded-full" />
+                        <div className="w-20 md:w-24 h-8 bg-zinc-200 rounded-full" />
                     </div>
                 </div>
             ))}

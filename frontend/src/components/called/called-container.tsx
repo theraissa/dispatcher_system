@@ -1,9 +1,9 @@
-import { Clock, PlayCircle, CheckCircle2, AlertCircle, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Link } from "react-router-dom";
 import type { ListTicketResponse } from "@/types/ticket.types";
 import { formatDate } from "@/utils/formatters";
+import { AlertCircle, CheckCircle2, Clock, PlayCircle, XCircle } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 /**
  * Props do componente responsável por listar os chamados do cliente.
@@ -42,13 +42,13 @@ export default function CalledContainer({ tickets, detailsRoute }: CalledContain
         <div className="bg-white p-4 md:p-8 rounded-[40px] border border-zinc-100 shadow-sm min-h-[400px] relative border-t-[6px] border-t-[#21314D]">
 
             {/* --- CABEÇALHO DAS ABAS --- */}
-            <div className="flex gap-2 mb-8 bg-zinc-100/50 p-1.5 rounded-[20px] w-fit">
+            <div className="flex gap-2 mb-8 bg-zinc-100/50 p-1.5 rounded-[20px] w-full md:w-fit">
                 {(["em andamento", "finalizados"] as TabType[]).map((tab) => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
                         className={cn(
-                            "cursor-pointer px-6 py-2.5 rounded-[16px] text-xs font-black uppercase tracking-widest transition-all duration-300",
+                            "flex-1 md:flex-none cursor-pointer px-4 md:px-6 py-2.5 rounded-[16px] text-[10px] md:text-xs font-black uppercase tracking-widest transition-all duration-300",
                             activeTab === tab
                                 ? "bg-[#21314D] text-white shadow-md scale-105"
                                 : "text-zinc-400 hover:text-zinc-600 hover:bg-zinc-200/50"
@@ -76,20 +76,19 @@ export default function CalledContainer({ tickets, detailsRoute }: CalledContain
                             )}
                         >
                             {/* ESQUERDA: IDENTIFICAÇÃO E SERVIÇO */}
-                            <div className="flex flex-col md:flex-row md:items-center gap-5">
-                                <div className="w-14 h-14 bg-white rounded-2xl flex flex-col items-center justify-center text-[#21314D] shadow-sm border border-zinc-100 group-hover:border-[#21314D]/20 transition-colors">
-                                    <span className="text-[10px] font-black opacity-40 uppercase">ID</span>
-                                    <span className="font-black text-sm">#{ticket.id}</span>
+                            <div className="flex flex-row items-center gap-4 md:gap-5">
+                                {/* ID Box: Tamanho fixo maior no desktop, reduz levemente no mobile */}
+                                <div className="w-12 h-12 md:w-14 md:h-14 bg-white rounded-2xl flex flex-col items-center justify-center text-[#21314D] shadow-sm border border-zinc-100 shrink-0">
+                                    <span className="text-[8px] md:text-[10px] font-black opacity-40 uppercase leading-none mb-0.5">ID</span>
+                                    <span className="font-black text-xs md:text-sm">#{ticket.id}</span>
                                 </div>
 
                                 <div>
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <h4 className="text-sm font-black text-[#1E1E1E] uppercase tracking-tight">
-                                            {ticket.name_service}
-                                        </h4>
-                                    </div>
-                                    <div className="flex items-center gap-3 text-xs text-zinc-400 font-bold uppercase tracking-wider">
-                                        <span className="flex items-center gap-1.5 bg-white px-2 py-1 rounded-md border border-zinc-100">
+                                    <h4 className="text-xs md:text-sm font-black text-[#1E1E1E] uppercase tracking-tight mb-1">
+                                        {ticket.name_service}
+                                    </h4>
+                                    <div className="flex items-center gap-2">
+                                        <span className="flex items-center gap-1.5 bg-white px-2 py-1 rounded-md border border-zinc-100 text-[10px] md:text-xs text-zinc-400 font-bold uppercase tracking-wider">
                                             <Clock size={12} className="text-[#21314D]" />
                                             {formatDate(ticket.created_at)}
                                         </span>
@@ -98,12 +97,12 @@ export default function CalledContainer({ tickets, detailsRoute }: CalledContain
                             </div>
 
                             {/* DIREITA: INFO E STATUS */}
-                            <div className="flex items-center justify-between lg:justify-end gap-10 mt-5 lg:mt-0 pt-5 lg:pt-0 border-t lg:border-t-0 border-zinc-100">
-                                <div className="text-right hidden sm:block">
-                                    <p className="text-[9px] text-zinc-400 font-black uppercase tracking-[0.2em] mb-1">
+                            <div className="flex items-center justify-between lg:justify-end gap-6 md:gap-10 mt-5 lg:mt-0 pt-5 lg:pt-0 border-t lg:border-t-0 border-zinc-100">
+                                <div className="text-left lg:text-right">
+                                    <p className="text-[8px] md:text-[9px] text-zinc-400 font-black uppercase tracking-[0.2em] mb-1">
                                         {relatedLabel}
                                     </p>
-                                    <p className="text-sm font-extrabold text-[#21314D] group-hover:text-black transition-colors">
+                                    <p className="text-xs md:text-sm font-extrabold text-[#21314D] group-hover:text-black transition-colors">
                                         {relatedName}
                                     </p>
                                 </div>
@@ -111,11 +110,11 @@ export default function CalledContainer({ tickets, detailsRoute }: CalledContain
                                 <div className="flex items-center gap-3">
                                     <div
                                         className={cn(
-                                            "flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all",
+                                            "flex items-center gap-2 px-3 md:px-4 py-2 rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest border transition-all",
                                             theme.badge
                                         )}
                                     >
-                                        {theme.icon}
+                                        <span className="shrink-0">{theme.icon}</span>
                                         {ticket.status}
                                     </div>
                                 </div>
