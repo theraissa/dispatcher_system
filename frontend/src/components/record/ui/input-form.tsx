@@ -40,7 +40,7 @@ export default function InputForm({
                 maxLength={50}
                 required
                 className={cn(
-                    "w-full h-11 text-base transition-all border outline-none rounded-xl",
+                    "w-full h-11 text-sm md:text-base transition-all border outline-none rounded-xl",
                     "border-zinc-200 bg-white placeholder:text-zinc-300",
                     "focus:border-[#21314D] focus:ring-1 focus:ring-[#21314D]/20",
                     // Ajuste de cursor e cor para campos bloqueados

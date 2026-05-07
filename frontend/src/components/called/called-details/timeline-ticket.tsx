@@ -1,6 +1,7 @@
 import { useTicketTimeline } from "@/hooks/use-ticket-timeline";
+import { cn } from "@/lib/utils"; // Utilizando a utilitária de classes para manter o código limpo
 import { formatDate } from "@/utils/formatters";
-import { AlertCircle, CheckCircle2, Clock, Info, PlayCircle, XCircle } from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock, PlayCircle, XCircle } from "lucide-react";
 import { useState } from "react";
 import { TimelineModal } from "../modal/timeline-modal";
 
@@ -37,14 +38,14 @@ export function TimelineTicket({ ticketId, isDispatcher }: { ticketId: number, i
     }
 
     return (
-        <section className="bg-white rounded-[32px] shadow-md border border-zinc-100 mb-8 overflow-hidden border-t-[6px] border-t-[#21314D]">
-            <div className="p-6 bg-zinc-50/50 m-2 rounded-[24px]">
+        <section className="bg-white rounded-[24px] md:rounded-[32px] shadow-md border border-zinc-100 mb-8 overflow-hidden border-t-[6px] border-t-[#21314D]">
+            <div className="p-4 md:p-6 bg-zinc-50/50 m-2 rounded-[20px] md:rounded-[24px]">
 
                 {isDispatcher && (
-                    <div className="flex justify-end">
+                    <div className="flex justify-end mb-4">
                         <button
                             onClick={() => setOpenModal(true)}
-                            className="cursor-pointer px-6 py-2 bg-[#21314D] text-white text-xs font-bold rounded-lg shadow-sm hover:opacity-90"
+                            className="cursor-pointer px-5 py-2 md:px-6 md:py-2 bg-[#21314D] text-white text-[10px] md:text-xs font-bold rounded-lg shadow-sm hover:opacity-90 transition-opacity"
                         >
                             Atualizar Status
                         </button>
@@ -61,47 +62,60 @@ export function TimelineTicket({ ticketId, isDispatcher }: { ticketId: number, i
                 {/* =========================
                     TRACKER (LINHA DO TEMPO)
                     ========================= */}
-                <div className="relative mb-16 mt-4 px-8 flex justify-center">
-                    <div className="relative w-fit">
+                <div className="relative mb-4 mt-4 px-4">
+                    {/* 
+                        Ajuste para Scroll para a Direita:
+                        O container agora possui 'overflow-x-auto' e 'flex-nowrap' 
+                        para garantir que a esteira siga horizontalmente.
+                    */}
+                    <div className="overflow-x-auto pb-8 scrollbar-thin scrollbar-thumb-zinc-200 scrollbar-track-transparent">
+                        <div className="relative flex items-center min-w-max px-10 py-4">
 
-                        {/* Linha de fundo  */}
-                        {data.length > 1 && (
-                            <div
-                                className="absolute top-[28px] left-[28px] right-[28px] h-[2px] bg-zinc-200 transition-all duration-500"
-                                style={{ zIndex: 0 }}
-                            />
-                        )}
+                            {/* Linha de fundo (conectora) */}
+                            {/* Linha de fundo (conectora) */}
+                            {data.length > 1 && (
+                                <div
+                                    className="absolute top-[42px] left-[50px] md:left-[60px] right-[50px] h-[3px] md:h-[2px] bg-zinc-200 md:w-[calc(100%-400px)]"
+                                    style={{ zIndex: 0 }}
+                                />
+                            )}
 
-                        {/* Container dos Itens */}
-                        <div className="relative flex items-center gap-50">
-                            {data.map((item) => {
-                                const { icon, styles, labelColor } = iconStatus(item.status);
-                                const isSelected = selectedItem?.id === item.id;
 
-                                return (
-                                    <div key={item.id} className="flex flex-col items-center relative z-10">
-                                        {/* Ícone com fundo branco para cobrir a linha */}
-                                        <div
-                                            onClick={() => setSelectedItem(item)}
-                                            className={`cursor-pointer w-14 h-14 rounded-2xl flex items-center justify-center border-4 transition-all duration-300 shadow-sm hover:scale-110 bg-white ${styles} ${isSelected ? 'ring-4 ring-zinc-100' : ''}`}
-                                        >
-                                            <div className="bg-inherit w-full h-full rounded-xl flex items-center justify-center">
-                                                {icon}
+                            {/* Container dos Itens em linha contínua */}
+                            <div className="relative flex items-center gap-24 md:gap-40">
+                                {data.map((item) => {
+                                    const { icon, styles, labelColor } = iconStatus(item.status);
+                                    const isSelected = selectedItem?.id === item.id;
+
+                                    return (
+                                        <div key={item.id} className="flex flex-col items-center relative z-11 shrink-0">
+                                            {/* Ícone com fundo branco para cobrir a linha */}
+                                            <div
+                                                onClick={() => setSelectedItem(item)}
+                                                className={cn(
+                                                    "cursor-pointer w-14 h-14 md:w-15 md:h-15 rounded-xl md:rounded-2xl flex items-center justify-center border-4 transition-all duration-300 shadow-sm hover:scale-110 bg-white",
+                                                    styles,
+                                                    isSelected ? 'ring-4 ring-zinc-100 scale-110' : ''
+                                                )}
+                                            >
+                                                <div className="bg-inherit w-full h-full rounded-lg md:rounded-xl flex items-center justify-center">
+                                                    {icon}
+                                                </div>
+                                            </div>
+
+                                            {/* Labels absolutos fixados abaixo do ícone */}
+                                            <div className="absolute top-14 md:top-16 flex flex-col items-center w-32 text-center">
+                                                <p className={cn("text-xs md:text-sm font-black uppercase whitespace-nowrap", labelColor)}>
+                                                    {item.status}
+                                                </p>
+                                                <p className="text-xs md:text-sm font-bold text-zinc-400 whitespace-nowrap">
+                                                    {formatDate(item.created_at)}
+                                                </p>
                                             </div>
                                         </div>
-
-                                        {/* Labels absolutos */}
-                                        <div className="absolute top-16 flex flex-col items-center w-32">
-                                            <p className={`text-xs md:text-sm font-black uppercase whitespace-nowrap ${labelColor}`}>
-                                                {item.status}
-                                            </p>
-                                            <p className="text-xs md:text-sm font-bold text-zinc-400 whitespace-nowrap">
-                                                {formatDate(item.created_at)}
-                                            </p>
-                                        </div>
-                                    </div>
-                                );
-                            })}
+                                    );
+                                })}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -110,26 +124,22 @@ export function TimelineTicket({ ticketId, isDispatcher }: { ticketId: number, i
                    CARD DE DESCRIÇÃO
                    ========================= */}
                 {selectedItem && (
-                    <div className="bg-white p-2 rounded-[20px] border border-zinc-100 shadow-sm relative overflow-hidden group">
+                    <div className="bg-white p-3 md:p-4 rounded-[20px] border border-zinc-100 shadow-sm relative overflow-hidden animate-in fade-in slide-in-from-top-1">
                         <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#21314D]" />
 
-                        <div className="flex items-start gap-2 pl-2">
-                            <div className="w-12 h-12 rounded-2xl bg-zinc-50 flex items-center justify-center text-[#21314D] shrink-0 border border-zinc-100">
-                                <Info size={20} strokeWidth={2.5} />
-                            </div>
-
-                            <div className="flex-1 pl-1">
-                                <div className="flex items-center gap-2 mt-1 mb-1">
-                                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                        <div className="flex items-start gap-3 pl-2">
+                            <div className="flex-1">
+                                <div className="flex items-center gap-2 mt-0.5 mb-1">
+                                    <span className="text-[10px] md:text-sm font-bold text-gray-400 uppercase tracking-wider">
                                         Descrição do status
                                     </span>
                                     <span className="w-1 h-1 rounded-full bg-gray-300" />
-                                    <span className="text-xs font-semibold text-gray-500 uppercase">
+                                    <span className="text-[10px] md:text-sm font-semibold text-gray-500 uppercase">
                                         {selectedItem.status}
                                     </span>
                                 </div>
 
-                                <p className="text-sm md:text-base font-medium text-gray-700">
+                                <p className="text-xs md:text-base font-medium text-gray-700 leading-relaxed">
                                     {selectedItem.description}
                                 </p>
                             </div>

@@ -43,7 +43,7 @@ export function InfoServiceAndUser({ ticket }: InfoServiceAndUserProps) {
     }
 
     return (
-        <section className="bg-white rounded-[24px] md:rounded-[32px] shadow-sm border border-zinc-100 overflow-hidden">
+        <section className="bg-white rounded-[24px] md:rounded-[32px] shadow-sm border opacity-100 overflow-hidden">
 
             {/* Cabeçalho Interno da Ficha */}
             <div className="bg-[#21314D] p-4 md:p-6 text-white flex justify-between items-center">
@@ -60,7 +60,7 @@ export function InfoServiceAndUser({ ticket }: InfoServiceAndUserProps) {
 
                     {/* Coluna: Detalhes do Serviço */}
                     <div className="space-y-6">
-                        <h4 className="text-xs md:text-sm font-black text-[#21314D] uppercase tracking-[0.2em] border-b pb-2 border-zinc-100">
+                        <h4 className="text-xs md:text-sm font-black text-[#21314D] uppercase tracking-[0.2em] border-b pb-2 opacity-100">
                             Dados do Chamado
                         </h4>
                         <div className="grid grid-cols-2 gap-4">
@@ -73,7 +73,7 @@ export function InfoServiceAndUser({ ticket }: InfoServiceAndUserProps) {
 
                     {/* Coluna: Dados do Solicitante */}
                     <div className="space-y-6">
-                        <h4 className="text-xs md:text-sm font-black text-[#21314D] uppercase tracking-[0.2em] border-b pb-2 border-zinc-100">
+                        <h4 className="text-xs md:text-sm font-black text-[#21314D] uppercase tracking-[0.2em] border-b pb-2 opacity-100">
                             Dados do Solicitante
                         </h4>
                         <div className="grid grid-cols-1 gap-y-4">
@@ -98,8 +98,9 @@ export function InfoServiceAndUser({ ticket }: InfoServiceAndUserProps) {
                     </p>
                 </div>
 
+
                 {/* BOTÃO DE CANCELAR */}
-                <div className="flex justify-end pt-4 border-t border-zinc-50">
+                <div className="flex justify-end pt-4 border-t opacity-100">
                     {ticket.status.toLowerCase() !== "cancelado" && (
                         <button
                             onClick={handleCancel}
