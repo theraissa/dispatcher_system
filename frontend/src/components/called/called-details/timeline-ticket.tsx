@@ -1,6 +1,6 @@
 import { useTicketTimeline } from "@/hooks/use-ticket-timeline";
 import { formatDate } from "@/utils/formatters";
-import { CheckCircle2, Clock, PlayCircle, AlertCircle, Info, XCircle } from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock, Info, PlayCircle, XCircle } from "lucide-react";
 import { useState } from "react";
 import { TimelineModal } from "../modal/timeline-modal";
 
@@ -92,10 +92,10 @@ export function TimelineTicket({ ticketId, isDispatcher }: { ticketId: number, i
 
                                         {/* Labels absolutos */}
                                         <div className="absolute top-16 flex flex-col items-center w-32">
-                                            <p className={`text-[12px] font-black uppercase whitespace-nowrap ${labelColor}`}>
+                                            <p className={`text-xs md:text-sm font-black uppercase whitespace-nowrap ${labelColor}`}>
                                                 {item.status}
                                             </p>
-                                            <p className="text-[11px] font-bold text-zinc-400 whitespace-nowrap">
+                                            <p className="text-xs md:text-sm font-bold text-zinc-400 whitespace-nowrap">
                                                 {formatDate(item.created_at)}
                                             </p>
                                         </div>
@@ -120,16 +120,16 @@ export function TimelineTicket({ ticketId, isDispatcher }: { ticketId: number, i
 
                             <div className="flex-1 pl-1">
                                 <div className="flex items-center gap-2 mt-1 mb-1">
-                                    <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
                                         Descrição do status
                                     </span>
                                     <span className="w-1 h-1 rounded-full bg-gray-300" />
-                                    <span className="text-[11px] font-semibold text-gray-500 uppercase">
+                                    <span className="text-xs font-semibold text-gray-500 uppercase">
                                         {selectedItem.status}
                                     </span>
                                 </div>
 
-                                <p className="text-[15px] font-medium text-gray-700">
+                                <p className="text-sm md:text-base font-medium text-gray-700">
                                     {selectedItem.description}
                                 </p>
                             </div>

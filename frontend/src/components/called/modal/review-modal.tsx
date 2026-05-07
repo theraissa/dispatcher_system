@@ -1,10 +1,12 @@
-import { useState } from "react";
-import { Star, MessageSquare } from "lucide-react";
-import { toast } from "sonner";
 import {
-    Dialog, DialogContent, DialogHeader,
-    DialogTitle, DialogDescription, DialogFooter
+    Dialog, DialogContent,
+    DialogDescription, DialogFooter,
+    DialogHeader,
+    DialogTitle
 } from "@/components/ui/dialog";
+import { MessageSquare, Star } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 
 /**

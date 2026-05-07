@@ -52,7 +52,7 @@ export function AsideProfileDispatcher({ dispatcher, onOpenReview, canReview = f
                     </h2>
 
                     {/* Label institucional para reforçar confiança */}
-                    <p className="text-[9px] md:text-[10px] font-bold text-zinc-400 uppercase tracking-widest mt-1">
+                    <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest mt-1">
                         Profissional Credenciado
                     </p>
                 </div>
@@ -63,20 +63,20 @@ export function AsideProfileDispatcher({ dispatcher, onOpenReview, canReview = f
                 <div className="space-y-1">
 
                     <InfoDispatcherRow
-                        icon={<MapPin size={18} strokeWidth={2} />}
+                        icon={<MapPin size={24} strokeWidth={2} />}
                         label="Localização"
                         value={`${dispatcher.office.address}, ${dispatcher.office.number}`}
                         subValue={`${dispatcher.office.neighborhood} - ${dispatcher.office.city}, ${dispatcher.office.state}`}
                     />
 
                     <InfoDispatcherRow
-                        icon={<Phone size={18} strokeWidth={2} />}
+                        icon={<Phone size={24} strokeWidth={2} />}
                         label="Contato Direto"
                         value={dispatcher.office.contact}
                     />
 
                     <InfoDispatcherRow
-                        icon={<Mail size={18} strokeWidth={2} />}
+                        icon={<Mail size={24} strokeWidth={2} />}
                         label="E-mail"
                         value={dispatcher.user.email}
                     />
@@ -144,7 +144,7 @@ function InfoDispatcherRow({ icon, label, value, subValue }: InfoDispatcherRowPr
         <div className="flex items-center gap-4 p-3 rounded-2xl hover:bg-zinc-50 transition-all duration-200 group border border-transparent hover:border-zinc-100">
 
             {/* CONTAINER DO ÍCONE: âncora visual */}
-            <div className="flex-shrink-0 w-10 h-10 bg-zinc-50 rounded-xl flex items-center justify-center text-[#21314D]/70 group-hover:bg-white group-hover:text-[#21314D] group-hover:shadow-sm transition-all">
+            <div className="flex-shrink-0 w-14 h-14 bg-zinc-50 rounded-xl flex items-center justify-center text-[#21314D]/70 group-hover:bg-white group-hover:text-[#21314D] group-hover:shadow-sm transition-all">
                 {icon}
             </div>
 
@@ -152,18 +152,18 @@ function InfoDispatcherRow({ icon, label, value, subValue }: InfoDispatcherRowPr
             <div className="flex flex-col">
 
                 {/* Label */}
-                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.12em] leading-none mb-1">
+                <span className="text-[11px] md:text-xs font-bold text-zinc-400 uppercase tracking-[0.12em] leading-none mb-1">
                     {label}
                 </span>
 
                 {/* Valor principal */}
-                <span className="text-sm font-bold text-[#1E1E1E] leading-tight">
+                <span className="text-sm md:text-[15px] font-bold text-[#1E1E1E] leading-tight">
                     {value}
                 </span>
 
                 {/* Valor secundário opcional */}
                 {subValue && (
-                    <span className="text-[11px] font-medium text-zinc-500 mt-0.5">
+                    <span className="text-sm font-medium text-zinc-500 mt-0.5">
                         {subValue}
                     </span>
                 )}

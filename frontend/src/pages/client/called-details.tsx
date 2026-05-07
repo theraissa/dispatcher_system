@@ -123,22 +123,22 @@ export default function TicketDetails() {
                 links={clientLinksNavbar}
             />
 
-            <main className="max-w-6xl mx-auto py-10 px-6">
+            <main className="max-w-6xl mx-auto py-6 md:py-10 px-4 md:px-6">
 
                 {/* =========================
                    HEADER DO CHAMADO
                    ========================= */}
-                <header className="mb-12">
+                <header className="mb-8 md:mb-12">
                     <div className="flex justify-between items-start">
                         <div>
-                            <h1 className="text-3xl md:text-4xl font-extrabold text-[#1E1E1E] tracking-tight">
+                            <h1 className="text-2xl md:text-4xl font-extrabold text-[#1E1E1E] tracking-tight">
                                 Detalhes do{" "}
                                 <span className="text-[#21314D]">
                                     Chamado #{selectedTicket.id}
                                 </span>
                             </h1>
 
-                            <p className="text-zinc-500 text-sm md:text-base font-medium mt-2 max-w-2xl">
+                            <p className="text-zinc-500 text-base md:text-lg font-medium mt-2 max-w-2xl">
                                 Acompanhe o progresso do serviço de{" "}
                                 <span className="font-bold text-[#1E1E1E]">
                                     {selectedTicket.service_details.name}
@@ -151,11 +151,10 @@ export default function TicketDetails() {
                 {/* =========================
                    LAYOUT PRINCIPAL (GRID)
                    ========================= */}
-                <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 md:gap-8">
 
                     {/* COLUNA PRINCIPAL */}
-                    <div className="space-y-8">
-
+                    <div className="space-y-6 md:space-y-8">
                         {/* Informações do serviço + cliente */}
                         <InfoServiceAndUser ticket={selectedTicket} />
 
@@ -173,7 +172,7 @@ export default function TicketDetails() {
                     {/* =========================
                        SIDEBAR (COLUNA DIREITA)
                        ========================= */}
-                    <aside className="space-y-8 sticky top-10 self-start h-fit">
+                    <aside className="space-y-6 md:space-y-8 lg:sticky lg:top-10 self-start h-fit">
 
                         {/* Perfil do despachante */}
                         <AsideProfileDispatcher

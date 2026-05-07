@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { Send, User } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
-import type { TicketUserResponse } from "@/types/ticket.types";
 import { useTicketChat } from "@/hooks/use-ticket-chat";
+import type { TicketUserResponse } from "@/types/ticket.types";
 import { formatDate } from "@/utils/formatters";
+import { Send, User } from "lucide-react";
+import { useState } from "react";
 
 
 /**
@@ -60,22 +60,22 @@ export function TicketChat({ userId, ticket }: TicketChatProps) {
     }
 
     return (
-        <section className="bg-white rounded-[32px] shadow-sm border border-zinc-100 overflow-hidden flex flex-col h-[550px] border-t-[6px] border-t-[#21314D]">
+        <section className="bg-white rounded-[24px] md:rounded-[32px] shadow-sm border border-zinc-100 overflow-hidden flex flex-col h-[500px] md:h-[600px] border-t-[6px] border-t-[#21314D]">
 
             {/* =========================
                HEADER DO CHAT
                ========================= */}
-            <div className="p-5 border-b border-zinc-50 bg-zinc-50/50 flex items-center justify-between">
+            <div className="p-4 md:p-5 border-b bg-zinc-50/50 flex items-center gap-3">
                 <div className="flex items-center gap-3">
 
                     {/* Avatar placeholder */}
-                    <div className="w-10 h-10 bg-[#F3EDE2] rounded-full flex items-center justify-center border border-zinc-200">
+                    <div className="w-8 h-8 md:w-10 md:h-10 bg-[#F3EDE2] rounded-full flex items-center justify-center shrink-0">
                         <User size={20} className="text-[#21314D]" />
                     </div>
 
                     {/* Nome do outro participante (despachante) */}
                     <div>
-                        <h3 className="text-sm font-bold text-[#1E1E1E] leading-tight">
+                        <h3 className="text-sm md:text-base font-bold truncate">
                             {ticket.dispatcher.name}
                         </h3>
                     </div>
@@ -85,7 +85,7 @@ export function TicketChat({ userId, ticket }: TicketChatProps) {
             {/* =========================
                LISTA DE MENSAGENS
                ========================= */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-[#FAFAFA] bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px]">
+            <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 md:space-y-6 bg-[#FAFAFA] bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px]">
                 {messages.map((msg) => {
 
                     // Verifica se a mensagem foi enviada pelo usuário atual
@@ -100,7 +100,7 @@ export function TicketChat({ userId, ticket }: TicketChatProps) {
 
                                 {/* BALÃO DA MENSAGEM */}
                                 <div
-                                    className={`relative p-4 text-sm font-medium shadow-sm
+                                    className={`relative p-4 text-sm md:text-base font-medium shadow-sm
                                         ${isMe
                                             ? 'bg-[#21314D] text-white rounded-2xl rounded-tr-none'
                                             : 'bg-white text-zinc-700 border border-zinc-100 rounded-2xl rounded-tl-none'
@@ -119,7 +119,7 @@ export function TicketChat({ userId, ticket }: TicketChatProps) {
                                 </div>
 
                                 {/* Timestamp da mensagem */}
-                                <span className="text-[10px] text-zinc-400 mt-1 font-bold">
+                                <span className="text-xs md:text-sm text-zinc-400 mt-1 font-bold">
                                     {formatDate(msg.created_at)}
                                 </span>
                             </div>
@@ -131,16 +131,16 @@ export function TicketChat({ userId, ticket }: TicketChatProps) {
             {/* =========================
                INPUT DE ENVIO
                ========================= */}
-            <div className="p-6 bg-white/80 backdrop-blur-md border-t border-zinc-50">
+            <div className="p-4 md:p-6 bg-white border-t">
                 <form
                     onSubmit={onSubmit}
-                    className="flex gap-3 items-center bg-zinc-50 p-2 rounded-2xl border border-zinc-100 focus-within:border-[#21314D]/30 focus-within:bg-white transition-all"
+                    className="flex gap-2 items-center bg-zinc-50 p-1.5 rounded-xl border border-zinc-100 focus-within:border-[#21314D]/30 focus-within:bg-white transition-all"
                 >
                     <Input
                         placeholder="Escreva uma mensagem..."
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
-                        className="border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 h-10 font-medium"
+                        className="text-sm md:text-base h-9 md:h-11 border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 font-medium"
                     />
 
                     <Button
