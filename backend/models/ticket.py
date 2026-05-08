@@ -76,6 +76,7 @@ class TicketUserResponse(BaseModel):
     dispatcher: DispatcherInfo
     service_details: ServiceDetailsInfo
     created_at: datetime
+    deleted_at: Optional[datetime] = None
 
 
 class ListTicketUser(BaseModel):
@@ -86,8 +87,8 @@ class ListTicketUser(BaseModel):
     name_service: str
     name_dispatcher: Optional[str] = None
     name_client: Optional[str] = None
-
     created_at: datetime
+    deleted_at: Optional[datetime] = None
 
 
 class ListTicketUserResponse(RootModel):

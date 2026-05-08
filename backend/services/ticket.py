@@ -73,6 +73,7 @@ class TicketService:
             id=ticket.id,
             status=ticket.status,
             created_at=ticket.created_at,
+            deleted_at=ticket.deleted_at,
             user=UserInfo(
                 name=ticket.user.name,
                 email=ticket.user.email,
@@ -152,6 +153,7 @@ class TicketService:
                 id=ticket.id,
                 status=ticket.status,
                 created_at=ticket.created_at,
+                deleted_at=ticket.deleted_at,
                 name_service=ticket.service_details.service.name,
                 name_dispatcher=(ticket.dispatcher.user.name if not is_dispatcher else None),
                 name_client=(ticket.user.name if is_dispatcher else None),

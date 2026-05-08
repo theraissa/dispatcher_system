@@ -133,6 +133,9 @@ class TicketReviewService:
         if not ticket:
             abort(404, description=f"Chamado com ID '{ticket_id}' não encontrado.")
 
+        if ticket.status == TicketTimeline.ENCERRADO:
+            abort(400, description="O chamado não pode ser avaliado porque não foi devidamente finalizado.")
+
         if ticket.status != TicketTimeline.FINALIZADO:
             abort(400, description="O chamado precisa estar finalizado para ser avaliado.")
 
