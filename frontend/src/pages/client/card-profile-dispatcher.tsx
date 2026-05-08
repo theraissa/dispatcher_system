@@ -3,6 +3,7 @@ import { AsideProfileDispatcher } from "@/components/client/card-profile-dispatc
 import NavbarPage from "@/components/record/ui/navbar-page";
 import { useAuthRequired } from "@/hooks/auth/auth-requirered";
 import { useDispatcherProfile } from "@/hooks/use-dispatcher-profile";
+import { useDispatcherReviews } from "@/hooks/use-dispatcher-reviews";
 import { clientLinksNavbar } from "@/routes/frontend-routes";
 import { useParams } from "react-router-dom";
 
@@ -23,6 +24,7 @@ export default function CardProfileDispatcher() {
 
     const { user } = useAuthRequired();
     const { data, loading } = useDispatcherProfile(user.id, dispatcherId!);
+    const { reviews, summary } = useDispatcherReviews(dispatcherId);
 
     if (loading) {
         return <p className="text-center mt-10">Carregando perfil...</p>;
@@ -56,9 +58,9 @@ export default function CardProfileDispatcher() {
                     {/* ASIDE: Informações do despachante */}
                     <AsideProfileDispatcher
                         dispatcher={data}
-                        onOpenReview={() => {
-                            console.log("Abrir modal de avaliação");
-                        }}
+                        rating={summary?.average_rating} // Passando a média
+                        totalReviews={reviews?.length}   // Passando total
+                        onOpenReview={() => console.log("Abrir modal")}
                     />
 
                     {/* CONTEÚDO: Serviços disponíveis */}

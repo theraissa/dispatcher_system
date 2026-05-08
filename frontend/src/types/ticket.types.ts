@@ -18,6 +18,7 @@ export type TicketUserResponse = {
     dispatcher: DispatcherInfoTicket;
     service_details: ServiceDetailsInfoTicket;
     created_at: string;
+    deleted_at?: string;
 };
 
 /*
@@ -71,6 +72,7 @@ export type ListTicketResponse = {
     name_dispatcher?: string | null;
     name_client?: string | null;
     created_at: string;
+    deleted_at?: string;
 }
 
 // Tipo para a resposta da listagem de chamados do usuário.

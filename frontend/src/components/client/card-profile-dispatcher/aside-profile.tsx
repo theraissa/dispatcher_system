@@ -13,6 +13,8 @@ type AsideProfileDispatcherProps = {
     };
     onOpenReview: () => void;
     canReview?: boolean;
+    rating?: number;
+    totalReviews?: number;
 };
 
 /**
@@ -24,7 +26,7 @@ type AsideProfileDispatcherProps = {
  * - Indicação de credenciamento
  * - Área de avaliação do atendimento
  */
-export function AsideProfileDispatcher({ dispatcher, onOpenReview, canReview = false }: AsideProfileDispatcherProps) {
+export function AsideProfileDispatcher({ dispatcher, onOpenReview, canReview = false, rating, totalReviews }: AsideProfileDispatcherProps) {
     return (
         <aside className="w-full">
             <div className="bg-white p-6 md:p-8 rounded-[28px] md:rounded-[32px] shadow-sm border border-zinc-100 lg:sticky lg:top-24 border-t-[6px] border-t-[#21314D]">
@@ -55,6 +57,19 @@ export function AsideProfileDispatcher({ dispatcher, onOpenReview, canReview = f
                     <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest mt-1">
                         Profissional Credenciado
                     </p>
+
+                    {/* Badge de Avaliação */}
+                    {rating !== undefined && (
+                        <div className="flex items-center justify-center gap-1.5 mt-2">
+                            <Star size={14} fill="#FFB800" className="text-[#FFB800]" />
+                            <span className="text-sm font-black text-[#1E1E1E]">
+                                {Number(rating).toFixed(1)}
+                            </span>
+                            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1">
+                                ({totalReviews || 0} avaliações)
+                            </span>
+                        </div>
+                    )}
                 </div>
 
                 {/* =========================

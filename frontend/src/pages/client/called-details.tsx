@@ -178,6 +178,7 @@ export default function TicketDetails() {
                         <AsideProfileDispatcher
                             dispatcher={dispatcherProfile}
                             onOpenReview={() => setIsReviewOpen(true)}
+                            canReview={true}
                         />
 
                         {/* Modal para avaliar o despachante */}

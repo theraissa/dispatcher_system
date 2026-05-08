@@ -43,9 +43,9 @@ export function InfoServiceAndUser({ ticket }: InfoServiceAndUserProps) {
     }
 
     return (
-        <section className="bg-white rounded-[24px] md:rounded-[32px] shadow-sm border opacity-100 overflow-hidden">
+        <section className="bg-white rounded-[24px] md:rounded-[32px] shadow-sm border overflow-hidden">
 
-            {/* Cabeçalho Interno da Ficha */}
+            {/* Cabeçalho */}
             <div className="bg-[#21314D] p-4 md:p-6 text-white flex justify-between items-center">
                 <div className="flex items-center gap-3">
                     <FileText size={18} className="text-zinc-300 shrink-0" />
@@ -53,58 +53,67 @@ export function InfoServiceAndUser({ ticket }: InfoServiceAndUserProps) {
                 </div>
             </div>
 
-            <div className="p-5 md:p-10 space-y-8 md:space-y-10">
-
-                {/* GRID PRINCIPAL: INFORMAÇÕES DO SERVIÇO E CLIENTE */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+            <div className="p-6 md:p-10 space-y-10">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
 
                     {/* Coluna: Detalhes do Serviço */}
-                    <div className="space-y-6">
-                        <h4 className="text-xs md:text-sm font-black text-[#21314D] uppercase tracking-[0.2em] border-b pb-2 opacity-100">
+                    <div className="lg:col-span-5 space-y-6">
+                        <h4 className="text-xs md:text-sm font-black text-[#21314D] uppercase tracking-[0.2em] border-b pb-2">
                             Dados do Chamado
                         </h4>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
                             <DataField label="Nome do Serviço" value={ticket.service_details.name} />
                             <DataField label="Valor do Serviço" value={`R$ ${ticket.service_details.price}`} />
                             <DataField label="Data de Abertura" value={formatDate(ticket.created_at)} />
-                            <DataField label="Data de Fechamento" value={formatDate(ticket.created_at)} />
+                            {ticket.deleted_at && (
+                                <DataField label="Data de Fechamento" value={formatDate(ticket.deleted_at)} />
+                            )}
                         </div>
                     </div>
 
                     {/* Coluna: Dados do Solicitante */}
-                    <div className="space-y-6">
-                        <h4 className="text-xs md:text-sm font-black text-[#21314D] uppercase tracking-[0.2em] border-b pb-2 opacity-100">
+                    <div className="lg:col-span-6 space-y-6">
+                        <h4 className="text-xs md:text-sm font-black text-[#21314D] uppercase tracking-[0.2em] border-b pb-2">
                             Dados do Solicitante
                         </h4>
-                        <div className="grid grid-cols-1 gap-y-4">
-                            <DataField label="Nome Completo" value={ticket.user.name} />
-                            <div className="grid grid-cols-2 gap-4">
-                                <DataField label="CPF/CNPJ" value={ticket.user.cpf} />
-                                <DataField label="Telefone" value={ticket.user.contact} />
-                                <DataField label="Email" value={ticket.user.email} />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+
+                            {/* Nome ocupa as duas colunas se necessário */}
+                            <div className="md:col-span-2">
+                                <DataField label="Nome Completo" value={ticket.user.name} />
                             </div>
-                            <DataField label="Endereço Completo" value={ticket.user.address} />
+
+                            <DataField label="CPF/CNPJ" value={ticket.user.cpf} />
+                            <DataField label="Telefone" value={ticket.user.contact} />
+
+                            {/* Email em linha cheia para evitar aperto */}
+                            <div className="md:col-span-2">
+                                <DataField label="E-mail" value={ticket.user.email} />
+                            </div>
+
+                            <div className="md:col-span-2">
+                                <DataField label="Endereço Completo" value={ticket.user.address} />
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 {/* OBSERVAÇÕES TÉCNICAS */}
-                <div>
-                    <h4 className="text-xs md:text-sm font-black text-[#21314D] uppercase tracking-[0.2em] mb-3">
+                <div className="pt-4">
+                    <h4 className="text-xs md:text-sm font-black text-[#21314D] uppercase tracking-[0.2em] mb-4">
                         Observações do Serviço:
                     </h4>
-                    <p className="text-zinc-600 text-sm md:text-[15px] leading-relaxed bg-zinc-50/50 p-4 rounded-xl border border-dashed border-zinc-200">
+                    <p className="text-zinc-600 text-sm md:text-[15px] leading-relaxed bg-zinc-50/50 p-5 rounded-2xl border border-zinc-200">
                         {ticket.service_details.description}
                     </p>
                 </div>
 
-
                 {/* BOTÃO DE CANCELAR */}
-                <div className="flex justify-end pt-4 border-t opacity-100">
+                <div className="flex justify-end pt-6 border-t">
                     {ticket.status.toLowerCase() !== "cancelado" && (
                         <button
                             onClick={handleCancel}
-                            className="cursor-pointer flex items-center gap-2 bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white px-4 py-2 rounded-xl text-xs md:text-sm font-bold transition-all border border-red-500/20 active:scale-95"
+                            className="cursor-pointer flex items-center gap-2 bg-red-50 hover:bg-red-500 text-red-500 hover:text-white px-6 py-2.5 rounded-xl text-xs md:text-sm font-bold transition-all border border-red-200 active:scale-95"
                         >
                             <XCircle size={16} />
                             Encerrar Chamado
@@ -113,7 +122,7 @@ export function InfoServiceAndUser({ ticket }: InfoServiceAndUserProps) {
                 </div>
             </div>
         </section>
-    )
+    );
 }
 
 
@@ -129,13 +138,12 @@ export function InfoServiceAndUser({ ticket }: InfoServiceAndUserProps) {
  */
 function DataField({ label, value }: { label: string; value: string | number; }) {
     return (
-        <div className="flex flex-col">
-            <span className="text-xs md:text-sm font-bold text-zinc-400 uppercase tracking-tighter">
+        <div className="flex flex-col gap-1">
+            <span className="text-[10px] md:text-xs font-bold text-zinc-400 uppercase tracking-wider">
                 {label}
             </span>
-
-            <span className="text-sm md:text-[15px] font-semibold text-zinc-800">
-                {value}
+            <span className="text-sm md:text-[15px] font-semibold text-zinc-800 break-words">
+                {value || "---"}
             </span>
         </div>
     );

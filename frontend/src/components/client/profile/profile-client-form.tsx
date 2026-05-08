@@ -2,8 +2,10 @@ import InlineField from "@/components/layout/inline-field-form";
 import InlineFields from "@/components/layout/inline-fields-form";
 import InputForm from "@/components/record/ui/input-form";
 import LabelForm from "@/components/record/ui/label-form";
+import InputPassword from "@/components/ui/input-password";
 import { Separator } from "@/components/ui/separator";
 import TitleTemplate from "@/components/ui/title";
+import { cpfMask, phoneMask, zipCodeMask } from "@/utils/masks";
 import { Calendar, CreditCard, Globe, Hash, Lock, Mail, MapPin, Milestone, Navigation, Phone, User } from "lucide-react";
 
 
@@ -70,7 +72,7 @@ export default function FormProfileClient({ data, handleChange, isEditing }: For
                     <InputForm
                         name="cpf"
                         icon={<CreditCard size={18} />}
-                        value={data.user.cpf}
+                        value={cpfMask(data.user.cpf)}
                         onChange={onInputChange("user")}
                         placeholder="000.000.000-00"
                         readOnly={!isEditing}
@@ -100,7 +102,7 @@ export default function FormProfileClient({ data, handleChange, isEditing }: For
                     <InputForm
                         name="contact"
                         icon={<Phone size={18} />}
-                        value={data.user.contact}
+                        value={phoneMask(data.user.contact)}
                         onChange={onInputChange("user")}
                         placeholder="(00) 00000-0000"
                         readOnly={!isEditing}
@@ -111,7 +113,7 @@ export default function FormProfileClient({ data, handleChange, isEditing }: For
                     <InputForm
                         name="contact"
                         icon={<Phone size={18} />}
-                        value={data.address?.contact || ""}
+                        value={phoneMask(data.address?.contact)}
                         onChange={onInputChange("address")}
                         placeholder="(00) 0000-0000"
                         readOnly={!isEditing}
@@ -134,8 +136,7 @@ export default function FormProfileClient({ data, handleChange, isEditing }: For
                 <InlineFields>
                     <InlineField>
                         <LabelForm title="Nova Senha" />
-                        <InputForm
-                            type="password"
+                        <InputPassword
                             name="password"
                             icon={<Lock size={18} />}
                             value={data.user.password || ""}
@@ -145,8 +146,7 @@ export default function FormProfileClient({ data, handleChange, isEditing }: For
                     </InlineField>
                     <InlineField>
                         <LabelForm title="Confirmar Senha" />
-                        <InputForm
-                            type="password"
+                        <InputPassword
                             name="confirm_password"
                             icon={<Lock size={18} />}
                             placeholder="••••••••"
@@ -202,7 +202,7 @@ export default function FormProfileClient({ data, handleChange, isEditing }: For
                     <InputForm
                         name="zip_code"
                         icon={<Milestone size={18} />}
-                        value={data.address?.zip_code || ""}
+                        value={zipCodeMask(data.address?.zip_code || "")}
                         onChange={onInputChange("address")}
                         placeholder="00000-000"
                         readOnly={!isEditing}
