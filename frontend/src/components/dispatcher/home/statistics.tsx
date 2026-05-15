@@ -1,5 +1,5 @@
 import { useDispatcherStatistics } from "@/hooks/use-dispatcher-statistics";
-import { Clock, TrendingUp, CheckCircle2, AlertCircle } from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock, TrendingUp } from "lucide-react";
 
 /**
  * Componente responsável por exibir as estatísticas do despachante no dashboard.
@@ -72,55 +72,43 @@ export function HomeStaticsDispatcher({ userId }: { userId: number }) {
     }
 
     return (
-        <section className="relative bg-[#D9CDBA]/30 -mx-6 px-6 py-20 overflow-hidden">
-
+        <section className="relative bg-[#D9CDBA]/30 -mx-4 md:-mx-6 px-4 md:px-6 py-12 md:py-20 overflow-hidden">
             {/* Linha decorativa superior */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-zinc-300 to-transparent" />
 
-            <div className="max-w-6xl mx-auto space-y-12">
-
-                {/* Cabeçalho da seção */}
+            <div className="max-w-6xl mx-auto space-y-8 md:space-y-12">
                 <div className="text-center space-y-2">
-                    <h2 className="text-2xl md:text-3xl font-black text-[#1E1E1E] uppercase tracking-tighter">
+                    <h2 className="text-xl md:text-3xl font-black text-[#1E1E1E] uppercase tracking-tighter">
                         Faturamento e <span className="text-[#21314D]">Progresso</span>
                     </h2>
-                    <p className="text-zinc-500 text-xs font-bold uppercase tracking-[0.3em]">
+                    <p className="text-zinc-500 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] md:tracking-[0.3em]">
                         Dados atualizados em tempo real
                     </p>
                 </div>
 
                 {/* Grid de estatísticas */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-
+                <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                     {stats.map((stat, i) => (
                         <div
                             key={i}
-                            className="group bg-white p-8 rounded-[32px] shadow-sm border border-zinc-200/60 flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl hover:-translate-y-2 hover:border-[#21314D]/20"
+                            className="group bg-white p-6 md:p-8 rounded-[24px] md:rounded-[32px] shadow-sm border border-zinc-200/60 flex flex-col items-center text-center transition-all"
                         >
-                            {/* Ícone da métrica */}
-                            <div
-                                className={`w-14 h-14 ${stat.bg} ${stat.color} rounded-2xl flex items-center justify-center mb-5 transition-transform duration-500 group-hover:rotate-[10deg]`}
-                            >
+                            <div className={`w-12 h-12 md:w-14 md:h-14 ${stat.bg} ${stat.color} rounded-xl md:rounded-2xl flex items-center justify-center mb-4 md:mb-5`}>
                                 {stat.icon}
                             </div>
-
-                            {/* Valor principal */}
-                            <p className="text-3xl font-black text-[#1E1E1E] tracking-tight mb-1">
+                            <p className="text-2xl md:text-3xl font-black text-[#1E1E1E] tracking-tight mb-1">
                                 {stat.value}
                             </p>
-
-                            {/* Descrição da métrica */}
-                            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest leading-tight max-w-[120px]">
+                            <p className="text-[9px] md:text-[10px] font-black text-zinc-400 uppercase tracking-widest leading-tight">
                                 {stat.label}
                             </p>
                         </div>
                     ))}
-
                 </div>
             </div>
 
             {/* Linha decorativa inferior */}
             <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-zinc-300 to-transparent" />
-        </section>
+        </section >
     );
 }

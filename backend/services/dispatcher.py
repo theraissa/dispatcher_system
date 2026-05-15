@@ -17,6 +17,7 @@ from models.dispatcher import (
     ListDispatcherResponse,
     OfficeResponse,
     ProfileResponse,
+    UpdateDispatcherFullRequest,
 )
 from models.user import UserResponse
 
@@ -172,7 +173,7 @@ class DispatcherService:
             self.db.session.rollback()
             raise e
 
-    def update_dispatcher_full(self, user_id: int, data: CreateDispatcherFullRequest) -> dict:
+    def update_dispatcher_full(self, user_id: int, data: UpdateDispatcherFullRequest) -> dict:
         """
         Atualiza os dados completos de um despachante.
 
@@ -185,7 +186,7 @@ class DispatcherService:
 
         Args:
             user_id (int): ID do usuário associado ao despachante.
-            data (CreateDispatcherFullRequest): Dados atualizados.
+            data (UpdateDispatcherFullRequest): Dados atualizados.
 
         Returns:
             dict: Mensagem de sucesso da operação.

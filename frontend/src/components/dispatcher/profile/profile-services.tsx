@@ -1,20 +1,20 @@
+import { Briefcase, Loader2, Plus, Search } from "lucide-react";
 import { useState } from "react";
-import { Plus, Search, Loader2 } from "lucide-react";
 
-import { ProfileCard, ProfileCardHeader, ProfileContainer } from "./layout/profile-card";
-import SelectServices from "./select-services";
-import ServiceDetails from "./profile-service-details";
-import ServiceActionButtons from "./ui/profile-buttons-action-service";
 import { useServiceDetails } from "@/hooks/use-service-details";
-
+import { cn } from "@/lib/utils";
+import { ProfileCard, ProfileContainer } from "./layout/profile-card";
+import ServiceDetails from "./profile-service-details";
+import SelectServices from "./select-services";
+import ServiceActionButtons from "./ui/profile-buttons-action-service";
 
 /**
  * Componente responsável por gerenciar os serviços do usuário (dispatcher).
  *
  * Ele controla três fluxos principais:
- * - Visualização dos serviços ativos
- * - Seleção de novos serviços
- * - Edição de detalhes de um serviço específico
+ * - Visualização dos serviços ativos (view)
+ * - Seleção de novos serviços (select)
+ * - Edição de detalhes de um serviço específico (details)
  */
 export default function ProfileServices({ dispatcherId }: { dispatcherId: number }) {
 
@@ -50,10 +50,11 @@ export default function ProfileServices({ dispatcherId }: { dispatcherId: number
     s.name.toLowerCase().includes(search.toLowerCase())
   );
 
+  // Feedback visual de carregamento inicial
   if (loading) return (
-    <div className="flex justify-center p-20 text-zinc-400">
-      <Loader2 className="animate-spin mr-2" />
-      Carregando serviços...
+    <div className="flex flex-col items-center justify-center p-20 text-zinc-400">
+      <Loader2 className="animate-spin mb-4" size={32} />
+      <span className="font-medium">Carregando seus serviços...</span>
     </div>
   );
 
@@ -61,7 +62,6 @@ export default function ProfileServices({ dispatcherId }: { dispatcherId: number
   // MODO: SELEÇÃO DE SERVIÇOS
   // =========================
   if (mode === "select") {
-
     /**
      * Remove serviços já existentes do usuário,
      * evitando duplicação na seleção.
@@ -112,25 +112,30 @@ export default function ProfileServices({ dispatcherId }: { dispatcherId: number
         {/* =========================
             HEADER DA LISTAGEM
            ========================= */}
-        <ProfileCardHeader>
-          <h3 className="text-2xl font-extrabold text-[#1E1E1E] tracking-tight">
-            Serviços <span className="text-[#21314D]">Ativos</span>
-          </h3>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-[#21314D]/5 rounded-xl text-[#21314D]">
+              <Briefcase size={22} />
+            </div>
+            <h3 className="text-xl md:text-2xl font-extrabold text-[#1E1E1E] tracking-tight">
+              Serviços <span className="text-[#21314D]">Ativos</span>
+            </h3>
+          </div>
 
-          {/* Botão para abrir modo de seleção */}
+          {/* Botão para abrir modo de seleção - Adaptável para mobile */}
           <button
             onClick={() => setMode("select")}
-            className="cursor-pointer flex items-center gap-2 bg-[#21314D] text-white px-4 py-2 rounded-xl text-[15px] font-bold hover:bg-[#1A263D] transition-all active:scale-95 shadow-sm"
+            className="w-full sm:w-auto cursor-pointer flex items-center justify-center gap-2 bg-[#21314D] text-white px-5 py-3 sm:py-2.5 rounded-2xl text-sm font-bold hover:bg-[#1A263D] transition-all active:scale-95 shadow-md shadow-blue-900/10"
           >
-            <Plus size={20} strokeWidth={3} />
+            <Plus size={18} strokeWidth={3} />
             Novo Serviço
           </button>
-        </ProfileCardHeader>
+        </div>
 
         {/* =========================
             CAMPO DE BUSCA
            ========================= */}
-        <div className="relative group">
+        <div className="relative group mb-6">
           <Search
             className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-[#21314D] transition-colors"
             size={18}
@@ -141,18 +146,17 @@ export default function ProfileServices({ dispatcherId }: { dispatcherId: number
             placeholder="Pesquisar em meus serviços..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-12 pl-12 pr-4 bg-zinc-100 border-none rounded-2xl text-sm focus:bg-white focus:ring-2 focus:ring-[#21314D]/10 outline-none transition-all"
+            className="w-full h-13 pl-12 pr-4 bg-zinc-100/80 border-2 border-transparent rounded-[20px] text-sm focus:bg-white focus:border-[#21314D]/20 focus:ring-4 focus:ring-[#21314D]/5 outline-none transition-all placeholder:text-zinc-400"
           />
         </div>
 
         {/* =========================
             LISTA DE SERVIÇOS
            ========================= */}
-        <div className="flex flex-col gap-3">
+        <div className="grid grid-cols-1 gap-3">
           {filteredServices.map((service) => (
             <ServiceItem
               key={service.id}
-
               /**
                * Ao clicar no item, abre tela de detalhes.
                */
@@ -161,18 +165,22 @@ export default function ProfileServices({ dispatcherId }: { dispatcherId: number
                 setMode("details");
               }}
             >
-              {/* Nome do serviço */}
-              <span className="font-bold text-[#333] text-sm md:text-base">
-                {service.name}
-              </span>
+              {/* Nome e subtitulo informativo */}
+              <div className="flex flex-col gap-0.5">
+                <span className="font-bold text-[#1E1E1E] text-[15px] md:text-base leading-tight">
+                  {service.name}
+                </span>
+                <span className="text-xs text-zinc-400 font-medium">
+                  Clique para ver detalhes
+                </span>
+              </div>
 
-              <div className="flex items-center gap-2">
-
+              <div className="flex items-center gap-1">
                 {/* Botões de ação (editar/excluir) */}
                 <ServiceActionButtons
                   /**
                    * Abre edição do serviço.
-                   * stopPropagation impede abrir o item automaticamente.
+                   * stopPropagation impede disparar o onClick do ServiceItem.
                    */
                   onEdit={(e) => {
                     e.stopPropagation();
@@ -194,12 +202,13 @@ export default function ProfileServices({ dispatcherId }: { dispatcherId: number
 
           {/* Estado vazio da busca */}
           {filteredServices.length === 0 && (
-            <div className="py-12 text-center bg-zinc-50 rounded-[32px] border-2 border-dashed border-zinc-200">
-              <p className="text-zinc-500 text-sm">
+            <div className="py-16 px-6 text-center bg-zinc-50/50 rounded-[32px] border-2 border-dashed border-zinc-200">
+              <div className="mx-auto w-12 h-12 bg-zinc-100 rounded-full flex items-center justify-center text-zinc-400 mb-4">
+                <Search size={24} />
+              </div>
+              <p className="text-zinc-500 text-sm md:text-base">
                 Nenhum serviço encontrado para{" "}
-                <span className="text-[#21314D] font-bold">
-                  "{search}"
-                </span>
+                <span className="text-[#21314D] font-bold">"{search}"</span>
               </p>
             </div>
           )}
@@ -212,6 +221,9 @@ export default function ProfileServices({ dispatcherId }: { dispatcherId: number
 
 /**
  * Componente visual de item da lista de serviços.
+ * 
+ * Centraliza os estilos de hover, bordas e animação de clique 
+ * para garantir consistência visual entre dispositivos.
  */
 const ServiceItem = ({
   children,
@@ -222,7 +234,12 @@ const ServiceItem = ({
 }) => (
   <div
     onClick={onClick}
-    className="group flex items-center justify-between p-4 bg-zinc-50 hover:bg-white border border-transparent hover:border-zinc-200 rounded-2xl cursor-pointer transition-all hover:shadow-md"
+    className={cn(
+      "group flex items-center justify-between p-4 md:p-5",
+      "bg-white border border-zinc-100 hover:border-[#21314D]/20",
+      "rounded-[24px] cursor-pointer transition-all",
+      "hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] active:scale-[0.98]"
+    )}
   >
     {children}
   </div>

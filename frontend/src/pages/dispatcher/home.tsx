@@ -23,8 +23,7 @@ export default function HomeDispatcher() {
                 links={dispatcherLinksNavbar}
             />
 
-            <main className="max-w-[1400px] mx-auto py-10 px-6 space-y-12">
-
+            <main className="max-w-[1400px] mx-auto py-6 md:py-10 px-4 md:px-6 space-y-8 md:space-y-12">
                 {/* Banner de boas-vindas / destaque */}
                 <HomeBannerDispatcher />
 

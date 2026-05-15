@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { Search, ArrowLeft, CheckCircle2, PlusCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ProfileCard, ProfileContainer } from "./layout/profile-card";
 import type { Service } from "@/types/type";
+import { ArrowLeft, CheckCircle2, PlusCircle, Search } from "lucide-react";
+import { useState } from "react";
+import { ProfileCard, ProfileContainer } from "./layout/profile-card";
 
 
 /**
@@ -66,7 +66,7 @@ export default function SelectServices({
             CABEÇALHO
            ========================= */}
         <div className="space-y-1 mb-2">
-          <h3 className="text-2xl font-extrabold text-[#1E1E1E] tracking-tight">
+          <h3 className="cursor-pointer text-2xl font-extrabold text-[#1E1E1E] tracking-tight">
             Adicionar <span className="text-[#21314D]">Novos Serviços</span>
           </h3>
 
@@ -152,7 +152,7 @@ export default function SelectServices({
           {/* Ação de cancelamento */}
           <button
             onClick={onCancel}
-            className="cursor-pointer flex items-center gap-2 px-4 py-2 text-zinc-500 font-bold text-[16px] hover:text-[#1E1E1E] transition-colors"
+            className="cursor-pointer flex items-center gap-2 px-4 py-2 text-zinc-500 font-bold text-sm md:text-[16px] hover:text-[#1E1E1E] transition-colors"
           >
             <ArrowLeft size={18} />
             Voltar
@@ -163,7 +163,7 @@ export default function SelectServices({
             disabled={selectedServices.length === 0}
             onClick={() => onAdd(selectedServices)}
             className={cn(
-              "flex items-center gap-2 px-8 py-3 bg-[#21314D] text-white rounded-xl font-bold text-[15px] transition-all",
+              "cursor-pointer flex items-center gap-2 px-8 py-2 md:py-3  bg-[#21314D] text-white rounded-xl font-bold text-xs md:text-[16px] transition-all",
               "hover:bg-[#1A263D] active:scale-95 disabled:bg-zinc-200 disabled:text-zinc-400 disabled:cursor-not-allowed shadow-sm"
             )}
           >

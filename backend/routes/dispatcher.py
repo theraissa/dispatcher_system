@@ -9,7 +9,7 @@ Este módulo agrupa endpoints responsáveis por:
 
 from flask import Flask, Response, jsonify, request
 
-from models.dispatcher import CreateDispatcherFullRequest
+from models.dispatcher import CreateDispatcherFullRequest, UpdateDispatcherFullRequest
 from require_auth import require_auth
 from services.associate_service_dispatcher import AssociateServiceDispatcherService
 from services.dispatcher import DispatcherService
@@ -58,7 +58,7 @@ def register_dispatcher_routes(
     def update_dispatcher(user_id):
         """Atualiza os dados de um despachante."""
         data = request.get_json()
-        result = dispatcher_service.update_dispatcher_full(user_id, CreateDispatcherFullRequest(**data))
+        result = dispatcher_service.update_dispatcher_full(user_id, UpdateDispatcherFullRequest(**data))
         return jsonify(result), 200
 
     @app.delete("/api/dispatcher-system/dispatcher/<int:dispatcher_id>")

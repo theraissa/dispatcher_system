@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { ArrowLeft, Save, DollarSign, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ProfileCard, ProfileContainer } from "./layout/profile-card";
 import type { ServiceDetails } from "@/types/service.types";
+import { ArrowLeft, DollarSign, Loader2, Save } from "lucide-react";
+import { useState } from "react";
+import { ProfileCard, ProfileContainer } from "./layout/profile-card";
 
 /**
  * Props do componente ServiceDetails.
@@ -105,7 +105,7 @@ export default function ServiceDetails({
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 className={cn(
-                  "w-full h-14 pl-12 pr-4 bg-zinc-50 border-2 border-transparent rounded-2xl",
+                  "w-full md:w-100 h-14 pl-12 pr-4 bg-zinc-50 border-2 border-transparent rounded-2xl",
                   "text-lg font-bold text-[#1E1E1E] outline-none transition-all",
                   "focus:bg-white focus:border-[#21314D] focus:ring-4 focus:ring-[#21314D]/5",
                   "placeholder:text-zinc-300"
@@ -123,7 +123,7 @@ export default function ServiceDetails({
           {/* Ação de voltar sem salvar */}
           <button
             onClick={onBack}
-            className="flex items-center gap-2 px-4 py-2 text-zinc-500 font-bold text-sm hover:text-[#1E1E1E] transition-colors group"
+            className="cursor-pointer flex items-center gap-2 px-4 py-2 text-zinc-500 font-bold text-sm hover:text-[#1E1E1E] transition-colors group"
           >
             <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
             Voltar
@@ -134,7 +134,7 @@ export default function ServiceDetails({
             onClick={handleSave}
             disabled={loading || !price}
             className={cn(
-              "flex items-center gap-2 px-8 py-3 bg-[#21314D] text-white rounded-xl font-bold text-sm shadow-sm",
+              "cursor-pointer flex items-center gap-2 px-4 md:px-8 py-3 bg-[#21314D] text-white rounded-xl font-bold text-sm shadow-sm",
               "hover:bg-[#1A263D] active:scale-95 transition-all disabled:opacity-50"
             )}
           >

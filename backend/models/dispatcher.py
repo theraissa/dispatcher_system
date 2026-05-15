@@ -5,8 +5,9 @@ Modelos Pydantic relacionados ao DispatcherService.
 from datetime import datetime
 from typing import List, Optional
 
-from models.user import CreateUserRequest, UserResponse
 from pydantic import BaseModel, ConfigDict, RootModel
+
+from models.user import CreateUserRequest, UserResponse
 
 
 class CreateDispatcherRequest(BaseModel):
@@ -114,3 +115,48 @@ class ListDispatcherResponse(RootModel):
     """Modelo de listagem para o DispatcherService."""
 
     root: List[CreateDispatcherFullResponse]
+
+
+class UpdateDispatcherRequest(BaseModel):
+    """Modelo de atualização parcial do Dispatcher."""
+
+    regis_crdd: Optional[str] = None
+    date_exp_regis: Optional[str] = None
+
+    model_config = ConfigDict(extra="ignore")
+
+
+class UpdateOfficeRequest(BaseModel):
+    """Modelo de atualização parcial do Office."""
+
+    contact: Optional[str] = None
+    number: Optional[int] = None
+    neighborhood: Optional[str] = None
+    address: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    zip_code: Optional[int] = None
+
+    model_config = ConfigDict(extra="ignore")
+
+
+class UpdateProfileRequest(BaseModel):
+    """Modelo de atualização parcial do Profile."""
+
+    photo: Optional[str] = None
+    instagram: Optional[str] = None
+    whatsapp: Optional[str] = None
+    website: Optional[str] = None
+
+    model_config = ConfigDict(extra="ignore")
+
+
+class UpdateDispatcherFullRequest(BaseModel):
+    """Modelo de atualização parcial de múltiplas tabelas."""
+
+    user: Optional[CreateUserRequest] = None
+    dispatcher: Optional[UpdateDispatcherRequest] = None
+    office: Optional[UpdateOfficeRequest] = None
+    profile: Optional[UpdateProfileRequest] = None
+
+    model_config = ConfigDict(extra="ignore")

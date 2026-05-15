@@ -7,57 +7,40 @@ import ProfileInfo from "../../components/dispatcher/profile/profile-info"
 import ProfileServices from "../../components/dispatcher/profile/profile-services"
 import NavbarPage from "../../components/record/ui/navbar-page"
 
-
 /**
  * Página principal do perfil do despachante.
- *
- * Responsável por centralizar:
- * - Informações pessoais e comerciais do perfil
- * - Gestão de serviços vinculados ao despachante
- * - Navegação entre abas internas da área de perfil
  */
 export default function ProfilePage() {
-
-  // Controla a aba ativa da página de perfil.
   const [tab, setTab] = useState<"info" | "services">("info")
-
   const { user } = useAuthRequired();
 
   if (!user?.dispatcherId) {
-    return <div>Carregando usuário...</div>;
+    return <div className="min-h-screen bg-[#F3EDE2] flex items-center justify-center font-bold">Carregando...</div>;
   }
 
-  // Classe dinâmica para botões do menu lateral.
   const menuButtonStyles = (isActive: boolean) =>
     cn(
       "cursor-pointer flex items-center gap-3 w-full p-4 rounded-xl text-[15px] font-bold transition-all duration-200",
       isActive
         ? "bg-[#21314D] text-white shadow-md scale-[1.03]"
-        : "bg-white text-zinc-500"
+        : "bg-white text-zinc-500 hover:bg-zinc-50"
     );
 
   return (
     <div className="min-h-screen bg-[#F3EDE2]">
-
-      {/* =========================
-          NAVBAR GLOBAL
-         ========================= */}
       <NavbarPage
         title="Central do Despachante"
         shortTitle="D"
         links={dispatcherLinksNavbar}
       />
 
-      <main className="max-w-[1800px] mx-auto px-6 md:px-10 py-10 transition-all">
-
-        <div className="flex flex-col lg:flex-row gap-10 items-start">
+      <main className="max-w-[1800px] mx-auto px-6 md:px-10 py-10">
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
 
           {/* =========================
               CONTEÚDO PRINCIPAL (ESQUERDA)
              ========================= */}
-          <div className="flex-[3] w-full order-2 lg:order-1 transition-">
-
-            {/* Aba: Informações do perfil */}
+          <div className="w-full lg:flex-[3] order-2 lg:order-1">
             {tab === "info" && (
               <ProfileInfo
                 dispatcherId={user.dispatcherId}
@@ -65,7 +48,6 @@ export default function ProfilePage() {
               />
             )}
 
-            {/* Aba: Serviços do despachante */}
             {tab === "services" && (
               <ProfileServices
                 dispatcherId={user.dispatcherId}
@@ -76,34 +58,29 @@ export default function ProfilePage() {
           {/* =========================
               MENU LATERAL (DIREITA)
              ========================= */}
-          <aside className="lg:w-[300px] h-52 bg-white/50 backdrop-blur-sm p-5 rounded-[32px] shadow-sm border border-white/20 sticky top-6 order-1 lg:order-2">
+          <aside className="w-full lg:w-[350px] bg-white/50 backdrop-blur-sm p-5 rounded-[32px] shadow-sm border border-white/20 sticky top-6 order-1 lg:order-2">
 
-            {/* Título do menu */}
             <p className="text-sm font-bold text-zinc-400 uppercase tracking-widest ml-3 mb-4">
               Menu Perfil
             </p>
 
-            {/* Botões de navegação entre abas */}
+            {/* No mobile os botões ficam lado a lado, no desktop ficam um embaixo do outro */}
             <div className="flex flex-row lg:flex-col gap-3">
-
-              {/* Aba: Informações */}
               <button
                 onClick={() => setTab("info")}
                 className={menuButtonStyles(tab === "info")}
               >
                 <UserCircle size={18} />
-                Seus Dados
+                <span className="truncate">Seus Dados</span>
               </button>
 
-              {/* Aba: Serviços */}
               <button
                 onClick={() => setTab("services")}
                 className={menuButtonStyles(tab === "services")}
               >
                 <Briefcase size={18} />
-                Seus Serviços
+                <span className="truncate">Seus Serviços</span>
               </button>
-
             </div>
           </aside>
 

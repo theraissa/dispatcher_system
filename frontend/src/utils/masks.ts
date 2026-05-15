@@ -1,8 +1,11 @@
 /**
  * Remove qualquer caractere que não seja número.
+ * Alterado para aceitar 'any' e garantir que seja string, evitando quebras.
  */
-const onlyDigits = (value: string): string => value.replace(/\D/g, "");
-
+const onlyDigits = (value: any): string => {
+    if (value === null || value === undefined) return "";
+    return String(value).replace(/\D/g, "");
+};
 
 /**
  * Aplica máscara de telefone brasileiro.
@@ -14,12 +17,11 @@ const onlyDigits = (value: string): string => value.replace(/\D/g, "");
  * @param value
  * @returns telefone formatado
  */
-export const phoneMask = (value: string | undefined): string => {
-    if (!value) return "";
-
+export const phoneMask = (value: string | undefined | null): string => {
     const digits = onlyDigits(value);
+    if (!digits) return "";
 
-    // Celular (9 dígitos)
+    // Celular (11 dígitos: 2 DDD + 9 números)
     if (digits.length > 10) {
         return digits
             .slice(0, 11)
@@ -27,7 +29,7 @@ export const phoneMask = (value: string | undefined): string => {
             .replace(/(\d{5})(\d)/, "$1-$2");
     }
 
-    // Fixo (8 dígitos)
+    // Fixo (10 dígitos: 2 DDD + 8 números)
     return digits
         .slice(0, 10)
         .replace(/(\d{2})(\d)/, "($1) $2")
@@ -43,10 +45,9 @@ export const phoneMask = (value: string | undefined): string => {
  * @param value
  * @returns CPF formatado
  */
-export const cpfMask = (value: string | undefined): string => {
-    if (!value) return "";
-
+export const cpfMask = (value: string | undefined | null): string => {
     const digits = onlyDigits(value).slice(0, 11);
+    if (!digits) return "";
 
     return digits
         .replace(/(\d{3})(\d)/, "$1.$2")
@@ -61,21 +62,17 @@ export const cpfMask = (value: string | undefined): string => {
  * @param value
  * @returns boolean
  */
-export const isValidCPF = (value: string): boolean => {
+export const isValidCPF = (value: string | undefined | null): boolean => {
     const cpf = onlyDigits(value);
 
     if (cpf.length !== 11) return false;
-
-    // Rejeita CPFs com todos dígitos iguais
     if (/^(\d)\1+$/.test(cpf)) return false;
 
     const calcCheckDigit = (base: string, factor: number) => {
         let total = 0;
-
         for (let i = 0; i < base.length; i++) {
             total += parseInt(base[i]) * (factor - i);
         }
-
         const remainder = (total * 10) % 11;
         return remainder === 10 ? 0 : remainder;
     };
@@ -86,7 +83,6 @@ export const isValidCPF = (value: string): boolean => {
     return digit1 === Number(cpf[9]) && digit2 === Number(cpf[10]);
 };
 
-
 /**
  * Aplica máscara de CEP.
  *
@@ -95,8 +91,9 @@ export const isValidCPF = (value: string): boolean => {
  * @param value
  * @returns CEP formatado
  */
-export const zipCodeMask = (value: string): string => {
+export const zipCodeMask = (value: string | undefined | null): string => {
     const digits = onlyDigits(value).slice(0, 8);
+    if (!digits) return "";
 
     return digits.replace(/(\d{5})(\d)/, "$1-$2");
 };
