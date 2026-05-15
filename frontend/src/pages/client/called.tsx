@@ -1,5 +1,6 @@
 import CalledContainer from "@/components/called/called-container";
 import CalledClientFilter from "@/components/called/called-filter";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAuthRequired } from "@/hooks/auth/auth-requirered";
 import { useTickets } from "@/hooks/use-ticket";
 import { clientLinksNavbar, FRONTEND_ROUTES } from "@/routes/frontend-routes";
@@ -102,29 +103,32 @@ export default function CalledClient() {
 function CalledSkeleton() {
     return (
         <div className="space-y-4 w-full">
-            {[1, 2, 3].map((n) => (
+            {[1, 2, 3, 4].map((n) => (
                 <div
                     key={n}
-                    className="flex items-center justify-between p-4 md:p-5 rounded-[24px] border border-zinc-100 bg-white/50 animate-pulse"
+                    className="flex items-center justify-between p-4 md:p-5 rounded-[24px] border border-zinc-100 bg-white"
                 >
                     <div className="flex items-center gap-3 md:gap-4 w-full">
-                        {/* ID box */}
-                        <div className="w-10 h-10 md:w-12 md:h-12 bg-zinc-200 rounded-xl md:rounded-2xl shrink-0" />
+                        {/* ID box - Simula o número do chamado */}
+                        <Skeleton className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl shrink-0" />
 
-                        {/* Textos */}
+                        {/* Textos - Nome do serviço e informações secundárias */}
                         <div className="space-y-2 w-full max-w-[150px] md:max-w-xs">
-                            <div className="h-4 bg-zinc-200 rounded-md w-full" />
-                            <div className="h-3 bg-zinc-200 rounded-md w-2/3" />
+                            <Skeleton className="h-4 w-full" />
+                            <Skeleton className="h-3 w-2/3" />
                         </div>
                     </div>
 
-                    {/* Lado direito (Status/Data) - Escondido em telas muito pequenas se necessário */}
+                    {/* Lado direito (Status/Data/Botão) */}
                     <div className="hidden sm:flex items-center gap-4 md:gap-8 shrink-0">
-                        <div className="space-y-2">
-                            <div className="h-3 bg-zinc-100 rounded-md w-16 ml-auto" />
-                            <div className="h-4 bg-zinc-200 rounded-md w-24" />
+                        {/* Data e Valor (se houver) */}
+                        <div className="space-y-2 flex flex-col items-end">
+                            <Skeleton className="h-3 w-16" />
+                            <Skeleton className="h-4 w-24" />
                         </div>
-                        <div className="w-20 md:w-24 h-8 bg-zinc-200 rounded-full" />
+
+                        {/* Badge de Status (Pendente, Concluído, etc) */}
+                        <Skeleton className="w-24 h-9 rounded-full" />
                     </div>
                 </div>
             ))}

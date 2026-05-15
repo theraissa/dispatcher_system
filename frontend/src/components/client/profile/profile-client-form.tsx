@@ -1,12 +1,15 @@
 import InlineField from "@/components/layout/inline-field-form";
 import InlineFields from "@/components/layout/inline-fields-form";
+import { CommandForm } from "@/components/record/ui/command-form";
 import InputForm from "@/components/record/ui/input-form";
 import LabelForm from "@/components/record/ui/label-form";
 import InputPassword from "@/components/ui/input-password";
 import { Separator } from "@/components/ui/separator";
 import TitleTemplate from "@/components/ui/title";
+import { ESTADOS_BR } from "@/utils/constants";
 import { cpfMask, phoneMask, zipCodeMask } from "@/utils/masks";
-import { Calendar, CreditCard, Globe, Hash, Lock, Mail, MapPin, Milestone, Navigation, Phone, User } from "lucide-react";
+import { Calendar, CreditCard, Hash, Lock, Mail, MapPin, Milestone, Navigation, Phone, User } from "lucide-react";
+import { useEffect, useState } from "react";
 
 
 /**
@@ -49,6 +52,40 @@ export default function FormProfileClient({ data, handleChange, isEditing }: For
         const { name, value } = e.target;
         handleChange(entity, name, value);
     };
+
+    const [cities, setCities] = useState<{ value: string; label: string }[]>([]);
+    const [loadingCities, setLoadingCities] = useState(false);
+
+    // Efeito para carregar cidades quando o Estado (UF) mudar
+    useEffect(() => {
+        if (!data.address?.state) {
+            setCities([]);
+            return;
+        }
+
+        async function fetchCities() {
+            setLoadingCities(true);
+            try {
+                const response = await fetch(
+                    `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${data.address.state}/municipios?orderBy=nome`
+                );
+                const result = await response.json();
+
+                const formattedCities = result.map((city: any) => ({
+                    value: city.nome,
+                    label: city.nome,
+                }));
+
+                setCities(formattedCities);
+            } catch (error) {
+                console.error("Erro ao carregar cidades:", error);
+            } finally {
+                setLoadingCities(false);
+            }
+        }
+
+        fetchCities();
+    }, [data.address?.state]);
 
     return (
         <section className="flex-1 bg-white p-6 md:p-12 rounded-[24px] md:rounded-[32px] border border-zinc-100 shadow-sm">
@@ -210,27 +247,34 @@ export default function FormProfileClient({ data, handleChange, isEditing }: For
                 </InlineField>
             </InlineFields>
 
+            {/* CAMPOS DE CIDADE E ESTADO ATUALIZADOS */}
             <InlineFields>
-                <InlineField>
-                    <LabelForm title="Cidade" />
-                    <InputForm
-                        name="city"
-                        icon={<Globe size={18} />}
-                        value={data.address?.city || ""}
-                        onChange={onInputChange("address")}
-                        placeholder="Sua cidade"
-                        readOnly={!isEditing}
+                <InlineField className="md:flex-[0.4]">
+                    <LabelForm title="Estado (UF)" />
+                    <CommandForm
+                        type="state"
+                        options={ESTADOS_BR}
+                        value={data.address?.state || ""}
+                        placeholder="UF"
+                        disabled={!isEditing}
+                        onChange={(val) => {
+                            // Atualiza o estado
+                            handleChange("address", "state", val);
+                            // Limpa a cidade para obrigar nova seleção compatível
+                            handleChange("address", "city", "");
+                        }}
                     />
                 </InlineField>
+
                 <InlineField>
-                    <LabelForm title="Estado (UF)" />
-                    <InputForm
-                        name="state"
-                        value={data.address?.state || ""}
-                        onChange={onInputChange("address")}
-                        placeholder="RS"
-                        maxLength={2}
-                        readOnly={!isEditing}
+                    <LabelForm title="Cidade" />
+                    <CommandForm
+                        type="city"
+                        options={cities}
+                        value={data.address?.city || ""}
+                        placeholder={loadingCities ? "Carregando..." : "Selecione a cidade"}
+                        disabled={!isEditing || !data.address?.state || loadingCities}
+                        onChange={(val) => handleChange("address", "city", val)}
                     />
                 </InlineField>
             </InlineFields>

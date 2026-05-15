@@ -11,7 +11,7 @@ type AsideProfileDispatcherProps = {
         user: Record<string, any>;
         office: Record<string, any>;
     };
-    onOpenReview: () => void;
+    onOpenReview: (rating: number) => void;
     canReview?: boolean;
     rating?: number;
     totalReviews?: number;
@@ -115,7 +115,7 @@ export function AsideProfileDispatcher({ dispatcher, onOpenReview, canReview = f
                                     <Star
                                         key={s}
                                         size={22}
-                                        onClick={onOpenReview}
+                                        onClick={() => onOpenReview(s)}
                                         className="text-zinc-200 hover:text-yellow-400 cursor-pointer transition-colors"
                                     />
                                 ))}
@@ -123,7 +123,7 @@ export function AsideProfileDispatcher({ dispatcher, onOpenReview, canReview = f
 
                             {/* Ação de envio de feedback */}
                             <Button
-                                onClick={onOpenReview}
+                                onClick={() => onOpenReview(0)}
                                 className="cursor-pointer w-full h-12 bg-[#21314D] hover:bg-[#1A263D] text-xs font-bold h-11 rounded-2xl shadow-md transition-all active:scale-95"
                             >
                                 Enviar Feedback

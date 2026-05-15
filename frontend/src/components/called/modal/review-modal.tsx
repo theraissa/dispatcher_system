@@ -4,6 +4,7 @@ import {
     DialogHeader,
     DialogTitle
 } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 import { MessageSquare, Star } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -15,6 +16,8 @@ import { toast } from "sonner";
 type ReviewModalProps = {
     /** Controla se o modal está aberto */
     isOpen: boolean;
+    /** Pega estrelas selecionados antes do modal*/
+    initialRating?: number;
     /** Callback disparado ao fechar o modal */
     onClose: (open: boolean) => void;
     /** Callback responsável por enviar a avaliação */
@@ -22,6 +25,7 @@ type ReviewModalProps = {
     /** Estado de carregamento durante envio */
     loading: boolean;
 };
+
 
 /**
  * Componente de modal para avaliação de atendimento (ReviewModal).
@@ -43,13 +47,20 @@ type ReviewModalProps = {
  * - O envio é delegado via `onSubmit`, permitindo desacoplamento da lógica de API
  * - O estado `loading` controla feedback visual no botão
  */
-export function ReviewModal({ isOpen, onClose, onSubmit, loading }: ReviewModalProps) {
+export function ReviewModal({ isOpen, onClose, onSubmit, loading, initialRating = 0 }: ReviewModalProps) {
 
-    // Nota selecionada pelo usuário (1 a 5).
-    const [rating, setRating] = useState(0);
-
-    // Comentário opcional da avaliação.
+    // Comentário e nota do usuário em relação ao chamado   
+    const [rating, setRating] = useState(initialRating);
     const [comment, setComment] = useState("");
+
+    // Armazenamos o valor da prop anterior para comparar
+    const [prevInitialRating, setPrevInitialRating] = useState(initialRating);
+
+    // Se a prop mudou, ajustamos o estado imediatamente durante a renderização
+    if (initialRating !== prevInitialRating) {
+        setRating(initialRating);
+        setPrevInitialRating(initialRating);
+    }
 
     /**
      * Manipula o envio da avaliação.
@@ -61,10 +72,7 @@ export function ReviewModal({ isOpen, onClose, onSubmit, loading }: ReviewModalP
      */
     const handleSend = () => {
         if (loading) return;
-
-        if (rating === 0) {
-            return toast.error("Por favor, selecione uma nota de 1 a 5.");
-        }
+        if (rating === 0) return toast.error("Por favor, selecione uma nota.");
         onSubmit({ rating, comment });
     };
 
@@ -112,16 +120,24 @@ export function ReviewModal({ isOpen, onClose, onSubmit, loading }: ReviewModalP
                         {[1, 2, 3, 4, 5].map((star) => (
                             <button
                                 key={star}
-                                onClick={() => setRating(star)}
-                                className="cursor-pointer transition-transform active:scale-90"
+                                type="button" // Sempre use type button em modais para evitar submit de forms
+                                onClick={() => {
+                                    setRating(star);
+                                    // Opcional: toast.success(`Nota ${star} selecionada!`, { duration: 1000 });
+                                }}
+                                className={cn(
+                                    "cursor-pointer transition-all duration-200 transform active:scale-75",
+                                    star <= rating ? "scale-110" : "scale-100 hover:scale-105"
+                                )}
                             >
                                 <Star
-                                    size={32}
-                                    className={
+                                    size={36} // Aumentei um pouco para facilitar o toque
+                                    className={cn(
+                                        "transition-colors duration-300",
                                         star <= rating
-                                            ? "fill-amber-400 text-amber-400"
+                                            ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.4)]"
                                             : "text-zinc-200"
-                                    }
+                                    )}
                                 />
                             </button>
                         ))}
@@ -134,6 +150,7 @@ export function ReviewModal({ isOpen, onClose, onSubmit, loading }: ReviewModalP
                         </label>
 
                         <textarea
+                            maxLength={150}
                             className="w-full min-h-[100px] p-4 bg-zinc-50 border border-zinc-100 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[#21314D]/10 transition-all"
                             placeholder="Conte como foi sua experiência..."
                             value={comment}

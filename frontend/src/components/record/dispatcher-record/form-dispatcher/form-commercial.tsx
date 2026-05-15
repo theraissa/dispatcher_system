@@ -175,6 +175,7 @@ export default function FormCommercial({ dispatcher, office, onChange, readOnly 
         <InlineField className="md:flex-[0.4]">
           <LabelForm title="Estado" />
           <CommandForm
+            type="state"
             options={ESTADOS_BR} // Aquela lista estática que criamos
             value={office.state || ""}
             placeholder="UF"
@@ -191,6 +192,7 @@ export default function FormCommercial({ dispatcher, office, onChange, readOnly 
         <InlineField>
           <LabelForm title="Cidade" />
           <CommandForm
+            type="city"
             options={cities} // Cidades vindas da API do IBGE (via useEffect)
             value={office.city || ""}
             placeholder={loadingCities ? "Carregando..." : "Selecione a cidade"}
