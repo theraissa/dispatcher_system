@@ -15,7 +15,7 @@ export function useUpdateClientProfilePublic() {
      * Realiza atualização do perfil do usuário.
      */
     async function updateProfile(
-        userId: string,
+        userId: number,
         data: ProfilePublicUser
     ) {
         try {
