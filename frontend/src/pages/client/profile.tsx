@@ -68,7 +68,7 @@ export default function ProfileClient() {
             // Adiciona atualização pública caso exista alteração
             if (pendingPublicData) {
                 promises.push(
-                    updateProfile(user.id.toString(), {
+                    updateProfile(user.id, {
                         instagram: pendingPublicData.instagram || "",
                         website: pendingPublicData.website || "",
                         photo: pendingPublicData.photoFile ?? ""
