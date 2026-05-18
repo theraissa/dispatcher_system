@@ -68,7 +68,7 @@ export default function ProfileInfo({ dispatcherId, userId }:
             // 2. Se houver alterações no cabeçalho, anexa a requisição pública na fila
             if (pendingPublicData) {
                 promises.push(
-                    updateProfile(userId.toString(), {
+                    updateProfile(userId, {
                         instagram: pendingPublicData.instagram || "",
                         website: pendingPublicData.website || "",
                         photo: pendingPublicData.photoFile ?? ""
