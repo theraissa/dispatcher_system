@@ -2,7 +2,7 @@
 
 import os
 
-from flask import Flask, Response, g, jsonify, request
+from flask import Flask, Response, g, jsonify, request, send_from_directory
 from flask_cors import CORS
 from flask_migrate import upgrade
 from werkzeug.exceptions import HTTPException
@@ -116,6 +116,11 @@ def create_app():
         """Rota protegida para testar autenticação."""
         user_id = g.user_id
         return jsonify({"user_id": user_id}), 200
+
+    @app.get("/api/dispatcher-system/uploads/profile/<path:filename>")
+    def uploaded_files(filename):
+        """Serve imagens de perfil dos usuários."""
+        return send_from_directory("uploads/profile", filename)
 
     return app
 

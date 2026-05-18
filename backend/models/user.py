@@ -31,6 +31,9 @@ class UserResponse(BaseModel):
     contact: Optional[str]
     email: Optional[str]
     password: Optional[str]
+    photo: Optional[str]
+    instagram: Optional[str]
+    website: Optional[str]
     created_at: datetime
     updated_at: datetime
     deleted_at: Optional[datetime]
@@ -67,6 +70,25 @@ class AddressResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     deleted_at: Optional[datetime]
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class UpdateUserProfileRequest(BaseModel):
+    """Modelo de atualização parcial do Profile."""
+
+    instagram: Optional[str] = None
+    website: Optional[str] = None
+
+    model_config = ConfigDict(extra="ignore")
+
+
+class UserProfileResponse(BaseModel):
+    """Modelo de atualização parcial do Profile."""
+
+    photo: Optional[str] = None
+    instagram: Optional[str] = None
+    website: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 

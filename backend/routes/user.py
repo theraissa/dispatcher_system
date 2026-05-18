@@ -5,9 +5,11 @@ Responsável pelo gerenciamento de usuários do sistema,
 incluindo operações de cadastro, consulta e atualização.
 """
 
+import json
+
 from flask import Flask, Response, jsonify, request
 
-from models.user import CreateUserRequest, UpdateUserRequest
+from models.user import CreateUserRequest, UpdateUserProfileRequest, UpdateUserRequest
 from require_auth import require_auth
 from services.user import UserService
 
@@ -34,7 +36,7 @@ def register_users_routes(
         list_users = user_service.list_user()
         return jsonify(list_users), 200
 
-    @app.get("/api/dispatcher-system/user/<user_id>")
+    @app.get("/api/dispatcher-system/user/<int:user_id>")
     @require_auth
     def get_user_by_id(user_id) -> Response:
         """Obtém os dados de um usuário pelo ID."""
@@ -48,7 +50,7 @@ def register_users_routes(
         created_user = user_service.create_user(body)
         return jsonify(created_user), 201
 
-    @app.put("/api/dispatcher-system/user/<user_id>")
+    @app.put("/api/dispatcher-system/user/<int:user_id>")
     @require_auth
     def update_user(user_id) -> Response:
         """Atualiza os dados de um usuário."""
@@ -56,7 +58,20 @@ def register_users_routes(
         updated_user = user_service.update_user(user_id, body)
         return jsonify(updated_user), 200
 
-    @app.delete("/api/dispatcher-system/user/<user_id>")
+    @app.put("/api/dispatcher-system/user/<int:user_id>/profile")
+    @require_auth
+    def update_user_profile_public(user_id) -> Response:
+        """Atualiza os dados do perfil de um usuário."""
+        data = json.loads(request.form.get("data", "{}"))
+        photo = request.files.get("photo")
+        result = user_service.update_user_profile_public(
+            user_id=user_id,
+            data=UpdateUserProfileRequest(**data),
+            photo=photo,
+        )
+        return jsonify(result), 200
+
+    @app.delete("/api/dispatcher-system/user/<int:user_id>")
     @require_auth
     def delete_user(user_id) -> Response:
         """Remove um usuário do sistema."""

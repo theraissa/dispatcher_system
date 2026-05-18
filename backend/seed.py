@@ -4,12 +4,11 @@ from datetime import datetime
 
 from database import db
 from database.tables import (
-    UserDB,
     DispatcherDB,
-    ProfileDB,
     OfficeDB,
     ServiceDB,
     ServiceDetailsDB,
+    UserDB,
 )
 
 
@@ -32,6 +31,8 @@ def seed():
         contact="55999999999",
         email="pedro@gmail.com",
         password="1234",
+        instagram="https://instagram.com/pedro",
+        website="https://pedrodespachante.com",
     )
 
     user2 = UserDB(
@@ -41,6 +42,8 @@ def seed():
         contact="55888888888",
         email="maria@gmail.com",
         password="1234",
+        instagram="https://instagram.com/maria",
+        website="https://mariadespachante.com",
     )
 
     db.session.add_all([user1, user2])
@@ -62,28 +65,6 @@ def seed():
     )
 
     db.session.add_all([dispatcher1, dispatcher2])
-    db.session.flush()
-
-    # =========================
-    # DISPATCHER PROFILE (NOVO)
-    # =========================
-    profile1 = ProfileDB(
-        dispatcher_id=dispatcher1.id,
-        photo="https://i.pravatar.cc/200?img=1",
-        instagram="https://instagram.com/pedro",
-        whatsapp="55999999999",
-        website="https://pedrodespachante.com",
-    )
-
-    profile2 = ProfileDB(
-        dispatcher_id=dispatcher2.id,
-        photo="https://i.pravatar.cc/200?img=2",
-        instagram="https://instagram.com/maria",
-        whatsapp="55888888888",
-        website="https://mariadespachante.com",
-    )
-
-    db.session.add_all([profile1, profile2])
     db.session.flush()
 
     # =========================

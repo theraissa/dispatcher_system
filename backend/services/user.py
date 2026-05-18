@@ -2,14 +2,27 @@
 Serviço responsável pelo gerenciamento de usuários no sistema.
 """
 
+import os
+import uuid
 from datetime import datetime
 from typing import Any
 
 from flask import abort
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.datastructures import FileStorage
+from werkzeug.utils import secure_filename
 
 from database.tables import AddressDB, UserDB
-from models.user import AddressResponse, CreateUserRequest, ListUserFullResponse, ListUserResponse, UpdateUserRequest, UserResponse
+from models.user import (
+    AddressResponse,
+    CreateUserRequest,
+    ListUserFullResponse,
+    ListUserResponse,
+    UpdateUserProfileRequest,
+    UpdateUserRequest,
+    UserProfileResponse,
+    UserResponse,
+)
 
 
 class UserService:
@@ -34,9 +47,6 @@ class UserService:
 
         Returns:
             ListUserResponse: Lista de usuários cadastrados.
-
-        Notes:
-            - Retorna lista vazia caso não existam usuários.
         """
         list_users = UserDB.query.filter(UserDB.deleted_at.is_(None)).all()
         response = ListUserResponse(root=[UserResponse.model_validate(user) for user in list_users])
@@ -55,10 +65,6 @@ class UserService:
             dict: Estrutura contendo:
                 - user
                 - address (opcional)
-
-        Raises:
-            HTTPException:
-                - 404: Caso o usuário não seja encontrado.
         """
         user = UserDB.query.filter(UserDB.id == user_id, UserDB.deleted_at.is_(None)).first()
         if not user:
@@ -111,10 +117,6 @@ class UserService:
             dict[str, Any]: Estrutura contendo:
                 - user atualizado
                 - address atualizado (ou None)
-
-        Raises:
-            HTTPException:
-                - 404: Caso o usuário não seja encontrado.
         """
         user_to_update = UserDB.query.filter(UserDB.id == user_id, UserDB.deleted_at.is_(None)).first()
         if not user_to_update:
@@ -155,6 +157,73 @@ class UserService:
             "address": AddressResponse.model_validate(updated_address).model_dump() if updated_address else None,
         }
 
+    def update_user_profile_public(self, user_id: int, data: UpdateUserProfileRequest, photo: FileStorage | None = None) -> dict:
+        """
+        Atualiza o perfil público do usuário.
+
+        Permite atualização de:
+            - instagram
+            - whatsapp
+            - website
+            - photo
+
+        Args:
+            user_id (int): ID do usuário.
+            data (UpdateUserProfileRequest): Dados do perfil.
+            photo: Arquivo da imagem enviado via multipart/form-data.
+        Returns:
+            dict: Dados atualizados do perfil.
+        """
+        try:
+            user = UserDB.query.filter(UserDB.id == user_id, UserDB.deleted_at.is_(None)).first()
+            if not user:
+                abort(404, description="Usuário não encontrado!")
+
+            for key, value in data.model_dump(exclude_unset=True).items():
+                setattr(user, key, value)
+
+            if photo:
+                if not photo.mimetype.startswith("image/"):
+                    abort(400, description="Arquivo de imagem inválido!")
+
+                # Sanitiza o nome do arquivo enviado pelo usuário,
+                filename = secure_filename(photo.filename)
+
+                # Extrai a extensão do arquivo.
+                _, extension = os.path.splitext(filename)
+                extension = extension.replace(".", "").lower()
+
+                allowed_extensions = {"png", "jpg", "jpeg"}
+
+                if extension.lower() not in allowed_extensions:
+                    abort(400, description="Formato de imagem inválido!")
+
+                # Gera um nome único para evitar conflitos entre uploads.
+                unique_filename = f"{uuid.uuid4()}.{extension}"
+
+                # Define a pasta onde as imagens serão armazenadas.
+                upload_folder = "uploads/profile"
+
+                # Garante que a pasta exista.
+                os.makedirs(upload_folder, exist_ok=True)
+
+                # Monta o caminho completo do arquivo no sistema operacional.
+                filepath = os.path.join(upload_folder, unique_filename)
+
+                # Salva fisicamente o arquivo enviado no diretório definido.
+                photo.save(filepath)
+
+                # Salva no banco o caminho público da imagem.
+                user.photo = f"/uploads/profile/{unique_filename}"
+
+            self.db.session.commit()
+
+            return UserProfileResponse.model_validate(user).model_dump()
+
+        except Exception as e:
+            self.db.session.rollback()
+            raise e
+
     def delete_user(self, user_id: str) -> dict[str, Any]:
         """
         Realiza a exclusão lógica (soft delete) de um usuário.
@@ -166,10 +235,6 @@ class UserService:
 
         Returns:
             dict[str, Any]: Dados do usuário após marcação de exclusão.
-
-        Raises:
-            HTTPException:
-                - 404: Caso o usuário não seja encontrado.
         """
         user_to_delete = UserDB.query.filter(
             UserDB.id == user_id,

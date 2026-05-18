@@ -42,7 +42,7 @@ class CreateOfficeRequest(BaseModel):
     address: Optional[str] = None
     city: Optional[str] = None
     state: Optional[str] = None
-    zip_code: Optional[int] = None
+    zip_code: Optional[str] = None
 
     model_config = ConfigDict(extra="forbid")
 
@@ -58,34 +58,7 @@ class OfficeResponse(BaseModel):
     address: Optional[str]
     city: Optional[str]
     state: Optional[str]
-    zip_code: Optional[int]
-    created_at: datetime
-    updated_at: datetime
-    deleted_at: Optional[datetime]
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class CreateProfileRequest(BaseModel):
-    """Modelo de criação do Profile."""
-
-    photo: Optional[str] = None
-    instagram: Optional[str] = None
-    whatsapp: Optional[str] = None
-    website: Optional[str] = None
-
-    model_config = ConfigDict(extra="forbid")
-
-
-class ProfileResponse(BaseModel):
-    """Modelo de resposta para o Profile."""
-
-    id: int
-    dispatcher_id: Optional[int]
-    photo: Optional[str]
-    instagram: Optional[str]
-    whatsapp: Optional[str]
-    website: Optional[str]
+    zip_code: Optional[str]
     created_at: datetime
     updated_at: datetime
     deleted_at: Optional[datetime]
@@ -99,7 +72,6 @@ class CreateDispatcherFullRequest(BaseModel):
     user: CreateUserRequest
     dispatcher: CreateDispatcherRequest
     office: CreateOfficeRequest
-    profile: CreateProfileRequest
 
 
 class CreateDispatcherFullResponse(BaseModel):
@@ -108,7 +80,6 @@ class CreateDispatcherFullResponse(BaseModel):
     user: UserResponse
     dispatcher: DispatcherResponse
     office: OfficeResponse
-    profile: ProfileResponse
 
 
 class ListDispatcherResponse(RootModel):
@@ -135,18 +106,7 @@ class UpdateOfficeRequest(BaseModel):
     address: Optional[str] = None
     city: Optional[str] = None
     state: Optional[str] = None
-    zip_code: Optional[int] = None
-
-    model_config = ConfigDict(extra="ignore")
-
-
-class UpdateProfileRequest(BaseModel):
-    """Modelo de atualização parcial do Profile."""
-
-    photo: Optional[str] = None
-    instagram: Optional[str] = None
-    whatsapp: Optional[str] = None
-    website: Optional[str] = None
+    zip_code: Optional[str] = None
 
     model_config = ConfigDict(extra="ignore")
 
@@ -157,6 +117,5 @@ class UpdateDispatcherFullRequest(BaseModel):
     user: Optional[CreateUserRequest] = None
     dispatcher: Optional[UpdateDispatcherRequest] = None
     office: Optional[UpdateOfficeRequest] = None
-    profile: Optional[UpdateProfileRequest] = None
 
     model_config = ConfigDict(extra="ignore")

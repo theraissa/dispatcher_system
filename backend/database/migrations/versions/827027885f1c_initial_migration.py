@@ -1,8 +1,8 @@
-"""initial migration
+"""initial_migration
 
-Revision ID: 8e5e0d48acd6
+Revision ID: 827027885f1c
 Revises:
-Create Date: 2026-04-11 01:55:08.006458
+Create Date: 2026-05-17 23:15:11.885970
 
 """
 
@@ -10,7 +10,7 @@ from alembic import op
 import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
-revision = "8e5e0d48acd6"
+revision = "827027885f1c"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -37,6 +37,9 @@ def upgrade():
         sa.Column("contact", sa.String(), nullable=True),
         sa.Column("email", sa.String(), nullable=True),
         sa.Column("password", sa.String(), nullable=True),
+        sa.Column("photo", sa.String(), nullable=True),
+        sa.Column("instagram", sa.String(), nullable=True),
+        sa.Column("website", sa.String(), nullable=True),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=True),
         sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=True),
         sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
@@ -61,6 +64,7 @@ def upgrade():
             ["user.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("user_id"),
     )
     op.create_table(
         "dispatcher",
@@ -75,23 +79,6 @@ def upgrade():
         sa.ForeignKeyConstraint(
             ["user_id"],
             ["user.id"],
-        ),
-        sa.PrimaryKeyConstraint("id"),
-    )
-    op.create_table(
-        "dispatcher_profile",
-        sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column("dispatcher_id", sa.Integer(), nullable=False),
-        sa.Column("photo", sa.String(), nullable=True),
-        sa.Column("instagram", sa.String(), nullable=True),
-        sa.Column("whatsapp", sa.String(), nullable=True),
-        sa.Column("website", sa.String(), nullable=True),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=True),
-        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=True),
-        sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
-        sa.ForeignKeyConstraint(
-            ["dispatcher_id"],
-            ["dispatcher.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
     )
@@ -232,7 +219,6 @@ def downgrade():
     op.drop_table("ticket")
     op.drop_table("service_details")
     op.drop_table("office")
-    op.drop_table("dispatcher_profile")
     op.drop_table("dispatcher")
     op.drop_table("address")
     op.drop_table("user")

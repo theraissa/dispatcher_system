@@ -54,6 +54,9 @@ class UserDB(db.Model):
     contact = Column(String)
     email = Column(String)
     password = Column(String)
+    photo = Column(String)
+    instagram = Column(String)
+    website = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True))
@@ -100,28 +103,9 @@ class DispatcherDB(db.Model):
     deleted_at = Column(DateTime(timezone=True))
 
     user = db.relationship("UserDB", back_populates="dispatcher")
-    profile = db.relationship("ProfileDB", back_populates="dispatcher", uselist=False)
     office = db.relationship("OfficeDB", back_populates="dispatcher", uselist=False)
     service_details = db.relationship("ServiceDetailsDB", back_populates="dispatcher")
     ticket = db.relationship("TicketDB", back_populates="dispatcher")
-
-
-class ProfileDB(db.Model):
-    """Perfil público do despachante"""
-
-    __tablename__ = "dispatcher_profile"
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    dispatcher_id = Column(Integer, ForeignKey("dispatcher.id"), nullable=False)
-    photo = Column(String)
-    instagram = Column(String)
-    whatsapp = Column(String)
-    website = Column(String)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
-    deleted_at = Column(DateTime(timezone=True))
-
-    dispatcher = db.relationship("DispatcherDB", back_populates="profile")
 
 
 class OfficeDB(db.Model):

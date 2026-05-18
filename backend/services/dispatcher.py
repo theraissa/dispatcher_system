@@ -9,14 +9,13 @@ from flask import abort
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
 
-from database.tables import DispatcherDB, OfficeDB, ProfileDB, ServiceDB, ServiceDetailsDB, UserDB
+from database.tables import DispatcherDB, OfficeDB, ServiceDB, ServiceDetailsDB, UserDB
 from models.dispatcher import (
     CreateDispatcherFullRequest,
     CreateDispatcherFullResponse,
     DispatcherResponse,
     ListDispatcherResponse,
     OfficeResponse,
-    ProfileResponse,
     UpdateDispatcherFullRequest,
 )
 from models.user import UserResponse
@@ -30,7 +29,6 @@ class DispatcherService:
         - Usuário (User)
         - Despachante (Dispatcher)
         - Escritório (Office)
-        - Perfil (Profile)
 
     Args:
         db (SQLAlchemy): Sessão do SQLAlchemy utilizada para persistência.
@@ -50,27 +48,24 @@ class DispatcherService:
                 - Dados do usuário
                 - Dados do despachante
                 - Informações do escritório
-                - Perfil
 
             Retorna lista vazia caso não existam registros.
         """
         results = (
-            self.db.session.query(DispatcherDB, UserDB, OfficeDB, ProfileDB)
+            self.db.session.query(DispatcherDB, UserDB, OfficeDB)
             .join(UserDB, DispatcherDB.user_id == UserDB.id)
             .join(OfficeDB, OfficeDB.dispatcher_id == DispatcherDB.id)
-            .join(ProfileDB, ProfileDB.dispatcher_id == DispatcherDB.id)
             .filter(DispatcherDB.deleted_at.is_(None))
             .all()
         )
 
         response = []
-        for dispatcher, user, office, profile in results:
+        for dispatcher, user, office in results:
             response.append(
                 CreateDispatcherFullResponse(
                     user=UserResponse.model_validate(user),
                     dispatcher=DispatcherResponse.model_validate(dispatcher),
                     office=OfficeResponse.model_validate(office),
-                    profile=ProfileResponse.model_validate(profile),
                 )
             )
         return ListDispatcherResponse(root=response).model_dump()
@@ -87,7 +82,6 @@ class DispatcherService:
                 - user
                 - dispatcher
                 - office (opcional)
-                - profile
         """
         dispatcher = (
             self.db.session.query(DispatcherDB).filter(DispatcherDB.user_id == dispatcher_id, DispatcherDB.deleted_at.is_(None)).first()
@@ -98,13 +92,11 @@ class DispatcherService:
 
         user = self.db.session.query(UserDB).filter(UserDB.id == dispatcher.user_id).first()
         office = self.db.session.query(OfficeDB).filter(OfficeDB.dispatcher_id == dispatcher.id).first()
-        profile = self.db.session.query(ProfileDB).filter(ProfileDB.dispatcher_id == dispatcher.id).first()
 
         return CreateDispatcherFullResponse(
             user=UserResponse.model_validate(user),
             dispatcher=DispatcherResponse.model_validate(dispatcher),
             office=OfficeResponse.model_validate(office) if office else None,
-            profile=ProfileResponse.model_validate(profile),
         ).model_dump()
 
     def create_dispatcher(self, dispatcher_data: CreateDispatcherFullRequest) -> dict[str, Any]:
@@ -157,7 +149,7 @@ class DispatcherService:
                 address=dispatcher_data.office.address,
                 city=dispatcher_data.office.city,
                 state=dispatcher_data.office.state,
-                zip_code=int(dispatcher_data.office.zip_code),
+                zip_code=dispatcher_data.office.zip_code,
             )
 
             self.db.session.add(new_office)
@@ -210,7 +202,7 @@ class DispatcherService:
                     setattr(office, key, value)
 
             self.db.session.commit()
-            return {"message": "Profile updated successfully"}
+            return {"message": "Perfil do despachante atualizado com sucesso!"}
 
         except Exception as e:
             self.db.session.rollback()
@@ -257,10 +249,9 @@ class DispatcherService:
             ListDispatcherResponse: Lista de despachantes que correspondem ao filtro.
         """
         base_query = (
-            self.db.session.query(DispatcherDB, UserDB, OfficeDB, ProfileDB)
+            self.db.session.query(DispatcherDB, UserDB, OfficeDB)
             .join(UserDB, DispatcherDB.user_id == UserDB.id)
             .join(OfficeDB, OfficeDB.dispatcher_id == DispatcherDB.id)
-            .join(ProfileDB, ProfileDB.dispatcher_id == DispatcherDB.id)
             .filter(DispatcherDB.deleted_at.is_(None))
         )
 
@@ -284,13 +275,12 @@ class DispatcherService:
         results = base_query.all()
 
         response = []
-        for dispatcher, user, office, profile in results:
+        for dispatcher, user, office in results:
             response.append(
                 CreateDispatcherFullResponse(
                     user=UserResponse.model_validate(user),
                     dispatcher=DispatcherResponse.model_validate(dispatcher),
                     office=OfficeResponse.model_validate(office),
-                    profile=ProfileResponse.model_validate(profile),
                 )
             )
 
