@@ -67,12 +67,15 @@ export default function ProfileServices({ dispatcherId }: { dispatcherId: number
      * evitando duplicação na seleção.
      */
     const availableServices = allServices.filter(
-      (s) => !serviceDetails.some((userService) => userService.id === s.id)
+      (s) => !serviceDetails.some(
+        (userService) => userService.id === s.id || userService.service_id === s.id
+      )
     );
 
     return (
       <SelectServices
         availableServices={availableServices}
+        currentServices={serviceDetails as any[]}
         // Cancela seleção e retorna para lista principal.
         onCancel={() => setMode("view")}
         // Adiciona novos serviços e volta para lista principal.
@@ -207,8 +210,7 @@ export default function ProfileServices({ dispatcherId }: { dispatcherId: number
                 <Search size={24} />
               </div>
               <p className="text-zinc-500 text-sm md:text-base">
-                Nenhum serviço encontrado para{" "}
-                <span className="text-[#21314D] font-bold">"{search}"</span>
+                Nenhum serviço encontrado.
               </p>
             </div>
           )}

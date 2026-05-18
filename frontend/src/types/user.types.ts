@@ -22,6 +22,9 @@ export type UserResponse = {
     email?: string
     date_birth?: string
     contact?: string
+    photo?: string
+    instagram?: string
+    website?: string
     created_at: string
     updated_at: string
     deleted_at?: string | null
@@ -34,4 +37,13 @@ export type UserResponse = {
 export type ProfileUser = {
     user: UserType
     address: Address
+}
+
+/*
+* Representa o perfil publico do cliente, como redes sociais e foto de perfil.
+*/
+export type ProfilePublicUser = {
+    photo: File | string
+    instagram: string
+    website: string
 }

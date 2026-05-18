@@ -4,43 +4,28 @@ import { ArrowLeft, CheckCircle2, PlusCircle, Search } from "lucide-react";
 import { useState } from "react";
 import { ProfileCard, ProfileContainer } from "./layout/profile-card";
 
-
 /**
  * Props do componente SelectServices.
  */
 type SelectServicesProps = {
-  // Lista de serviços disponíveis para seleção.
   availableServices: Service[];
-  // Callback executado ao confirmar a seleção.
+  currentServices: Service[];
   onAdd: (services: Service[]) => void;
-  // Callback executado ao cancelar a operação.
   onCancel: () => void;
 };
 
-
-/**
- * Componente responsável pela seleção de novos serviços.
- *
- * Permite:
- * - Buscar serviços disponíveis
- * - Selecionar múltiplos serviços
- * - Confirmar adição ao perfil
- * - Cancelar operação
- */
 export default function SelectServices({
-  availableServices, onAdd, onCancel,
+  availableServices,
+  currentServices,
+  onAdd,
+  onCancel,
 }: SelectServicesProps) {
 
-  //Texto utilizado para filtrar serviços por nome.
   const [search, setSearch] = useState("");
-  // Lista de serviços selecionados pelo usuário.
   const [selectedServices, setSelectedServices] = useState<Service[]>([]);
 
   /**
    * Alterna o estado de seleção de um serviço.
-   *
-   * - Se já estiver selecionado: remove da lista
-   * - Se não estiver selecionado: adiciona à lista
    */
   function toggleService(service: Service) {
     setSelectedServices((prev) =>
@@ -50,13 +35,35 @@ export default function SelectServices({
     );
   }
 
-  /**
-   * Lista de serviços filtrados pelo texto de busca.
-   * A comparação é feita de forma case-insensitive.
-   */
-  const filteredServices = availableServices.filter((service) =>
-    service.name.toLowerCase().includes(search.toLowerCase())
-  );
+  // AJUSTE 1: Função para tratar a confirmação e limpar os estados
+  function handleConfirmAdd() {
+    if (selectedServices.length === 0) return;
+
+    // Passa os dados para o componente pai
+    onAdd(selectedServices);
+
+    // Zera o componente local após o sucesso
+    setSelectedServices([]);
+    setSearch("");
+  }
+
+  // AJUSTE 2: Função para tratar o cancelamento/retorno e limpar os estados
+  function handleCancelAction() {
+    setSelectedServices([]);
+    setSearch("");
+    onCancel();
+  }
+
+  const filteredServices = availableServices.filter((service) => {
+    const matchesSearch = service.name.toLowerCase().includes(search.toLowerCase());
+
+    // Garante que verifica tanto por .id quanto por .service_id vindo dos dados do despachante
+    const alreadyLinked = currentServices.some(
+      (s) => s.id === service.id || (s as any).service_id === service.id
+    );
+
+    return matchesSearch && !alreadyLinked;
+  });
 
   return (
     <ProfileContainer>
@@ -114,7 +121,6 @@ export default function SelectServices({
                     : "bg-white border-zinc-100 hover:border-zinc-300"
                 )}
               >
-                {/* Nome do serviço */}
                 <span
                   className={cn(
                     "text-[16px] font-bold transition-colors",
@@ -124,7 +130,6 @@ export default function SelectServices({
                   {service.name}
                 </span>
 
-                {/* Ícone de estado (selecionado ou não) */}
                 {isSelected ? (
                   <CheckCircle2 className="text-[#21314D]" size={24} />
                 ) : (
@@ -134,7 +139,6 @@ export default function SelectServices({
             );
           })}
 
-          {/* Estado vazio */}
           {filteredServices.length === 0 && (
             <div className="py-10 text-center bg-zinc-50 rounded-3xl border-2 border-dashed border-zinc-200">
               <p className="text-zinc-400 text-sm">
@@ -149,19 +153,19 @@ export default function SelectServices({
            ========================= */}
         <div className="flex items-center justify-between pt-6 border-t border-zinc-100">
 
-          {/* Ação de cancelamento */}
+          {/* Chamando a nova ação de cancelamento */}
           <button
-            onClick={onCancel}
+            onClick={handleCancelAction}
             className="cursor-pointer flex items-center gap-2 px-4 py-2 text-zinc-500 font-bold text-sm md:text-[16px] hover:text-[#1E1E1E] transition-colors"
           >
             <ArrowLeft size={18} />
             Voltar
           </button>
 
-          {/* Ação de confirmação */}
+          {/* Chamando a nova ação de confirmação */}
           <button
             disabled={selectedServices.length === 0}
-            onClick={() => onAdd(selectedServices)}
+            onClick={handleConfirmAdd}
             className={cn(
               "cursor-pointer flex items-center gap-2 px-8 py-2 md:py-3  bg-[#21314D] text-white rounded-xl font-bold text-xs md:text-[16px] transition-all",
               "hover:bg-[#1A263D] active:scale-95 disabled:bg-zinc-200 disabled:text-zinc-400 disabled:cursor-not-allowed shadow-sm"

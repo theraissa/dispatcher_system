@@ -247,7 +247,6 @@ export default function FormProfileClient({ data, handleChange, isEditing }: For
                 </InlineField>
             </InlineFields>
 
-            {/* CAMPOS DE CIDADE E ESTADO ATUALIZADOS */}
             <InlineFields>
                 <InlineField className="md:flex-[0.4]">
                     <LabelForm title="Estado (UF)" />

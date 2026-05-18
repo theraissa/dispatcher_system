@@ -1,4 +1,4 @@
-import type { CreateDispatcher, CreateOffice, CreateUserType, Dispatcher, Office, Profile, UserType } from "./type";
+import type { CreateDispatcher, CreateOffice, CreateUserType, Dispatcher, Office, UserType } from "./type";
 
 
 /**
@@ -26,5 +26,4 @@ export type ProfileDispatcher = {
   user: UserType
   dispatcher: Dispatcher
   office: Office
-  profile: Profile
 }

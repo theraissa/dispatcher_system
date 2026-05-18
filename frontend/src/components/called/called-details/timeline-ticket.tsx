@@ -69,13 +69,14 @@ export function TimelineTicket({ ticketId, isDispatcher }: { ticketId: number, i
                         para garantir que a esteira siga horizontalmente.
                     */}
                     <div className="overflow-x-auto pb-8 scrollbar-thin scrollbar-thumb-zinc-200 scrollbar-track-transparent">
-                        <div className="relative flex items-center min-w-max px-10 py-4">
+
+                        <div className="relative flex items-center min-w-max px-10 md:px-20 py-4">
 
                             {/* Linha de fundo (conectora) */}
                             {/* Linha de fundo (conectora) */}
                             {data.length > 1 && (
                                 <div
-                                    className="absolute top-[42px] left-[50px] md:left-[60px] right-[50px] h-[3px] md:h-[2px] bg-zinc-200 md:w-[calc(100%-400px)]"
+                                    className="absolute top-[42px] left-[60px] md:left-[120px] right-[50px] h-[2px] bg-zinc-200 md:w-[calc(100%-250px)]"
                                     style={{ zIndex: 0 }}
                                 />
                             )}

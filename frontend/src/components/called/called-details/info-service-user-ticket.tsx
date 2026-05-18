@@ -28,18 +28,36 @@ export function InfoServiceAndUser({ ticket }: InfoServiceAndUserProps) {
 
     const { createTimeline, refetch } = useTicketTimeline(ticket.id);
 
-    async function handleCancel() {
+    // Função que efetivamente encerra o chamado após a confirmação
+    async function executeCancellation() {
         try {
             await createTimeline({
                 status: "encerrado",
-                description: "Chamado encerrado pelo usuário",
+                description: "Chamado encerrado pelo usuário devido a conflito ou impedimento.",
             });
             await refetch();
-            toast.info("Chamado encerrado.");
-
+            toast.success("Chamado encerrado com sucesso.");
         } catch (error) {
             console.error("Erro ao encerrar chamado:", error);
+            toast.error("Não foi possível encerrar o chamado.");
         }
+    }
+
+    // Intercepta o clique e joga a responsabilidade de confirmação para o Sonner
+    function handleCancelConfirmation() {
+        toast.warning("Tem certeza que deseja encerrar?", {
+            description: "Esta ação indica que houve algum impedimento que impossibilitou o andamento do processo.",
+            duration: Infinity,
+            action: {
+                label: "Sim, encerrar",
+                onClick: () => executeCancellation(),
+            },
+            cancel: {
+                label: "Voltar",
+                onClick: () => toast.dismiss(),
+            },
+
+        });
     }
 
     return (
@@ -110,9 +128,9 @@ export function InfoServiceAndUser({ ticket }: InfoServiceAndUserProps) {
 
                 {/* BOTÃO DE CANCELAR */}
                 <div className="flex justify-end pt-6 border-t">
-                    {ticket.status.toLowerCase() !== "cancelado" && (
+                    {ticket.status.toLowerCase() !== "cancelado" && ticket.status.toLowerCase() !== "encerrado" && (
                         <button
-                            onClick={handleCancel}
+                            onClick={handleCancelConfirmation}
                             className="cursor-pointer flex items-center gap-2 bg-red-50 hover:bg-red-500 text-red-500 hover:text-white px-6 py-2.5 rounded-xl text-xs md:text-sm font-bold transition-all border border-red-200 active:scale-95"
                         >
                             <XCircle size={16} />

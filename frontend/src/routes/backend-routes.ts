@@ -17,9 +17,10 @@ export const BACKEND_ROUTES = {
         logout: `/logout`,
     },
 
-    users: {
-        updateById: (id: string) => `/user/${id}`,
-        getById: (id: string) => `/user/${id}`,
+    user: {
+        updateById: (id: number) => `/user/${id}`,
+        updateProfilePublicById: (id: number) => `/user/${id}/profile`,
+        getById: (id: number) => `/user/${id}`,
         create: `/user`,
     },
 

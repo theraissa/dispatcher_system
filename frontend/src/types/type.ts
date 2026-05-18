@@ -12,6 +12,9 @@ export type UserType = {
     contact?: string;
     password?: string;
     confirm_password?: string;
+    photo?: string
+    instagram?: string
+    website?: string
 }
 export type CreateUserType = {
     name: string;
@@ -80,17 +83,6 @@ export type CreateOffice = {
     zip_code: string;
     city: string;
     state: string;
-}
-
-/*
-* Representa os dados específicos do perfil do despachante.
-*/
-export type Profile = {
-    id: number;
-    photo: string
-    instagram: string
-    whatsapp: string
-    website: string
 }
 
 /*

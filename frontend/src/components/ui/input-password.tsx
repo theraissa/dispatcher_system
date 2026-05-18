@@ -10,21 +10,47 @@ interface InputPasswordProps extends React.InputHTMLAttributes<HTMLInputElement>
 export default function InputPassword({ readOnly, ...props }: InputPasswordProps) {
     const [showPassword, setShowPassword] = useState(false);
 
+    // ESTADO CHAVE: Começa como falso para o navegador achar que é um input de texto comum
+    const [hasInteracted, setHasInteracted] = useState(false);
+
+    // Define o tipo real baseado na interação do usuário
+    // Se ele nunca clicou/digitou, mandamos "text". 
+    // Assim que ele interagir, respeitamos o botão de "olhinho" (showPassword)
+    const currentType = !hasInteracted
+        ? "text"
+        : (showPassword ? "text" : "password");
+
     return (
         <div className="relative w-full">
             <InputForm
                 {...props}
-                type={showPassword ? "text" : "password"}
-                icon={props.icon || <Lock size={18} />} // Lock por padrão se não enviar outro
+                type={currentType}
+
+                // Captura o momento em que o usuário foca ou digita para ativar o comportamento de senha
+                onFocus={(e) => {
+                    setHasInteracted(true);
+                    props.onFocus?.(e);
+                }}
+                onChange={(e) => {
+                    setHasInteracted(true);
+                    props.onChange?.(e);
+                }}
+
+                // Mantém a estilização de bolinhas de senha mesmo quando o navegador finge ser texto
+                className={`${props.className || ""} ${!hasInteracted && !showPassword ? "[text-security:disc] [-webkit-text-security:disc]" : ""}`}
+
+                icon={props.icon || <Lock size={18} />}
                 readOnly={readOnly}
                 rightElement={
-                    /* Só mostra o botão se não for readOnly */
                     !readOnly && (
                         <button
                             type="button"
-                            onClick={() => setShowPassword(!showPassword)}
+                            onClick={() => {
+                                setHasInteracted(true); // Garante a ativação ao clicar no olho
+                                setShowPassword(!showPassword);
+                            }}
                             className="text-zinc-400 hover:text-[#21314D] transition-colors p-1"
-                            tabIndex={-1} // Evita que o Tab pare no ícone, facilitando a digitação
+                            tabIndex={-1}
                         >
                             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>

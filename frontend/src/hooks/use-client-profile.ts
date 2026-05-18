@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 /**
  * Hook responsável por gerenciar o perfil do usuário.
  */
-export function useClientProfile(userId: string) {
+export function useClientProfile(userId: number) {
     const [data, setData] = useState<ProfileUser | null>(null)
     const [loading, setLoading] = useState(true)
 

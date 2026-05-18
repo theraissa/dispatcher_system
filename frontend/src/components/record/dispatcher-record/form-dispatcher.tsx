@@ -53,7 +53,7 @@ export default function FormDispatcher() {
   }
 
   return (
-    <div className="w-full flex flex-col bg-[#F3EDE2] py-18">
+    <div className="w-full flex-1 flex flex-col py-10 md:py-18">
       <FormSubmit onSubmit={handleSubmit}>
         {error && <span style={{ color: "red" }}>{error}</span>}
 
