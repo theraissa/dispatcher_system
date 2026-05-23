@@ -8,6 +8,7 @@ resumo de avaliações atribuídas aos despachantes.
 # pylint: disable=not-callable
 
 from flask import abort
+from flask_jwt_extended import get_jwt_identity
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload
@@ -46,7 +47,7 @@ class TicketReviewService:
             .all()
         )
 
-        return [ReviewResponse.model_validate(review) for review in reviews]
+        return [ReviewResponse.model_validate(review).model_dump(mode="json") for review in reviews]
 
     def create_review(self, ticket_id: int, data: CreateReviewRequest) -> ReviewResponse:
         """
@@ -67,7 +68,7 @@ class TicketReviewService:
         Returns:
             ReviewResponse: Dados da avaliação criada.
         """
-        ticket = TicketDB.query.filter(TicketDB.id == ticket_id, TicketDB.deleted_at.is_(None)).first()
+        ticket = TicketDB.query.filter(TicketDB.id == ticket_id).first()
         if not ticket:
             abort(404, description=f"Chamado com ID '{ticket_id}' não encontrado.")
 
@@ -97,7 +98,7 @@ class TicketReviewService:
             ticket_id=ticket.id,
             dispatcher_id=ticket.dispatcher_id,
             user_id=context_user_id,
-            name_user=user.name,
+            user_name=user.name,
             rating=data.rating,
             comment=data.comment,
         )

@@ -74,8 +74,6 @@ class UpdateDispatcherFullRequest(BaseModel):
     dispatcher: Optional[UpdateDispatcherRequest] = None
     address: Optional[UpdateAddressRequest] = None
 
-    model_config = ConfigDict(extra="ignore")
-
 
 class DispatcherFullResponse(BaseModel):
     """Resposta completa de despachante."""

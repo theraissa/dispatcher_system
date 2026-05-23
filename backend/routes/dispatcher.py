@@ -89,7 +89,7 @@ def register_dispatcher_routes(
     def get_services_from_dispatcher(dispatcher_id):
         """Lista todos os serviços detalhados associados a um despachante."""
         services = associate_service.get_services_details_from_dispatcher(dispatcher_id)
-        return jsonify(services), 200
+        return jsonify(services.model_dump(mode="json")), 200
 
     @app.post("/api/dispatcher-system/dispatcher/<int:dispatcher_id>/service/<int:service_id>")
     @jwt_required()

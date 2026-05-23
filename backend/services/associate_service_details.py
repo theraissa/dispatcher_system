@@ -2,7 +2,6 @@
 Serviço responsável pela associação entre despachantes e serviços.
 """
 
-import logging
 from datetime import datetime
 
 from flask import abort
@@ -12,8 +11,6 @@ from sqlalchemy.orm import joinedload
 from database.tables import ServiceDetailsDB
 from models.pagination import PaginatedResponse
 from models.service_catalog import AssociateServiceDetailsResponse, UpdateAssociateServiceDetailsRequest
-
-logger = logging.getLogger(__name__)
 
 
 class AssociateServiceDetailsDispatcherService:
@@ -67,7 +64,6 @@ class AssociateServiceDetailsDispatcherService:
             )
             for detail in paginated.items
         ]
-        logger.info("Listando serviços detalhados ativos do despachante '%s'", dispatcher_id)
         return PaginatedResponse[AssociateServiceDetailsResponse].from_pagination(paginated, response)
 
     def add_service_for_dispatcher(self, dispatcher_id: int, service_id: int) -> dict:

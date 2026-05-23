@@ -83,7 +83,13 @@ class TicketService:
                 number=ticket.user.address.number,
                 neighborhood=ticket.user.address.neighborhood,
             ),
-            service_details=ServiceDetailsInfo.model_validate(ticket.service_details),
+            service_details=ServiceDetailsInfo(
+                id=ticket.service_details.id,
+                price=ticket.service_details.price,
+                service_id=ticket.service_details.service_id,
+                name=ticket.service_details.service.name,
+                description=ticket.service_details.service.description,
+            ),
             dispatcher=DispatcherInfo(
                 name=ticket.dispatcher.user.name,
                 email=ticket.dispatcher.user.email,

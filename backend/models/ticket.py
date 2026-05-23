@@ -37,8 +37,8 @@ class ServiceDetailsInfo(BaseModel):
     id: int
     price: int
     service_id: int
-    name: Optional[str] = None
-    description: Optional[str] = None
+    name: str
+    description: str
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -70,6 +70,7 @@ class UserInfo(BaseModel):
     state: str
     number: int
     neighborhood: str
+
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -108,6 +109,8 @@ class DispatcherTicketStatisticsResponse(BaseModel):
     in_progress: int
     finished_month: int
     monthly_revenue: float
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ===============================================================
@@ -149,6 +152,8 @@ class CreateTimelineRequest(BaseModel):
 
     description: str
     status: TicketTimeline
+
+    model_config = ConfigDict(extra="ignore")
 
 
 # ===============================================================
@@ -198,7 +203,7 @@ class ReviewResponse(BaseModel):
 
     id: int
     ticket_id: int
-    name_user: str
+    user_name: str
     rating: int
     comment: Optional[str]
     created_at: datetime

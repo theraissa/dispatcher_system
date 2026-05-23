@@ -2,7 +2,6 @@
 Serviço responsável pelo gerenciamento de despachantes no sistema.
 """
 
-import logging
 from datetime import datetime
 from typing import Any
 
@@ -22,8 +21,6 @@ from models.dispatcher import (
 )
 from models.pagination import PaginatedResponse
 from models.user import AddressResponse, UserResponse
-
-logger = logging.getLogger(__name__)
 
 
 class DispatcherService:
@@ -60,7 +57,6 @@ class DispatcherService:
             )
             for d in paginated.items
         ]
-        logger.info("Listando todos os despachantes ativos")
         return PaginatedResponse[DispatcherFullResponse].from_pagination(paginated, response)
 
     def get_dispatcher_by_id(self, user_id: int) -> DispatcherFullResponse:
@@ -87,7 +83,6 @@ class DispatcherService:
         if not dispatcher:
             abort(404, description=f"Despachante com o ID {user_id} não foi encontrado.")
 
-        logger.info("Obtendo os dados do despachante com o ID '%s'.", dispatcher.id)
         return DispatcherFullResponse(
             user=UserResponse.model_validate(dispatcher.user),
             dispatcher=DispatcherResponse.model_validate(dispatcher),
@@ -157,7 +152,6 @@ class DispatcherService:
             self.db.session.add(new_dispatcher)
             self.db.session.commit()
 
-            logger.info("Despachante com o ID '%s' criado com sucesso!", new_dispatcher.id)
             return {
                 "user_id": new_user.id,
                 "dispatcher_id": new_dispatcher.id,
@@ -165,7 +159,6 @@ class DispatcherService:
             }
 
         except Exception as e:
-            logger.error("Erro ao criar o despachante. CPF do usuário: '%s'", data.user.cpf)
             self.db.session.rollback()
             raise e
 
@@ -206,11 +199,9 @@ class DispatcherService:
 
             self.db.session.commit()
 
-            logger.info("Despachante com o ID '%s' atualizado com sucesso!", update_to_dispatcher.id)
             return {"message": "Perfil do despachante atualizado com sucesso!"}
 
         except Exception as e:
-            logger.error("Erro ao atualizar o despachante. ID do usuário: '%s'", user_id)
             self.db.session.rollback()
             raise e
 
@@ -235,7 +226,6 @@ class DispatcherService:
         dispatcher_to_delete.deleted_at = datetime.now()
         self.db.session.commit()
 
-        logger.info("Despachante com o ID '%s' foi deletado logicamente com sucesso!", dispatcher_id)
         return DispatcherResponse.model_validate(dispatcher_to_delete)
 
     def search_dispatchers(

@@ -17,7 +17,7 @@ class CreateServiceCatologRequest(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
 
 class ServiceCatalogResponse(BaseModel):
@@ -62,3 +62,5 @@ class UpdateAssociateServiceDetailsRequest(BaseModel):
     """Dados para atualização do vínculo."""
 
     price: float
+
+    model_config = ConfigDict(extra="ignore")

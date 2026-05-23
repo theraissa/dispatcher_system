@@ -5,7 +5,6 @@ A timeline representa o histórico de mudanças de estado e ações realizadas
 em um ticket, garantindo rastreabilidade e controle de fluxo.
 """
 
-import logging
 from datetime import datetime
 
 from flask import abort
@@ -13,15 +12,12 @@ from flask_jwt_extended import get_jwt, get_jwt_identity
 from flask_sqlalchemy import SQLAlchemy
 
 from database.tables import TicketDB, TicketTimelineDB
-from models.pagination import PaginatedResponse
 from models.ticket import (
     VALID_TRANSITIONS,
     CreateTimelineRequest,
     TicketTimeline,
     TimelineResponse,
 )
-
-logger = logging.getLogger(__name__)
 
 
 class TicketTimelineService:
@@ -38,43 +34,37 @@ class TicketTimelineService:
     def __init__(self, db: SQLAlchemy):
         self.db = db
 
-    def list_timeline_by_ticket_id(
-        self,
-        ticket_id: int,
-        page: int = 1,
-        per_page: int = 10,
-    ) -> PaginatedResponse[TimelineResponse]:
+    def list_timeline_by_ticket_id(self, ticket_id: int) -> list[TimelineResponse]:
         """
         Lista todos os eventos da timeline de um chamado.
 
         Os eventos representam o histórico completo de ações realizadas
         no ticket, como mudanças de status e registros descritivos.
 
-        A lista é retornada em ordem cronológica crescente (mais antigo → mais recente).
+        A lista é retornada em ordem cronológica crescente
+        (mais antigo → mais recente).
 
         Args:
             ticket_id (int): Identificador do chamado.
+
         Returns:
-            dict: Lista serializada de eventos conforme ListTimelineResponse.
+            list[TimelineResponse]:
+                Lista de eventos da timeline do chamado.
         """
+
         ticket_exists = self.db.session.get(TicketDB, ticket_id)
+
         if not ticket_exists:
             abort(404, description=f"Chamado com ID {ticket_id} não encontrado.")
 
-        paginated = (
+        timelines = (
             self.db.session.query(TicketTimelineDB)
             .filter(TicketTimelineDB.ticket_id == ticket_id)
             .order_by(TicketTimelineDB.created_at.asc())
-            .paginate(
-                page=page,
-                per_page=per_page,
-                error_out=False,
-            )
+            .all()
         )
-        response = [TimelineResponse.model_validate(item) for item in paginated.items]
 
-        logger.info("Listando todos os eventos da timeline do chamado. ID: '%s'", ticket_id)
-        return PaginatedResponse[TimelineResponse].from_pagination(paginated, response)
+        return [TimelineResponse.model_validate(item).model_dump(mode="json") for item in timelines]
 
     def create_timeline(self, ticket_id: int, data: CreateTimelineRequest) -> TimelineResponse:
         """

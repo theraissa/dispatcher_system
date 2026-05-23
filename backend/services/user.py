@@ -2,7 +2,6 @@
 Serviço responsável pelo gerenciamento de usuários no sistema.
 """
 
-import logging
 import os
 import uuid
 from datetime import datetime, timezone
@@ -25,8 +24,6 @@ from models.user import (
     UserProfileResponse,
     UserResponse,
 )
-
-logger = logging.getLogger(__name__)
 
 
 class UserService:
@@ -54,7 +51,6 @@ class UserService:
         )
         response = [UserResponse.model_validate(user) for user in paginated.items]
 
-        logger.info("Listando todos os usuários ativos no sistema")
         return PaginatedResponse[UserResponse].from_pagination(paginated, response)
 
     def get_user_by_id(self, user_id: int) -> ListUserFullResponse:
@@ -77,7 +73,6 @@ class UserService:
         if not user:
             abort(404, description=f"Usuário com o ID '{user_id}' não foi encontrado.")
 
-        logger.info("Obtendo os dados do usuário com o ID '%s'.", user_id)
         return ListUserFullResponse(
             user=UserResponse.model_validate(user),
             address=(AddressResponse.model_validate(user.address) if user.address else None),
@@ -108,7 +103,6 @@ class UserService:
         self.db.session.add(new_user)
         self.db.session.commit()
 
-        logger.info("Usuário com o CPF '%s' criado com sucesso!", user_data.cpf)
         return UserResponse.model_validate(new_user)
 
     def update_user(self, user_id: int, user_data: UpdateUserRequest) -> ListUserFullResponse:
@@ -159,7 +153,6 @@ class UserService:
 
         self.db.session.commit()
 
-        logger.info("Usuário com o ID '%s' atualizado com sucesso!", user_id)
         return ListUserFullResponse(
             user=UserResponse.model_validate(user_to_update),
             address=(AddressResponse.model_validate(user_to_update.address) if user_to_update.address else None),
@@ -225,7 +218,6 @@ class UserService:
 
             self.db.session.commit()
 
-            logger.info("Perfil público do usuário com o CPF '%s' atualizado com sucesso!", user.cpf)
             return UserProfileResponse.model_validate(user)
 
         except Exception:
@@ -252,5 +244,4 @@ class UserService:
         user_to_delete.deleted_at = datetime.now(timezone.utc)
         self.db.session.commit()
 
-        logger.info("Usuário com o CPF '%s' deletado com sucesso!", user_to_delete.cpf)
         return UserResponse.model_validate(user_to_delete)

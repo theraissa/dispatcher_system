@@ -133,7 +133,7 @@ def register_ticket_routes(
     def list_timeline(ticket_id):
         """Lista os eventos da timeline de um chamado."""
         listed_timeline = timeline_service.list_timeline_by_ticket_id(ticket_id)
-        return jsonify(listed_timeline.model_dump(mode="json")), 200
+        return jsonify(listed_timeline), 200
 
     @app.post("/api/dispatcher-system/ticket/<int:ticket_id>/timeline")
     @jwt_required()

@@ -2,6 +2,8 @@
 
 from datetime import datetime
 
+from werkzeug.security import generate_password_hash
+
 from database import db
 from database.tables import (
     AddressDB,
@@ -20,17 +22,18 @@ def seed():
         return
 
     print("Iniciando seed...")
-
     # =========================
     # USERS
     # =========================
+    new_password = generate_password_hash("1234")
+
     user1 = UserDB(
         name="Pedro Henrique",
         cpf="12345678900",
         date_birth="2005-03-18",
         contact="55999999999",
         email="pedro@gmail.com",
-        password="1234",
+        password=new_password,
         instagram="https://instagram.com/pedro",
         website="https://pedrodespachante.com",
     )
@@ -41,7 +44,7 @@ def seed():
         date_birth="1998-07-10",
         contact="55888888888",
         email="maria@gmail.com",
-        password="1234",
+        password=new_password,
         instagram="https://instagram.com/maria",
         website="https://mariadespachante.com",
     )
