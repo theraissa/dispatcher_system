@@ -1,5 +1,5 @@
-import type { ServiceDetails, ServiceResponse } from "@/types/service.types"
-import type { MessageResponse } from "@/types/type"
+import type { AssociateServiceDetailsResponse, ServiceResponse } from "@/types/service.types"
+import type { MessageResponse, PaginatedResponse } from "@/types/type"
 import { BACKEND_ROUTES } from "../routes/backend-routes"
 import { apiClient } from "./api-client"
 
@@ -17,8 +17,8 @@ export const serviceDetailsDispatcher = {
     /**
      * Busca os serviços detalhados do despachante pelo seu ID.
      */
-    getServiceDetailsDispatcher(dispatcherId: number): Promise<ServiceDetails[]> {
-        return apiClient.get<ServiceDetails[]>(
+    getServiceDetailsDispatcher(dispatcherId: number) {
+        return apiClient.get<PaginatedResponse<AssociateServiceDetailsResponse>>(
             BACKEND_ROUTES.dispatcher.getServiceDetailsById(dispatcherId)
         )
     },

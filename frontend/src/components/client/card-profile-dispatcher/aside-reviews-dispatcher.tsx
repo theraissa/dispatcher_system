@@ -50,11 +50,11 @@ export function AsideReviewsDispatcher({ dispatcherId }: { dispatcherId: number 
 
                         <div className="flex items-center gap-3 pt-3 border-t border-zinc-50">
                             <div className="w-8 h-8 bg-[#21314D] text-white rounded-full flex items-center justify-center font-black text-[10px] md:text-xs">
-                                {review.name_user.charAt(0)}
+                                {review.user_name.charAt(0)}
                             </div>
                             <div className="flex flex-col overflow-hidden">
                                 <span className="text-[10px] md:text-xs font-extrabold text-[#1E1E1E] uppercase truncate">
-                                    {review.name_user}
+                                    {review.user_name}
                                 </span>
                                 <span className="text-[10px] md:text-xs text-zinc-400 font-bold">
                                     {formatDate(review.created_at)}

@@ -1,5 +1,5 @@
 import { serviceDetailsDispatcher } from "@/services/service-details"
-import type { ServiceDetails, ServiceResponse } from "@/types/service.types"
+import type { AssociateServiceDetailsResponse, ServiceDetails, ServiceResponse } from "@/types/service.types"
 import { useCallback, useEffect, useState } from "react"
 
 
@@ -8,7 +8,7 @@ import { useCallback, useEffect, useState } from "react"
  */
 export function useServiceDetails(dispatcherId: number) {
 
-    const [serviceDetails, setServiceDetails] = useState<ServiceDetails[]>([])
+    const [serviceDetails, setServiceDetails] = useState<AssociateServiceDetailsResponse[]>([])
     const [allServices, setAllServices] = useState<ServiceResponse[]>([])
     const [loading, setLoading] = useState(true)
 
@@ -20,7 +20,7 @@ export function useServiceDetails(dispatcherId: number) {
                 serviceDetailsDispatcher.getServiceDetailsDispatcher(dispatcherId),
                 serviceDetailsDispatcher.getAllServices()
             ]);
-            setServiceDetails(details);
+            setServiceDetails(details.items);
             setAllServices(catalog);
         } catch (error) {
             console.error("Erro ao buscar serviços:", error);

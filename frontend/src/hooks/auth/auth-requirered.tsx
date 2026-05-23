@@ -1,5 +1,6 @@
 import { useAuth } from "@/hooks/auth/use-auth";
 import { FRONTEND_ROUTES } from "@/routes/frontend-routes";
+import type { UserContext } from "@/types/type";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -38,16 +39,28 @@ export function useAuthRequired() {
      * ele será redirecionado para a tela de login.
      */
     useEffect(() => {
-        if (!auth.isAuthenticated) {
+        if (!auth.isAuthenticated || !auth.user) {
             navigate(FRONTEND_ROUTES.LOGIN, {
                 replace: true,
             });
         }
-    }, [auth.isAuthenticated, navigate]);
+    }, [auth, navigate]);
 
     /**
-     * Retorna os dados globais de autenticação
-     * para uso na página protegida.
+     * A partir daqui garantimos ao TypeScript
+     * que o usuário existe.
      */
-    return auth;
+    if (!auth.user) {
+        throw new Error("Usuário não autenticado.");
+    }
+
+    return {
+        ...auth,
+
+        /**
+         * Sobrescreve o tipo:
+         * user agora NÃO pode ser null.
+         */
+        user: auth.user as UserContext,
+    };
 }

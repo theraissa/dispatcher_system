@@ -1,9 +1,9 @@
+import { useAdminDispatchers } from "@/hooks/use-admin-dispatchers";
+import { FRONTEND_ROUTES } from "@/routes/frontend-routes";
+import { ArrowLeft, Search, ShieldAlert } from "lucide-react";
 import { useState } from "react";
-import { Search, ArrowLeft, ShieldAlert } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AdminDispatcherList from "../../components/admin/dispatcher-list";
-import { FRONTEND_ROUTES } from "@/routes/frontend-routes";
-import { useAdminDispatchers } from "@/hooks/use-admin-dispatchers";
 
 /**
  * Página de administração responsável por gerenciar despachantes pendentes.

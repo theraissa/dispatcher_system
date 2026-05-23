@@ -1,4 +1,5 @@
 import type { ProfileDispatcher } from "@/types/dispatcher.types"
+import type { PaginatedResponse } from "@/types/type"
 import { BACKEND_ROUTES } from "../routes/backend-routes"
 import { apiClient } from "./api-client"
 
@@ -22,10 +23,11 @@ export const dispatcherService = {
     /**
      * Realiza a busca de despachantes no backend com base na query informada.
      */
-    searchDispatchers(query: string): Promise<ProfileDispatcher[]> {
-        const response = apiClient.get<ProfileDispatcher[]>(
-            BACKEND_ROUTES.dispatcher.search, { query });
+    searchDispatchers(query: string) {
+        return apiClient.get<PaginatedResponse<ProfileDispatcher>>(
+            BACKEND_ROUTES.dispatcher.search, { query }
+        );
 
-        return response;
     },
 }
+

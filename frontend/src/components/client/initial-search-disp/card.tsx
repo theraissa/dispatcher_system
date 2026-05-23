@@ -96,7 +96,7 @@ export default function CardDispatcher({ dispatchers, loading, hasSearched }: Ca
             <div className="flex items-center gap-1.5 text-zinc-500">
               <MapPin size={14} />
               <span className="text-xs font-medium">
-                {dispatcher.office.city}, {dispatcher.office.state}
+                {dispatcher.address.city}, {dispatcher.address.state}
               </span>
             </div>
 

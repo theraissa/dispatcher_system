@@ -6,7 +6,7 @@ import ButtonSubmitForm from "../ui/button-submit-form"
 import FormCommercial from "./form-dispatcher/form-commercial"
 import FormPersonal from "./form-dispatcher/form-personal"
 
-type FormSection = "user" | "dispatcher" | "office";
+type FormSection = "user" | "dispatcher" | "address";
 
 
 export default function FormDispatcher() {
@@ -26,7 +26,7 @@ export default function FormDispatcher() {
       regis_crdd: "",
       date_exp_regis: ""
     },
-    office: {
+    address: {
       address: "",
       number: "",
       neighborhood: "",
@@ -66,7 +66,7 @@ export default function FormDispatcher() {
 
           <FormCommercial
             dispatcher={formData.dispatcher}
-            office={formData.office}
+            address={formData.address}
             onChange={handleChange}
             readOnly={false}
           />

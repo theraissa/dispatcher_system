@@ -27,3 +27,16 @@ export type ServiceDetails = {
     name: string;
     price?: number;
 };
+
+
+
+export type AssociateServiceDetailsResponse = {
+    id: number;
+    service_id: number;
+    dispatcher_id: number;
+    service_name: string;
+    price?: number;
+    created_at: string;
+    updated_at: string;
+    deleted_at?: string;
+};

@@ -1,4 +1,5 @@
-import type { CreateTicketRequest, CreateTimelineRequest, ListTicketMessage, ListTicketReview, ListTicketUserResponse, ListTimelineResponse, TicketMessage, TicketReview, TicketReviewSummary, TicketStatisticsDispatcher, TicketUserResponse } from "@/types/ticket.types";
+import type { CreateTicketRequest, CreateTimelineRequest, ListTicketMessage, ListTicketResponse, ListTicketReview, ListTimelineResponse, TicketMessage, TicketReview, TicketReviewSummary, TicketStatisticsDispatcher, TicketUserResponse } from "@/types/ticket.types";
+import type { PaginatedResponse } from "@/types/type";
 import { BACKEND_ROUTES } from "../routes/backend-routes";
 import { apiClient } from "./api-client";
 
@@ -14,9 +15,12 @@ export const ticketService = {
     /**
      * Lista os chamados do usuário pelo seu ID.
      */
-    listTicketsByIdUser(userId: number): Promise<ListTicketUserResponse> {
-        return apiClient.get(BACKEND_ROUTES.tickets.listTicketsByUser(userId));
+    listTicketsByIdUser(userId: number) {
+        return apiClient.get<PaginatedResponse<ListTicketResponse>>(
+            BACKEND_ROUTES.tickets.listTicketsByUser(userId)
+        );
     },
+
     /**
      * Cria um novo chamado no sistema.
      */

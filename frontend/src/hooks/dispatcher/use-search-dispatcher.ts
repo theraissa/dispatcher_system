@@ -25,7 +25,7 @@ export function useSearchDispatchers(query: string) {
         // Se não houver query, busca dados iniciais
         const result = await dispatcherService.searchDispatchers(query || "");
 
-        setData(result);
+        setData(result.items);
 
       } catch (error) {
         console.error("Erro ao buscar despachantes", error);

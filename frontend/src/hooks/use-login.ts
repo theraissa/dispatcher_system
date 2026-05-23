@@ -59,7 +59,7 @@ export function useLogin() {
                 return;
             }
 
-            navigate(FRONTEND_ROUTES.CLIENT.SEARCH_DISPATCHER);
+            navigate(FRONTEND_ROUTES.CLIENT.PROFILE);
 
         } catch (err: unknown) {
 

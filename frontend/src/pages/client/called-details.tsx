@@ -112,7 +112,7 @@ export default function TicketDetails() {
             name: selectedTicket.dispatcher.name,
             email: selectedTicket.dispatcher.email,
         },
-        office: {
+        address: {
             contact: selectedTicket.dispatcher.contact,
             address: selectedTicket.dispatcher.address,
             city: selectedTicket.dispatcher.city,

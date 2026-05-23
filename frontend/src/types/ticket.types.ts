@@ -75,10 +75,6 @@ export type ListTicketResponse = {
     deleted_at?: string;
 }
 
-// Tipo para a resposta da listagem de chamados do usuário.
-export type ListTicketUserResponse = ListTicketResponse[];
-
-
 /*
 * Informações que contém na mensagem do chamado.
 */
@@ -98,7 +94,7 @@ export type ListTicketMessage = TicketMessage[]
 export type TicketReview = {
     id: number;
     ticket_id: number;
-    name_user: string;
+    user_name: string;
     rating: number;
     comment: string;
     created_at: string;

@@ -9,7 +9,7 @@ import { Mail, MapPin, Phone, ShieldCheck, Star, User } from "lucide-react";
 type AsideProfileDispatcherProps = {
     dispatcher: {
         user: Record<string, any>;
-        office: Record<string, any>;
+        address: Record<string, any>;
     };
     onOpenReview: (rating: number) => void;
     canReview?: boolean;
@@ -80,14 +80,14 @@ export function AsideProfileDispatcher({ dispatcher, onOpenReview, canReview = f
                     <InfoDispatcherRow
                         icon={<MapPin size={24} strokeWidth={2} />}
                         label="Localização"
-                        value={`${dispatcher.office.address}, ${dispatcher.office.number}`}
-                        subValue={`${dispatcher.office.neighborhood} - ${dispatcher.office.city}, ${dispatcher.office.state}`}
+                        value={`${dispatcher.address.address}, ${dispatcher.address.number}`}
+                        subValue={`${dispatcher.address.neighborhood} - ${dispatcher.address.city}, ${dispatcher.address.state}`}
                     />
 
                     <InfoDispatcherRow
                         icon={<Phone size={24} strokeWidth={2} />}
                         label="Contato Direto"
-                        value={dispatcher.office.contact}
+                        value={dispatcher.address.contact}
                     />
 
                     <InfoDispatcherRow

@@ -47,7 +47,7 @@ export default function ProfileServices({ dispatcherId }: { dispatcherId: number
    * A comparação é feita de forma case-insensitive.
    */
   const filteredServices = serviceDetails.filter((s) =>
-    s.name.toLowerCase().includes(search.toLowerCase())
+    s.service_name.toLowerCase().includes(search.toLowerCase())
   );
 
   // Feedback visual de carregamento inicial
@@ -171,7 +171,7 @@ export default function ProfileServices({ dispatcherId }: { dispatcherId: number
               {/* Nome e subtitulo informativo */}
               <div className="flex flex-col gap-0.5">
                 <span className="font-bold text-[#1E1E1E] text-[15px] md:text-base leading-tight">
-                  {service.name}
+                  {service.service_name}
                 </span>
                 <span className="text-xs text-zinc-400 font-medium">
                   Clique para ver detalhes

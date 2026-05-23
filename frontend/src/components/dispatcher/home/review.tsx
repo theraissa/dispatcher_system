@@ -119,11 +119,11 @@ export function HomeReviewDispatcher({ userId }: { userId: number }) {
                                         {/* Rodapé do Card: Dados do Cliente */}
                                         <div className="flex items-center gap-3 pt-4 md:pt-6 mt-4 md:mt-6 border-t border-zinc-50">
                                             <div className="w-8 h-8 md:w-10 md:h-10 bg-[#21314D]/5 rounded-full flex items-center justify-center text-[#21314D] font-black text-[10px] md:text-xs shrink-0">
-                                                {review.name_user.charAt(0) || "?"}
+                                                {review.user_name.charAt(0) || "?"}
                                             </div>
                                             <div className="overflow-hidden">
                                                 <p className="font-extrabold text-[#1E1E1E] text-[10px] md:text-xs truncate uppercase tracking-tight">
-                                                    {review.name_user || "Usuário"}
+                                                    {review.user_name || "Usuário"}
                                                 </p>
                                                 <p className="text-[9px] md:text-[10px] text-zinc-400 font-bold uppercase tracking-widest">
                                                     {formatDate(review.created_at)}

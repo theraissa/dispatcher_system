@@ -154,7 +154,7 @@ export default function ProfileInfo({ dispatcherId, userId }:
                 <div className="flex-1 w-full">
                     <FormCommercial
                         dispatcher={data.dispatcher}
-                        office={data.office}
+                        address={data.address}
                         onChange={handleChange}
                         readOnly={!isEditing}
                     />

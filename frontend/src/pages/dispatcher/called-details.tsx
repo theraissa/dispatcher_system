@@ -80,7 +80,7 @@ export default function TicketDetailsDispatcher() {
             name: selectedTicket.dispatcher.name,
             email: selectedTicket.dispatcher.email,
         },
-        office: {
+        address: {
             contact: selectedTicket.dispatcher.contact,
             address: selectedTicket.dispatcher.address,
             city: selectedTicket.dispatcher.city,

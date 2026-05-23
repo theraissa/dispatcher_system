@@ -91,7 +91,7 @@ export default function CalledClient() {
                     ) : (
                         <CalledContainer
                             tickets={filteredTickets}
-                            detailsRoute={FRONTEND_ROUTES.CLIENT.CALLED_DETAILS}
+                            detailsRoute={FRONTEND_ROUTES.CLIENT.TICKET_DETAILS}
                         />
                     )}
                 </div>

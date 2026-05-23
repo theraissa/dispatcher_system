@@ -63,29 +63,6 @@ export type CreateDispatcher = {
 }
 
 /*
-* Representa os dados específicos do escritório do despachante.
-*/
-export type Office = {
-    id: number;
-    contact: string;
-    address: string;
-    number: string;
-    neighborhood: string;
-    zip_code: string;
-    city: string;
-    state: string;
-}
-export type CreateOffice = {
-    contact: string;
-    address: string;
-    number: string;
-    neighborhood: string;
-    zip_code: string;
-    city: string;
-    state: string;
-}
-
-/*
 * Representa os dados específicos do serviço.
 */
 export type Service = {
@@ -129,7 +106,7 @@ export type MessageResponse = {
 
 
 /**
- * 
+ * Dados do usuário obtindo pelo contexto da requisição
  */
 export type UserContext = {
     id: number;
@@ -148,3 +125,22 @@ export type AuthContextType = {
 };
 
 export const AuthContext = createContext({} as AuthContextType);
+
+/**
+ * Estrutura genérica de respostas paginadas da API.
+ *
+ * @template T Tipo dos itens retornados.
+ */
+export interface PaginatedResponse<T> {
+    // Lista de itens da página atual.
+    items: T[];
+
+    // Quantidade total de registros.
+    total: number;
+
+    // Página atual.
+    page: number;
+
+    // Quantidade de itens por página.
+    per_page: number;
+}

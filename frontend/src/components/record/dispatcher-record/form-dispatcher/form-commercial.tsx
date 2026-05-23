@@ -1,5 +1,5 @@
 import { Separator } from "@/components/ui/separator"
-import type { CreateDispatcher, CreateOffice } from "@/types/type"
+import type { CreateAddress, CreateDispatcher } from "@/types/type"
 import { ESTADOS_BR } from "@/utils/constants"
 import { phoneMask, zipCodeMask } from "@/utils/masks"
 import {
@@ -23,22 +23,22 @@ import LabelForm from "../../ui/label-form"
 
 type FormCommercialProps = {
   dispatcher: CreateDispatcher;
-  office: CreateOffice;
-  onChange: (section: "dispatcher" | "office", field: any, value: string) => void;
+  address: CreateAddress;
+  onChange: (section: "dispatcher" | "address", field: any, value: string) => void;
   readOnly: boolean;
 };
 
 
-export default function FormCommercial({ dispatcher, office, onChange, readOnly }: FormCommercialProps) {
+export default function FormCommercial({ dispatcher, address, onChange, readOnly }: FormCommercialProps) {
 
   function handleDispatcherChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target
     onChange("dispatcher", name, value)
   }
 
-  function handleOfficeChange(event: React.ChangeEvent<HTMLInputElement>) {
+  function handleAddressChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target
-    onChange("office", name, value)
+    onChange("address", name, value)
   }
 
   const [cities, setCities] = useState<{ value: string; label: string }[]>([]);
@@ -46,7 +46,7 @@ export default function FormCommercial({ dispatcher, office, onChange, readOnly 
 
   // Efeito que dispara sempre que o estado (UF) mudar
   useEffect(() => {
-    if (!office.state) {
+    if (!address.state) {
       setCities([]);
       return;
     }
@@ -55,7 +55,7 @@ export default function FormCommercial({ dispatcher, office, onChange, readOnly 
       setLoadingCities(true);
       try {
         const response = await fetch(
-          `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${office.state}/municipios?orderBy=nome`
+          `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${address.state}/municipios?orderBy=nome`
         );
         const data = await response.json();
 
@@ -73,7 +73,7 @@ export default function FormCommercial({ dispatcher, office, onChange, readOnly 
     }
 
     fetchCities();
-  }, [office.state]); // Monitora o estado
+  }, [address.state]); // Monitora o estado
 
   return (
     <SectionForm>
@@ -107,8 +107,8 @@ export default function FormCommercial({ dispatcher, office, onChange, readOnly 
           <InputForm
             name="contact"
             icon={<Phone size={18} />}
-            value={phoneMask(office.contact)}
-            onChange={handleOfficeChange}
+            value={phoneMask(address.contact)}
+            onChange={handleAddressChange}
             placeholder="(55) 9 9999-9999"
             readOnly={readOnly}
           />
@@ -125,8 +125,8 @@ export default function FormCommercial({ dispatcher, office, onChange, readOnly 
           <InputForm
             name="address"
             icon={<MapPin size={18} />}
-            value={office.address}
-            onChange={handleOfficeChange}
+            value={address.address}
+            onChange={handleAddressChange}
             placeholder="Rua, Avenida..."
             readOnly={readOnly}
           />
@@ -138,8 +138,8 @@ export default function FormCommercial({ dispatcher, office, onChange, readOnly 
             type="text"
             name="number"
             icon={<Hash size={18} />}
-            value={office.number}
-            onChange={handleOfficeChange}
+            value={address.number}
+            onChange={handleAddressChange}
             placeholder="123"
             readOnly={readOnly}
           />
@@ -152,8 +152,8 @@ export default function FormCommercial({ dispatcher, office, onChange, readOnly 
           <InputForm
             name="neighborhood"
             icon={<Navigation size={18} />}
-            value={office.neighborhood}
-            onChange={handleOfficeChange}
+            value={address.neighborhood}
+            onChange={handleAddressChange}
             placeholder="Bairro"
             readOnly={readOnly}
           />
@@ -163,8 +163,8 @@ export default function FormCommercial({ dispatcher, office, onChange, readOnly 
           <InputForm
             name="zip_code"
             icon={<Milestone size={18} />}
-            value={zipCodeMask(office.zip_code)}
-            onChange={handleOfficeChange}
+            value={zipCodeMask(address.zip_code)}
+            onChange={handleAddressChange}
             placeholder="00000-000"
             readOnly={readOnly}
           />
@@ -177,14 +177,14 @@ export default function FormCommercial({ dispatcher, office, onChange, readOnly 
           <CommandForm
             type="state"
             options={ESTADOS_BR} // Aquela lista estática que criamos
-            value={office.state || ""}
+            value={address.state || ""}
             placeholder="UF"
             disabled={readOnly}
             onChange={(val) => {
               // Atualiza o estado
-              handleOfficeChange({ target: { name: "state", value: val } } as any)
+              handleAddressChange({ target: { name: "state", value: val } } as any)
               // Limpa a cidade selecionada anteriormente
-              onChange("office", "city", "")
+              onChange("address", "city", "")
             }}
           />
         </InlineField>
@@ -194,11 +194,11 @@ export default function FormCommercial({ dispatcher, office, onChange, readOnly 
           <CommandForm
             type="city"
             options={cities} // Cidades vindas da API do IBGE (via useEffect)
-            value={office.city || ""}
+            value={address.city || ""}
             placeholder={loadingCities ? "Carregando..." : "Selecione a cidade"}
-            disabled={readOnly || !office.state || loadingCities}
+            disabled={readOnly || !address.state || loadingCities}
             onChange={(val) =>
-              handleOfficeChange({ target: { name: "city", value: val } } as any)
+              handleAddressChange({ target: { name: "city", value: val } } as any)
             }
           />
         </InlineField>

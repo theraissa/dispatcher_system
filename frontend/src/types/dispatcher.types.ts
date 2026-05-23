@@ -1,4 +1,4 @@
-import type { CreateDispatcher, CreateOffice, CreateUserType, Dispatcher, Office, UserType } from "./type";
+import type { Address, CreateAddress, CreateDispatcher, CreateUserType, Dispatcher, UserType } from "./type";
 
 
 /**
@@ -7,7 +7,7 @@ import type { CreateDispatcher, CreateOffice, CreateUserType, Dispatcher, Office
 export type RegisterDispatcherRequest = {
   user: CreateUserType;
   dispatcher: CreateDispatcher;
-  office: CreateOffice;
+  address: CreateAddress;
 }
 
 /**
@@ -16,7 +16,7 @@ export type RegisterDispatcherRequest = {
 export type RegisterDispatcherResponse = {
   user_id: number
   dispatcher_id: number
-  office_id: number
+  address_id: number
 }
 
 /*
@@ -25,5 +25,5 @@ export type RegisterDispatcherResponse = {
 export type ProfileDispatcher = {
   user: UserType
   dispatcher: Dispatcher
-  office: Office
+  address: Address
 }

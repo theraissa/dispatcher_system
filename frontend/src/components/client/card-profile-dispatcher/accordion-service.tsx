@@ -19,13 +19,7 @@ import { toast } from "sonner";
  * @param userId ID do usuário autenticado (cliente)
  * @param dispatcherId ID do despachante cujos serviços serão exibidos
  */
-export default function AccordionServiceDispatcher({
-    userId,
-    dispatcherId
-}: {
-    userId: number,
-    dispatcherId: number
-}) {
+export default function AccordionServiceDispatcher({ userId, dispatcherId }: { userId: number, dispatcherId: number }) {
 
     // Hook de navegação para redirecionamento
     const navigate = useNavigate();
@@ -69,7 +63,7 @@ export default function AccordionServiceDispatcher({
             toast.success("Chamado criado com sucesso!");
 
             // Redireciona para listagem de chamados
-            navigate(FRONTEND_ROUTES.CLIENT.CALLED);
+            navigate(FRONTEND_ROUTES.CLIENT.TICKET);
 
         } catch (error: any) {
             toast.error(error.message);
@@ -112,7 +106,7 @@ export default function AccordionServiceDispatcher({
 
                                     {/* Nome do serviço vindo da API */}
                                     <span className="font-bold text-zinc-800">
-                                        {service.name}
+                                        {service.service_name}
                                     </span>
                                 </div>
 

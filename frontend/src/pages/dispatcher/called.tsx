@@ -92,7 +92,7 @@ export default function CalledDispatcher() {
                     ) : (
                         <CalledContainer
                             tickets={filteredTickets}
-                            detailsRoute={FRONTEND_ROUTES.DISPATCHER.CALLED_DETAILS}
+                            detailsRoute={FRONTEND_ROUTES.DISPATCHER.TICKET_DETAILS}
                         />
                     )}
                 </div>

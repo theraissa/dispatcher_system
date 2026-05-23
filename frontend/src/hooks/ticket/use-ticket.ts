@@ -1,5 +1,5 @@
 import { ticketService } from "@/services/ticket-service";
-import type { CreateTicketRequest, ListTicketUserResponse, TicketUserResponse } from "@/types/ticket.types";
+import type { CreateTicketRequest, ListTicketResponse, TicketUserResponse } from "@/types/ticket.types";
 import { useEffect, useState } from "react";
 
 /**
@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
  * - Criar novos chamados
  */
 export function useTickets(userId: number) {
-    const [tickets, setTickets] = useState<ListTicketUserResponse>([]);
+    const [tickets, setTickets] = useState<ListTicketResponse[]>([]);
     const [selectedTicket, setSelectedTicket] = useState<TicketUserResponse>();
     const [loading, setLoading] = useState(false);
 
@@ -23,7 +23,7 @@ export function useTickets(userId: number) {
         try {
             setLoading(true);
             const response = await ticketService.listTicketsByIdUser(userId);
-            setTickets(response);
+            setTickets(response.items);
 
         } catch (error) {
             console.error("Erro ao buscar chamados:", error);
