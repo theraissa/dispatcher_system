@@ -3,9 +3,10 @@ Modelos de dados para autenticação e autorização.
 """
 
 from typing import Literal, Optional
+
 from pydantic import BaseModel, ConfigDict
 
-RoleType = Literal["client", "dispatcher"]
+RoleType = Literal["cliente", "despachante", "admin"]
 
 StatusType = Literal["aprovado", "negado", "pendente"]
 
@@ -13,8 +14,8 @@ StatusType = Literal["aprovado", "negado", "pendente"]
 class LoginUserRequest(BaseModel):
     """Modelo de login do UserService."""
 
-    email: Optional[str]
-    password: Optional[str]
+    email: str
+    password: str
 
     model_config = ConfigDict(extra="ignore")
 

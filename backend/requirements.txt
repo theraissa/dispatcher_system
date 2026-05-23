@@ -5,5 +5,5 @@ Flask-SQLAlchemy
 Flask-Migrate
 psycopg2-binary
 pydantic
-PyJWT
 Redis
+Flask-JWT-Extended
