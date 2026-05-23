@@ -2,102 +2,116 @@
 Serviço responsável pelo gerenciamento de usuários no sistema.
 """
 
+import logging
 import os
 import uuid
-from datetime import datetime
-from typing import Any
+from datetime import datetime, timezone
 
 from flask import abort
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import joinedload
 from werkzeug.datastructures import FileStorage
+from werkzeug.security import generate_password_hash
 from werkzeug.utils import secure_filename
 
 from database.tables import AddressDB, UserDB
+from models.pagination import PaginatedResponse
 from models.user import (
     AddressResponse,
     CreateUserRequest,
     ListUserFullResponse,
-    ListUserResponse,
     UpdateUserProfileRequest,
     UpdateUserRequest,
     UserProfileResponse,
     UserResponse,
 )
 
+logger = logging.getLogger(__name__)
+
 
 class UserService:
     """
     Serviço de domínio responsável pela gestão de usuários.
-
-    Este serviço gerencia:
-        - Dados básicos do usuário
-        - Endereço associado (quando existente)
-    Args:
-        db (SQLAlchemy): Sessão do SQLAlchemy utilizada para persistência.
     """
 
     def __init__(self, db: SQLAlchemy):
         self.db = db
 
-    def list_user(self) -> ListUserResponse:
+    def list_user(self, page: int = 1, per_page: int = 10) -> PaginatedResponse[UserResponse]:
         """
         Lista todos os usuários ativos no sistema.
 
-        Considera apenas registros não deletados (soft delete).
-
+        Args:
+            page (int): Página atual da paginação.
+            per_page (int): Quantidade de itens por página.
         Returns:
-            ListUserResponse: Lista de usuários cadastrados.
+            PaginatedResponse[UserResponse]: Lista paginada de usuários.
         """
-        list_users = UserDB.query.filter(UserDB.deleted_at.is_(None)).all()
-        response = ListUserResponse(root=[UserResponse.model_validate(user) for user in list_users])
-        return response.model_dump()
+        paginated = UserDB.query.filter(UserDB.deleted_at.is_(None)).paginate(
+            page=page,
+            per_page=per_page,
+            error_out=False,
+        )
+        response = [UserResponse.model_validate(user) for user in paginated.items]
 
-    def get_user_by_id(self, user_id: str) -> dict:
+        logger.info("Listando todos os usuários ativos no sistema")
+        return PaginatedResponse[UserResponse].from_pagination(paginated, response)
+
+    def get_user_by_id(self, user_id: int) -> ListUserFullResponse:
         """
         Recupera os dados completos de um usuário pelo ID.
 
-        Inclui informações básicas e endereço associado (quando existir).
-
         Args:
-            user_id (str): ID do usuário.
-
+            user_id (int): ID do usuário.
         Returns:
-            dict: Estrutura contendo:
-                - user
-                - address (opcional)
+            ListUserFullResponse: Dados completos do usuário cadastrado.
         """
-        user = UserDB.query.filter(UserDB.id == user_id, UserDB.deleted_at.is_(None)).first()
+        user = (
+            UserDB.query.options(joinedload(UserDB.address))
+            .filter(
+                UserDB.id == user_id,
+                UserDB.deleted_at.is_(None),
+            )
+            .first()
+        )
         if not user:
-            abort(404, description=f"User with ID '{user_id}' not found.")
+            abort(404, description=f"Usuário com o ID '{user_id}' não foi encontrado.")
 
-        address = AddressDB.query.filter(AddressDB.user_id == user_id, AddressDB.deleted_at.is_(None)).first()
-
+        logger.info("Obtendo os dados do usuário com o ID '%s'.", user_id)
         return ListUserFullResponse(
             user=UserResponse.model_validate(user),
-            address=AddressResponse.model_validate(address) if address else None,
-        ).model_dump()
+            address=(AddressResponse.model_validate(user.address) if user.address else None),
+        )
 
-    def create_user(self, user_data: CreateUserRequest) -> dict[str, Any]:
+    def create_user(self, user_data: CreateUserRequest) -> UserResponse:
         """
         Cria um novo usuário no sistema.
 
         Args:
             user_data (CreateUserRequest): Dados validados para criação do usuário.
-
         Returns:
-            dict[str, Any]: Representação serializada do usuário criado.
-
-        Raises:
-            Exception: Erros de persistência podem ser propagados.
+            UserResponse: Representação serializada do usuário criado.
         """
-        new_user = UserDB(**user_data.model_dump(mode="json"))
+        existing_user = UserDB.query.filter_by(cpf=user_data.cpf).first()
+        if existing_user:
+            abort(400, description=f"Usuário com o CPF {user_data.cpf} já existe!")
+
+        existing_email = UserDB.query.filter_by(email=user_data.email).first()
+        if existing_email:
+            abort(400, description=f"Usuário com o email {user_data.email} já existe!")
+
+        user_data_dict = user_data.model_dump(mode="json")
+        user_data_dict["password"] = generate_password_hash(user_data.password)
+
+        new_user = UserDB(**user_data_dict)
 
         self.db.session.add(new_user)
         self.db.session.commit()
 
-        return UserResponse.model_validate(new_user).model_dump()
+        logger.info("Usuário com o CPF '%s' criado com sucesso!", user_data.cpf)
+        return UserResponse.model_validate(new_user)
 
-    def update_user(self, user_id: str, user_data: UpdateUserRequest) -> dict[str, Any]:
+    def update_user(self, user_id: int, user_data: UpdateUserRequest) -> ListUserFullResponse:
         """
         Atualiza os dados de um usuário existente.
 
@@ -110,74 +124,67 @@ class UserService:
             - Se não existir → cria novo
 
         Args:
-            user_id (str): ID do usuário.
+            user_id (int): ID do usuário.
             user_data (UpdateUserRequest): Dados atualizados.
-
         Returns:
-            dict[str, Any]: Estrutura contendo:
+            ListUserFullResponse: Estrutura contendo:
                 - user atualizado
                 - address atualizado (ou None)
         """
-        user_to_update = UserDB.query.filter(UserDB.id == user_id, UserDB.deleted_at.is_(None)).first()
-        if not user_to_update:
-            abort(404, description=f"User with ID '{user_id}' not found.")
+        user_to_update = (
+            UserDB.query.options(joinedload(UserDB.address))
+            .filter(
+                UserDB.id == user_id,
+                UserDB.deleted_at.is_(None),
+            )
+            .first()
+        )
 
-        # Atualizar dados do usuário
+        if not user_to_update:
+            abort(404, description=f"Usuário com o ID '{user_id}' não foi encontrado.")
+
         if user_data.user:
             for key, value in user_data.user.model_dump(exclude_unset=True).items():
                 setattr(user_to_update, key, value)
 
-        # Atualizar ou criar endereço
-        address = AddressDB.query.filter(AddressDB.user_id == user_id, AddressDB.deleted_at.is_(None)).first()
+        address = user_to_update.address
 
         if user_data.address:
             if address:
-                # UPDATE
                 for key, value in user_data.address.model_dump(exclude_unset=True).items():
                     setattr(address, key, value)
-                address.updated_at = datetime.now()
             else:
-                # CREATE
-                new_address = AddressDB(
-                    user_id=user_id,
-                    **user_data.address.model_dump(exclude_unset=True),
-                )
+                new_address = AddressDB(user_id=user_id, **user_data.address.model_dump(exclude_unset=True))
                 self.db.session.add(new_address)
 
-        user_to_update.updated_at = datetime.now()
         self.db.session.commit()
 
-        updated_address = AddressDB.query.filter(
-            AddressDB.user_id == user_id,
-            AddressDB.deleted_at.is_(None),
-        ).first()
+        logger.info("Usuário com o ID '%s' atualizado com sucesso!", user_id)
+        return ListUserFullResponse(
+            user=UserResponse.model_validate(user_to_update),
+            address=(AddressResponse.model_validate(user_to_update.address) if user_to_update.address else None),
+        )
 
-        return {
-            "user": UserResponse.model_validate(user_to_update).model_dump(),
-            "address": AddressResponse.model_validate(updated_address).model_dump() if updated_address else None,
-        }
-
-    def update_user_profile_public(self, user_id: int, data: UpdateUserProfileRequest, photo: FileStorage | None = None) -> dict:
+    def update_user_profile_public(
+        self,
+        user_id: int,
+        data: UpdateUserProfileRequest,
+        photo: FileStorage | None = None,
+    ) -> UserProfileResponse:
         """
-        Atualiza o perfil público do usuário.
-
-        Permite atualização de:
-            - instagram
-            - whatsapp
-            - website
-            - photo
+        Atualiza o perfil público (instagram, website, foto de perfil) do usuário.
 
         Args:
             user_id (int): ID do usuário.
             data (UpdateUserProfileRequest): Dados do perfil.
             photo: Arquivo da imagem enviado via multipart/form-data.
         Returns:
-            dict: Dados atualizados do perfil.
+            UserProfileResponse: Dados atualizados do perfil público.
         """
         try:
             user = UserDB.query.filter(UserDB.id == user_id, UserDB.deleted_at.is_(None)).first()
             if not user:
-                abort(404, description="Usuário não encontrado!")
+                abort(404, description=f"Usuário com o ID '{user_id}' não foi encontrado.")
 
             for key, value in data.model_dump(exclude_unset=True).items():
                 setattr(user, key, value)
@@ -191,7 +198,7 @@ class UserService:
 
                 # Extrai a extensão do arquivo.
                 _, extension = os.path.splitext(filename)
-                extension = extension.replace(".", "").lower()
+                extension = extension.lstrip(".").lower()
 
                 allowed_extensions = {"png", "jpg", "jpeg"}
 
@@ -218,23 +225,21 @@ class UserService:
 
             self.db.session.commit()
 
-            return UserProfileResponse.model_validate(user).model_dump()
+            logger.info("Perfil público do usuário com o CPF '%s' atualizado com sucesso!", user.cpf)
+            return UserProfileResponse.model_validate(user)
 
-        except Exception as e:
+        except Exception:
             self.db.session.rollback()
-            raise e
+            raise
 
-    def delete_user(self, user_id: str) -> dict[str, Any]:
+    def delete_user(self, user_id: int) -> UserResponse:
         """
         Realiza a exclusão lógica (soft delete) de um usuário.
 
-        O registro não é removido fisicamente, apenas marcado com timestamp.
-
         Args:
-            user_id (str): ID do usuário.
-
+            user_id (int): ID do usuário.
         Returns:
-            dict[str, Any]: Dados do usuário após marcação de exclusão.
+            UserResponse: Dados do usuário após marcação de exclusão.
         """
         user_to_delete = UserDB.query.filter(
             UserDB.id == user_id,
@@ -242,9 +247,10 @@ class UserService:
         ).first()
 
         if not user_to_delete:
-            abort(404, description=f"User with ID '{user_id}' not found.")
+            abort(404, description=f"Usuário com o ID '{user_id}' não foi encontrado.")
 
-        user_to_delete.deleted_at = datetime.now()
+        user_to_delete.deleted_at = datetime.now(timezone.utc)
         self.db.session.commit()
 
-        return UserResponse.model_validate(user_to_delete).model_dump()
+        logger.info("Usuário com o CPF '%s' deletado com sucesso!", user_to_delete.cpf)
+        return UserResponse.model_validate(user_to_delete)

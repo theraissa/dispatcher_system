@@ -48,12 +48,12 @@ class UserDB(db.Model):
     __tablename__ = "user"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    cpf = Column(String)
-    name = Column(String)
+    cpf = Column(String, nullable=False)
+    name = Column(String, nullable=False)
     date_birth = Column(String)
     contact = Column(String)
-    email = Column(String)
-    password = Column(String)
+    email = Column(String, nullable=False)
+    password = Column(String, nullable=False)
     photo = Column(String)
     instagram = Column(String)
     website = Column(String)
@@ -65,6 +65,7 @@ class UserDB(db.Model):
     dispatcher = db.relationship("DispatcherDB", back_populates="user", uselist=False)
     ticket = db.relationship("TicketDB", back_populates="user")
     messages = db.relationship("TicketMessageDB", back_populates="user")
+    timeline = db.relationship("TicketTimelineDB", back_populates="user")
 
 
 class AddressDB(db.Model):
@@ -74,13 +75,13 @@ class AddressDB(db.Model):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False, unique=True)
-    contact = Column(String)
-    address = Column(String)
-    number = Column(Integer)
-    neighborhood = Column(String)
-    city = Column(String)
-    state = Column(String)
-    zip_code = Column(String)
+    contact = Column(String, nullable=False)
+    address = Column(String, nullable=False)
+    number = Column(Integer, nullable=False)
+    neighborhood = Column(String, nullable=False)
+    city = Column(String, nullable=False)
+    state = Column(String, nullable=False)
+    zip_code = Column(String, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True))
@@ -95,38 +96,16 @@ class DispatcherDB(db.Model):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
-    regis_crdd = Column(String)
-    date_exp_regis = Column(DateTime)
-    status = Column(String, default="pendente")
+    regis_crdd = Column(String, nullable=False)
+    date_exp_regis = Column(DateTime, nullable=False)
+    status = Column(String, default="pendente", nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True))
 
     user = db.relationship("UserDB", back_populates="dispatcher")
-    office = db.relationship("OfficeDB", back_populates="dispatcher", uselist=False)
     service_details = db.relationship("ServiceDetailsDB", back_populates="dispatcher")
     ticket = db.relationship("TicketDB", back_populates="dispatcher")
-
-
-class OfficeDB(db.Model):
-    """Representa um Estabelecimento"""
-
-    __tablename__ = "office"
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    dispatcher_id = Column(Integer, ForeignKey("dispatcher.id"), nullable=False)
-    contact = Column(String)
-    number = Column(Integer)
-    neighborhood = Column(String)
-    address = Column(String)
-    city = Column(String)
-    state = Column(String)
-    zip_code = Column(String)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
-    deleted_at = Column(DateTime(timezone=True))
-
-    dispatcher = db.relationship("DispatcherDB", back_populates="office")
 
 
 class ServiceDB(db.Model):
@@ -135,8 +114,8 @@ class ServiceDB(db.Model):
     __tablename__ = "service"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String)
-    description = Column(String)
+    name = Column(String, nullable=False)
+    description = Column(String, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True))
@@ -152,7 +131,7 @@ class ServiceDetailsDB(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     service_id = Column(Integer, ForeignKey("service.id"), nullable=False)
     dispatcher_id = Column(Integer, ForeignKey("dispatcher.id"), nullable=False)
-    price = Column(Numeric(10, 2))
+    price = Column(Numeric(10, 2), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True))
@@ -171,7 +150,7 @@ class TicketDB(db.Model):
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     dispatcher_id = Column(Integer, ForeignKey("dispatcher.id"), nullable=False)
     service_details_id = Column(Integer, ForeignKey("service_details.id"), nullable=False)
-    status = Column(String, default="pendente")
+    status = Column(String, default="pendente", nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True))
@@ -185,19 +164,20 @@ class TicketDB(db.Model):
 
 
 class TicketTimelineDB(db.Model):
-    """Representa eventos de histórico do chamado (Ex: 'Status alterado para em andamento')"""
+    """Representa eventos de histórico do chamado"""
 
     __tablename__ = "ticket_timeline"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     ticket_id = Column(Integer, ForeignKey("ticket.id"), nullable=False)
-    description = Column(String, nullable=False)
-    action_by = Column(Integer, ForeignKey("user.id"))
-    status = Column(String, default="pendente")
+    action_by = Column(Integer, ForeignKey("user.id"), nullable=False)
+    description = Column(String)
+    status = Column(String, default="pendente", nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     ticket = db.relationship("TicketDB", back_populates="timeline")
+    user = db.relationship("UserDB", back_populates="timeline")
 
 
 class TicketMessageDB(db.Model):
@@ -226,9 +206,10 @@ class TicketReviewDB(db.Model):
     ticket_id = Column(Integer, ForeignKey("ticket.id"), nullable=False, unique=True)
     dispatcher_id = Column(Integer, ForeignKey("dispatcher.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
-    name_user = Column(String)
+    user_name = Column(String, nullable=False)
     rating = Column(Integer, nullable=False)
     comment = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     ticket = db.relationship("TicketDB", back_populates="review")

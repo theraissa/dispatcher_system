@@ -10,22 +10,24 @@ a chamados, incluindo criação, consulta detalhada e listagem por usuário.
 from datetime import datetime
 
 from flask import abort
+from flask_jwt_extended import get_jwt_identity
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 
 from database.tables import DispatcherDB, ServiceDetailsDB, TicketDB, TicketTimelineDB, UserDB
+from models.pagination import PaginatedResponse
 from models.ticket import (
     CreateTicketRequest,
     DispatcherInfo,
+    DispatcherTicketStatisticsResponse,
     ListTicketUser,
-    ListTicketUserResponse,
     ServiceDetailsInfo,
     TicketResponse,
+    TicketTimeline,
     TicketUserResponse,
     UserInfo,
 )
-from models.timeline import TicketTimeline
 
 
 class TicketService:
@@ -34,9 +36,6 @@ class TicketService:
 
     Centraliza regras de negócio, validações e consultas ao banco de dados,
     retornando dados estruturados através de schemas (Pydantic).
-
-    Args:
-        db (SQLAlchemy): Instância de acesso ao banco de dados.
     """
 
     def __init__(self, db: SQLAlchemy):
@@ -58,14 +57,13 @@ class TicketService:
         ticket = (
             self.db.session.query(TicketDB)
             .options(
+                joinedload(TicketDB.user).joinedload(UserDB.address),
                 joinedload(TicketDB.service_details).joinedload(ServiceDetailsDB.service),
-                joinedload(TicketDB.dispatcher).joinedload(DispatcherDB.user),
-                joinedload(TicketDB.dispatcher).joinedload(DispatcherDB.office),
+                joinedload(TicketDB.dispatcher).joinedload(DispatcherDB.user).joinedload(UserDB.address),
             )
             .filter(TicketDB.id == ticket_id)
             .first()
         )
-
         if not ticket:
             abort(404, description=f"Chamado com ID '{ticket_id}' não encontrado.")
 
@@ -85,26 +83,20 @@ class TicketService:
                 number=ticket.user.address.number,
                 neighborhood=ticket.user.address.neighborhood,
             ),
-            service_details=ServiceDetailsInfo(
-                id=ticket.service_details.id,
-                price=ticket.service_details.price,
-                service_id=ticket.service_details.service.id,
-                name=ticket.service_details.service.name,
-                description=ticket.service_details.service.description,
-            ),
+            service_details=ServiceDetailsInfo.model_validate(ticket.service_details),
             dispatcher=DispatcherInfo(
                 name=ticket.dispatcher.user.name,
                 email=ticket.dispatcher.user.email,
-                contact=ticket.dispatcher.office.contact,
-                address=ticket.dispatcher.office.address,
-                city=ticket.dispatcher.office.city,
-                state=ticket.dispatcher.office.state,
-                number=ticket.dispatcher.office.number,
-                neighborhood=ticket.dispatcher.office.neighborhood,
+                contact=ticket.dispatcher.user.address.contact,
+                address=ticket.dispatcher.user.address.address,
+                city=ticket.dispatcher.user.address.city,
+                state=ticket.dispatcher.user.address.state,
+                number=ticket.dispatcher.user.address.number,
+                neighborhood=ticket.dispatcher.user.address.neighborhood,
             ),
-        ).model_dump()
+        )
 
-    def list_tickets_by_user(self, user_id: int) -> ListTicketUserResponse:
+    def list_tickets_by_user(self, user_id: int, page: int = 1, per_page: int = 10) -> PaginatedResponse[ListTicketUser]:
         """
         Lista todos os chamados associados a um usuário.
 
@@ -116,18 +108,22 @@ class TicketService:
 
         Args:
             user_id (int): Identificador do usuário.
+            page (int): Página atual.
+            per_page (int): Quantidade de itens por página.
 
         Returns:
-            ListTicketUserResponse: Lista de chamados.
+            PaginatedResponse[ListTicketUser]: Lista paginada de chamados.
         """
         user = (
-            UserDB.query.options(joinedload(UserDB.dispatcher))
+            self.db.session.query(UserDB)
+            .options(joinedload(UserDB.dispatcher))
             .filter(
                 UserDB.id == user_id,
                 UserDB.deleted_at.is_(None),
             )
             .first()
         )
+
         if not user:
             abort(404, description=f"Usuário com o ID '{user_id}' não foi encontrado.")
 
@@ -135,18 +131,23 @@ class TicketService:
 
         query = self.db.session.query(TicketDB).options(
             joinedload(TicketDB.service_details).joinedload(ServiceDetailsDB.service),
-            joinedload(TicketDB.user),  # cliente
-            joinedload(TicketDB.dispatcher).joinedload(DispatcherDB.user),  # despachante
+            joinedload(TicketDB.user),
+            joinedload(TicketDB.dispatcher).joinedload(DispatcherDB.user),
         )
 
-        # se for despachante, filtra pelos chamados vinculados a ele;
-        # se for cliente, filtra pelos chamados criados por ele.
+        # Se for despachante → chamados vinculados a ele
         if is_dispatcher:
             query = query.filter(TicketDB.dispatcher_id == user.dispatcher.id)
+
+        # Se for cliente → chamados criados por ele
         else:
             query = query.filter(TicketDB.user_id == user_id)
 
-        tickets = query.order_by(TicketDB.created_at.desc()).all()
+        paginated = query.order_by(TicketDB.created_at.desc()).paginate(
+            page=page,
+            per_page=per_page,
+            error_out=False,
+        )
 
         response = [
             ListTicketUser(
@@ -158,9 +159,9 @@ class TicketService:
                 name_dispatcher=(ticket.dispatcher.user.name if not is_dispatcher else None),
                 name_client=(ticket.user.name if is_dispatcher else None),
             )
-            for ticket in tickets
+            for ticket in paginated.items
         ]
-        return ListTicketUserResponse(root=response).model_dump()
+        return PaginatedResponse[ListTicketUser].from_pagination(paginated, response)
 
     def create_ticket(self, data: CreateTicketRequest) -> TicketResponse:
         """
@@ -174,38 +175,45 @@ class TicketService:
         Returns:
             TicketResponse: Dados do chamado criado.
         """
-        user = self.db.session.get(UserDB, data.user_id)
-        dispatcher = self.db.session.get(DispatcherDB, data.dispatcher_id)
-        service_details = self.db.session.get(ServiceDetailsDB, data.service_details_id)
+        context_user_id = int(get_jwt_identity())
 
+        user = UserDB.query.filter(UserDB.id == context_user_id, UserDB.deleted_at.is_(None)).first()
         if not user:
-            abort(404, description=f"Usuário com o ID '{data.user_id}' não foi encontrado.")
+            abort(404, description=f"Usuário com o ID '{context_user_id}' não foi encontrado.")
 
-        self._validate_user_profile_complete(user)
-
+        dispatcher = DispatcherDB.query.filter(
+            DispatcherDB.id == data.dispatcher_id,
+            DispatcherDB.deleted_at.is_(None),
+        ).first()
         if not dispatcher:
             abort(404, description=f"Despachante com o ID '{data.dispatcher_id}' não foi encontrado.")
 
+        service_details = ServiceDetailsDB.query.filter(
+            ServiceDetailsDB.id == data.service_details_id,
+            ServiceDetailsDB.deleted_at.is_(None),
+        ).first()
         if not service_details:
             abort(404, description=f"Serviço com o ID '{data.service_details_id}' não foi encontrado.")
 
-        ticket = TicketDB(**data.model_dump())
+        self._validate_user_profile_complete(user)
 
-        self.db.session.add(ticket)
+        new_ticket = TicketDB(**data.model_dump(), user_id=context_user_id)
+
+        self.db.session.add(new_ticket)
         self.db.session.flush()  # Necessário para obter o ID do ticket antes de criar a timeline
 
         # CRIA TIMELINE INICIAl
         timeline = TicketTimelineDB(
-            ticket_id=ticket.id,
+            ticket_id=new_ticket.id,
             description="Chamado criado e aguardando atendimento",
-            action_by=data.user_id,
-            status="pendente",
+            action_by=context_user_id,
+            status=TicketTimeline.PENDENTE.value,
         )
 
         self.db.session.add(timeline)
         self.db.session.commit()
 
-        return TicketResponse.model_validate(ticket).model_dump()
+        return TicketResponse.model_validate(new_ticket)
 
     def _validate_user_profile_complete(self, user: UserDB) -> None:
         """
@@ -245,7 +253,7 @@ class TicketService:
         if not all(is_filled(field) for field in address_fields):
             abort(400, description="Endereço do usuário está incompleto.")
 
-    def get_dispatcher_ticket_statistics(self, user_id: int) -> dict:
+    def get_dispatcher_ticket_statistics(self, user_id: int) -> DispatcherTicketStatisticsResponse:
         """
         Calcula e retorna estatísticas de chamados para o dashboard do despachante.
 
@@ -259,7 +267,7 @@ class TicketService:
         Args:
             user_id (int): ID do usuário.
         Returns:
-            dict: Dicionário contendo as estatísticas do despachante.
+            DispatcherTicketStatisticsResponse: Dicionário contendo as estatísticas do despachante.
         """
         user = UserDB.query.options(joinedload(UserDB.dispatcher)).filter(UserDB.id == user_id).first()
         if not user or not user.dispatcher:
@@ -271,17 +279,17 @@ class TicketService:
         base_query = self.db.session.query(TicketDB).filter(TicketDB.dispatcher_id == dispatcher_id)
 
         # Pendentes
-        pending = base_query.filter(TicketDB.status == TicketTimeline.PENDENTE).count()
+        pending = base_query.filter(TicketDB.status == TicketTimeline.PENDENTE.value).count()
 
         # Em andamento
-        in_progress = base_query.filter(TicketDB.status == TicketTimeline.EM_ANDAMENTO).count()
+        in_progress = base_query.filter(TicketDB.status == TicketTimeline.EM_ANDAMENTO.value).count()
 
         # Finalizados no mês
         now = datetime.now()
         finished_month = base_query.filter(
-            TicketDB.status == TicketTimeline.FINALIZADO,
-            func.extract("month", TicketDB.created_at) == now.month,
-            func.extract("year", TicketDB.created_at) == now.year,
+            TicketDB.status == TicketTimeline.FINALIZADO.value,
+            func.extract("month", TicketDB.deleted_at) == now.month,
+            func.extract("year", TicketDB.deleted_at) == now.year,
         ).count()
 
         # Lucro (soma dos serviços finalizados)
@@ -290,17 +298,17 @@ class TicketService:
             .join(TicketDB, TicketDB.service_details_id == ServiceDetailsDB.id)
             .filter(
                 TicketDB.dispatcher_id == dispatcher_id,
-                TicketDB.status == TicketTimeline.FINALIZADO,
-                func.extract("month", TicketDB.created_at) == now.month,
-                func.extract("year", TicketDB.created_at) == now.year,
+                TicketDB.status == TicketTimeline.FINALIZADO.value,
+                func.extract("month", TicketDB.deleted_at) == now.month,
+                func.extract("year", TicketDB.deleted_at) == now.year,
             )
             .scalar()
             or 0
         )
 
-        return {
-            "pending": pending,
-            "in_progress": in_progress,
-            "finished_month": finished_month,
-            "monthly_revenue": float(revenue),
-        }
+        return DispatcherTicketStatisticsResponse(
+            pending=pending,
+            in_progress=in_progress,
+            finished_month=finished_month,
+            monthly_revenue=float(revenue),
+        )

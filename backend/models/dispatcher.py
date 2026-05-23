@@ -3,24 +3,50 @@ Modelos Pydantic relacionados ao DispatcherService.
 """
 
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, RootModel
+from pydantic import BaseModel, ConfigDict
 
-from models.user import CreateUserRequest, UserResponse
+from models.user import (
+    AddressResponse,
+    CreateAddressRequest,
+    CreateUserRequest,
+    UpdateAddressRequest,
+    UpdateUserRequest,
+    UserResponse,
+)
+
+
+class DispatcherFilters(BaseModel):
+    """Filtros para busca de despachantes."""
+
+    city: Optional[str] = None
+    name: Optional[str] = None
+    service_name: Optional[str] = None
+
+    model_config = ConfigDict(extra="ignore")
 
 
 class CreateDispatcherRequest(BaseModel):
-    """Modelo de criação do DispatcherService."""
+    """Dados para criação do despachante."""
 
     regis_crdd: Optional[str] = None
     date_exp_regis: Optional[str] = None
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
+
+
+class UpdateDispatcherRequest(BaseModel):
+    """Dados para atualização do despachante."""
+
+    regis_crdd: Optional[str] = None
+    date_exp_regis: Optional[str] = None
+
+    model_config = ConfigDict(extra="ignore")
 
 
 class DispatcherResponse(BaseModel):
-    """Modelo de resposta para o DispatcherService."""
+    """Resposta de despachante."""
 
     id: int
     user_id: Optional[int]
@@ -33,89 +59,27 @@ class DispatcherResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class CreateOfficeRequest(BaseModel):
-    """Modelo de criação do Office."""
-
-    contact: Optional[str] = None
-    number: Optional[int] = None
-    neighborhood: Optional[str] = None
-    address: Optional[str] = None
-    city: Optional[str] = None
-    state: Optional[str] = None
-    zip_code: Optional[str] = None
-
-    model_config = ConfigDict(extra="forbid")
-
-
-class OfficeResponse(BaseModel):
-    """Modelo de resposta para o Office."""
-
-    id: int
-    dispatcher_id: Optional[int]
-    contact: Optional[str]
-    number: Optional[int]
-    neighborhood: Optional[str]
-    address: Optional[str]
-    city: Optional[str]
-    state: Optional[str]
-    zip_code: Optional[str]
-    created_at: datetime
-    updated_at: datetime
-    deleted_at: Optional[datetime]
-
-    model_config = ConfigDict(from_attributes=True)
-
-
 class CreateDispatcherFullRequest(BaseModel):
-    """Criar múltiplas tabelas ao mesmo tempo"""
+    """Dados completos para criação de despachante."""
 
     user: CreateUserRequest
     dispatcher: CreateDispatcherRequest
-    office: CreateOfficeRequest
-
-
-class CreateDispatcherFullResponse(BaseModel):
-    """Responder múltiplas tabelas ao mesmo tempo"""
-
-    user: UserResponse
-    dispatcher: DispatcherResponse
-    office: OfficeResponse
-
-
-class ListDispatcherResponse(RootModel):
-    """Modelo de listagem para o DispatcherService."""
-
-    root: List[CreateDispatcherFullResponse]
-
-
-class UpdateDispatcherRequest(BaseModel):
-    """Modelo de atualização parcial do Dispatcher."""
-
-    regis_crdd: Optional[str] = None
-    date_exp_regis: Optional[str] = None
-
-    model_config = ConfigDict(extra="ignore")
-
-
-class UpdateOfficeRequest(BaseModel):
-    """Modelo de atualização parcial do Office."""
-
-    contact: Optional[str] = None
-    number: Optional[int] = None
-    neighborhood: Optional[str] = None
-    address: Optional[str] = None
-    city: Optional[str] = None
-    state: Optional[str] = None
-    zip_code: Optional[str] = None
-
-    model_config = ConfigDict(extra="ignore")
+    address: CreateAddressRequest
 
 
 class UpdateDispatcherFullRequest(BaseModel):
-    """Modelo de atualização parcial de múltiplas tabelas."""
+    """Dados para atualização parcial de despachante."""
 
-    user: Optional[CreateUserRequest] = None
+    user: Optional[UpdateUserRequest] = None
     dispatcher: Optional[UpdateDispatcherRequest] = None
-    office: Optional[UpdateOfficeRequest] = None
+    address: Optional[UpdateAddressRequest] = None
 
     model_config = ConfigDict(extra="ignore")
+
+
+class DispatcherFullResponse(BaseModel):
+    """Resposta completa de despachante."""
+
+    user: UserResponse
+    dispatcher: DispatcherResponse
+    address: AddressResponse

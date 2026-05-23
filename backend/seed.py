@@ -4,8 +4,8 @@ from datetime import datetime
 
 from database import db
 from database.tables import (
+    AddressDB,
     DispatcherDB,
-    OfficeDB,
     ServiceDB,
     ServiceDetailsDB,
     UserDB,
@@ -50,6 +50,34 @@ def seed():
     db.session.flush()
 
     # =========================
+    # ADDRESS
+    # =========================
+    address1 = AddressDB(
+        user_id=user1.id,
+        contact="55999999999",
+        address="Rua Central",
+        number=123,
+        neighborhood="Centro",
+        zip_code="93800000",
+        city="Sapiranga",
+        state="RS",
+    )
+
+    address2 = AddressDB(
+        user_id=user2.id,
+        contact="55888888888",
+        address="Av. Brasil",
+        number=456,
+        neighborhood="Centro",
+        zip_code="90000000",
+        city="Porto Alegre",
+        state="RS",
+    )
+
+    db.session.add_all([address1, address2])
+    db.session.flush()
+
+    # =========================
     # DISPATCHERS
     # =========================
     dispatcher1 = DispatcherDB(
@@ -65,34 +93,6 @@ def seed():
     )
 
     db.session.add_all([dispatcher1, dispatcher2])
-    db.session.flush()
-
-    # =========================
-    # OFFICES
-    # =========================
-    office1 = OfficeDB(
-        dispatcher_id=dispatcher1.id,
-        contact="55999999999",
-        address="Rua Central",
-        number=123,
-        neighborhood="Centro",
-        zip_code="93800000",
-        city="Sapiranga",
-        state="RS",
-    )
-
-    office2 = OfficeDB(
-        dispatcher_id=dispatcher2.id,
-        contact="55888888888",
-        address="Av. Brasil",
-        number=456,
-        neighborhood="Centro",
-        zip_code="90000000",
-        city="Porto Alegre",
-        state="RS",
-    )
-
-    db.session.add_all([office1, office2])
     db.session.flush()
 
     # =========================

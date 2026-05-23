@@ -7,6 +7,9 @@ from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, RootModel
 
+# ===============================================================
+# ========== Modelos relacionado ao Service ==========
+
 
 class CreateServiceCatologRequest(BaseModel):
     """Modelo de criação do Service."""
@@ -34,3 +37,28 @@ class ListServiceCatalogResponse(RootModel):
     """Modelo de listagem para o Service."""
 
     root: List[ServiceCatalogResponse]
+
+
+# ===============================================================
+# ========== Modelos relacionado ao Service Details ==========
+
+
+class AssociateServiceDetailsResponse(BaseModel):
+    """Resposta do vínculo entre despachante e serviço."""
+
+    id: int
+    service_id: int
+    dispatcher_id: int
+    price: float
+    service_name: str
+    created_at: datetime
+    updated_at: datetime
+    deleted_at: Optional[datetime] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class UpdateAssociateServiceDetailsRequest(BaseModel):
+    """Dados para atualização do vínculo."""
+
+    price: float

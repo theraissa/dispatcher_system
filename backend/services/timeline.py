@@ -5,14 +5,23 @@ A timeline representa o histórico de mudanças de estado e ações realizadas
 em um ticket, garantindo rastreabilidade e controle de fluxo.
 """
 
+import logging
 from datetime import datetime
 
 from flask import abort
+from flask_jwt_extended import get_jwt, get_jwt_identity
 from flask_sqlalchemy import SQLAlchemy
 
 from database.tables import TicketDB, TicketTimelineDB
-from models.timeline import VALID_TRANSITIONS, CreateTimelineRequest, ListTimelineResponse, TicketTimeline, TimelineResponse
-from require_auth import request_context
+from models.pagination import PaginatedResponse
+from models.ticket import (
+    VALID_TRANSITIONS,
+    CreateTimelineRequest,
+    TicketTimeline,
+    TimelineResponse,
+)
+
+logger = logging.getLogger(__name__)
 
 
 class TicketTimelineService:
@@ -24,15 +33,17 @@ class TicketTimelineService:
     - Criação de eventos de timeline
     - Validação de transições de status
     - Atualização do status do ticket
-
-    Attributes:
-        db (SQLAlchemy): Instância de acesso ao banco de dados.
     """
 
     def __init__(self, db: SQLAlchemy):
         self.db = db
 
-    def list_timeline_by_ticket(self, ticket_id: int) -> ListTimelineResponse:
+    def list_timeline_by_ticket_id(
+        self,
+        ticket_id: int,
+        page: int = 1,
+        per_page: int = 10,
+    ) -> PaginatedResponse[TimelineResponse]:
         """
         Lista todos os eventos da timeline de um chamado.
 
@@ -43,29 +54,27 @@ class TicketTimelineService:
 
         Args:
             ticket_id (int): Identificador do chamado.
-
         Returns:
             dict: Lista serializada de eventos conforme ListTimelineResponse.
         """
-        timeline = (
+        ticket_exists = self.db.session.get(TicketDB, ticket_id)
+        if not ticket_exists:
+            abort(404, description=f"Chamado com ID {ticket_id} não encontrado.")
+
+        paginated = (
             self.db.session.query(TicketTimelineDB)
             .filter(TicketTimelineDB.ticket_id == ticket_id)
             .order_by(TicketTimelineDB.created_at.asc())
-            .all()
-        )
-
-        response = [
-            TimelineResponse(
-                id=item.id,
-                description=item.description,
-                status=item.status,
-                action_by=item.action_by,
-                created_at=item.created_at,
+            .paginate(
+                page=page,
+                per_page=per_page,
+                error_out=False,
             )
-            for item in timeline
-        ]
+        )
+        response = [TimelineResponse.model_validate(item) for item in paginated.items]
 
-        return ListTimelineResponse(root=response).model_dump()
+        logger.info("Listando todos os eventos da timeline do chamado. ID: '%s'", ticket_id)
+        return PaginatedResponse[TimelineResponse].from_pagination(paginated, response)
 
     def create_timeline(self, ticket_id: int, data: CreateTimelineRequest) -> TimelineResponse:
         """
@@ -85,23 +94,28 @@ class TicketTimelineService:
             data (CreateTimelineRequest): Dados do evento contendo:
                 - status (opcional)
                 - description (opcional)
-
         Returns:
             dict: Evento criado serializado conforme TimelineResponse.
         """
-        ticket = self.db.session.get(TicketDB, ticket_id)
+        ticket = self.db.session.query(TicketDB).filter(TicketDB.id == ticket_id, TicketDB.deleted_at.is_(None)).first()
         if not ticket:
             abort(404, description=f"Chamado com ID {ticket_id} não encontrado.")
 
+        claims = get_jwt()
+        context_role = claims["role"]
+
+        if context_role != "despachante":
+            abort(403, description="Apenas despachantes podem criar eventos de timeline.")
+
         current_status_enum = TicketTimeline(ticket.status)
-        new_status_enum = data.status or current_status_enum
+        new_status_enum = data.status
+
+        if current_status_enum == new_status_enum.value:
+            abort(400, description=f"O chamado já está '{new_status_enum.value}'.")
 
         # Validação de transição de status
         if new_status_enum not in VALID_TRANSITIONS.get(current_status_enum, []):
-            abort(
-                400,
-                description=(f"Transição inválida de " f"'{current_status_enum.value}' para '{new_status_enum.value}'"),
-            )
+            abort(400, description=(f"Transição inválida de " f"'{current_status_enum.value}' para '{new_status_enum.value}'"))
 
         # Atualiza status do ticket
         ticket.status = new_status_enum.value
@@ -111,7 +125,7 @@ class TicketTimelineService:
             ticket.deleted_at = datetime.now()
 
         # Usuário autenticado responsável pela ação
-        action_by = request_context.user_id
+        action_by = int(get_jwt_identity())
 
         # Criação do evento de timeline
         new_event = TicketTimelineDB(
@@ -124,10 +138,4 @@ class TicketTimelineService:
         self.db.session.add(new_event)
         self.db.session.commit()
 
-        return TimelineResponse(
-            id=new_event.id,
-            description=new_event.description,
-            status=new_event.status,
-            action_by=new_event.action_by,
-            created_at=new_event.created_at,
-        ).model_dump()
+        return TimelineResponse.model_validate(new_event)
