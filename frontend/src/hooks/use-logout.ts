@@ -1,6 +1,6 @@
 import { useAuth } from "@/hooks/auth/use-auth";
 import { FRONTEND_ROUTES } from "@/routes/frontend-routes";
-import { logoutRequest } from "@/services/auth";
+import { authService } from "@/services/auth";
 import { useNavigate } from "react-router-dom";
 
 
@@ -23,7 +23,7 @@ export function useLogout() {
 
         try {
             // Solicita invalidação do token no backend.
-            await logoutRequest();
+            await authService.logoutRequest();
 
         } catch (error) {
             /**

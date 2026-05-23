@@ -1,6 +1,6 @@
 import { useAuth } from "@/hooks/auth/use-auth";
 import { FRONTEND_ROUTES } from "@/routes/frontend-routes";
-import { loginRequest } from "@/services/login-request";
+import { authService } from "@/services/auth";
 import type { LoginRequest } from "@/types/type";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -34,7 +34,7 @@ export function useLogin() {
             /**
              * Realiza login no backend.
              */
-            const user = await loginRequest(data);
+            const user = await authService.loginRequest(data);
 
             /**
              * Persiste autenticação no contexto global.
