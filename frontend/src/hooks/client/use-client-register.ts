@@ -1,9 +1,9 @@
+import type { CreateUserRequest, UserResponse } from "@/types/user.types"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { registerUser } from "../services/register-user"
-import { FRONTEND_ROUTES } from "../routes/frontend-routes"
-import type { ApiError } from "../types/type"
-import type { CreateUserRequest, UserResponse } from "@/types/user.types"
+import { FRONTEND_ROUTES } from "../../routes/frontend-routes"
+import { registerUser } from "../../services/register-user"
+import type { ApiError } from "../../types/type"
 
 
 /**
@@ -15,7 +15,7 @@ import type { CreateUserRequest, UserResponse } from "@/types/user.types"
  * - Tratar erros da API
  * - Redirecionar após sucesso
  */
-export function useRegisterUser() {
+export function useRegisterClient() {
     const navigate = useNavigate()
 
     const [loading, setLoading] = useState(false)
@@ -31,7 +31,7 @@ export function useRegisterUser() {
             setLoading(true)
             setError(null)
 
-            const user = await registerUser(data)
+            const user = await registerUser.registerClient(data)
 
             // redireciona após sucesso
             navigate(FRONTEND_ROUTES.LOGIN)

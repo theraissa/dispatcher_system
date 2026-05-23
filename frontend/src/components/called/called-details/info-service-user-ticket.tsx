@@ -1,4 +1,4 @@
-import { useTicketTimeline } from "@/hooks/use-ticket-timeline";
+import { useTicketTimeline } from "@/hooks/ticket/use-ticket-timeline";
 import type { TicketUserResponse } from "@/types/ticket.types";
 import { formatDate } from "@/utils/formatters";
 import { FileText, XCircle } from "lucide-react";

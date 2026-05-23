@@ -1,4 +1,4 @@
-import { useTicketTimeline } from "@/hooks/use-ticket-timeline";
+import { useTicketTimeline } from "@/hooks/ticket/use-ticket-timeline";
 import { cn } from "@/lib/utils"; // Utilizando a utilitária de classes para manter o código limpo
 import { formatDate } from "@/utils/formatters";
 import { AlertCircle, CheckCircle2, Clock, PlayCircle, XCircle } from "lucide-react";

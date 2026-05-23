@@ -6,8 +6,8 @@ import { AsideProfileDispatcher } from '@/components/client/card-profile-dispatc
 import { FeedbackState } from '@/components/record/ui/feedback-state';
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuthRequired } from '@/hooks/auth/auth-requirered';
-import { useTickets } from "@/hooks/use-ticket";
-import { useTicketReview } from "@/hooks/use-ticket-review";
+import { useTickets } from "@/hooks/ticket/use-ticket";
+import { useTicketReview } from "@/hooks/ticket/use-ticket-review";
 import { clientLinksNavbar } from "@/routes/frontend-routes";
 import { ClipboardX } from "lucide-react";
 import { useEffect, useState } from "react";

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useRegisterDispatcher } from "../../../hooks/use-register-dispatcher"
+import { useRegisterDispatcher } from "../../../hooks/dispatcher/use-dispatcher-register"
 import FormsContainer from "../../layout/form-container"
 import FormSubmit from "../../layout/form-submit"
 import ButtonSubmitForm from "../ui/button-submit-form"

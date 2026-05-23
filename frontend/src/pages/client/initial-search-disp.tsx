@@ -1,4 +1,4 @@
-import { useSearchDispatchers } from "@/hooks/use-search-dispatcher";
+import { useSearchDispatchers } from "@/hooks/dispatcher/use-search-dispatcher";
 import { clientLinksNavbar } from "@/routes/frontend-routes";
 import { useState } from "react";
 import CardDispatcher from "../../components/client/initial-search-disp/card";

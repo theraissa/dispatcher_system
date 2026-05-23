@@ -1,12 +1,9 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { FRONTEND_ROUTES } from "../routes/frontend-routes"
-import { registerDispatcher } from "../services/register-dispatcher"
-import type {
-    RegisterDispatcherRequest,
-    RegisterDispatcherResponse
-} from "../types/dispatcher.types"
-import type { ApiError } from "../types/type"
+import { FRONTEND_ROUTES } from "../../routes/frontend-routes"
+import { registerUser } from "../../services/register-user"
+import type { RegisterDispatcherRequest, RegisterDispatcherResponse } from "../../types/dispatcher.types"
+import type { ApiError } from "../../types/type"
 
 
 /**
@@ -40,7 +37,7 @@ export function useRegisterDispatcher() {
                 throw new Error("As senhas não coincidem")
             }
 
-            const result = await registerDispatcher(formData)
+            const result = await registerUser.registerDispatcher(formData)
 
             // redirecionamento após sucesso
             navigate(FRONTEND_ROUTES.LOGIN)

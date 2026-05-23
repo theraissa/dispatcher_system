@@ -1,4 +1,4 @@
-import { getClientProfile, updateClientProfile } from "@/services/client-service"
+import { clientService } from "@/services/client-service"
 import type { ProfileUser } from "@/types/user.types"
 import { useEffect, useState } from "react"
 
@@ -21,7 +21,7 @@ export function useClientProfile(userId: number) {
             console.log("Buscando perfil...")
 
             try {
-                const profile = await getClientProfile(userId)
+                const profile = await clientService.getClientProfile(userId)
                 setData(profile)
             } catch (error) {
                 console.error("ERRO AO BUSCAR PERFIL DO CLIENTE:", error)
@@ -58,7 +58,7 @@ export function useClientProfile(userId: number) {
         if (!data) return
 
         console.log("ANTES DE ENVIAR:", data)
-        await updateClientProfile(userId, data)
+        await clientService.updateClientProfile(userId, data)
     }
 
     return {

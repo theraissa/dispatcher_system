@@ -1,12 +1,6 @@
-import { useCallback, useEffect, useState } from "react"
+import { serviceDetailsDispatcher } from "@/services/service-details"
 import type { ServiceDetails, ServiceResponse } from "@/types/service.types"
-import {
-    createServiceDetailsDispatcher,
-    getAllServices,
-    getServiceDetailsDispatcher,
-    removeDispatcherServiceDetails,
-    updateServiceDetailsDispatcher
-} from "@/services/service-details"
+import { useCallback, useEffect, useState } from "react"
 
 
 /**
@@ -23,8 +17,8 @@ export function useServiceDetails(dispatcherId: number) {
         setLoading(true); // Começa o carregamento
         try {
             const [details, catalog] = await Promise.all([
-                getServiceDetailsDispatcher(dispatcherId),
-                getAllServices()
+                serviceDetailsDispatcher.getServiceDetailsDispatcher(dispatcherId),
+                serviceDetailsDispatcher.getAllServices()
             ]);
             setServiceDetails(details);
             setAllServices(catalog);
@@ -44,7 +38,7 @@ export function useServiceDetails(dispatcherId: number) {
     async function createServiceDetails(newServices: ServiceDetails[]) {
         await Promise.all(
             newServices.map(service =>
-                createServiceDetailsDispatcher(dispatcherId, service.id)
+                serviceDetailsDispatcher.createServiceDetailsDispatcher(dispatcherId, service.id)
             )
         )
         fetchData(); // Recarrega a lista após criar
@@ -52,7 +46,7 @@ export function useServiceDetails(dispatcherId: number) {
 
     // Função para atualizar o serviço detalhado do despachante.
     async function updateServiceDetails(serviceId: number, price: number) {
-        await updateServiceDetailsDispatcher(dispatcherId, serviceId, price);
+        await serviceDetailsDispatcher.updateServiceDetailsDispatcher(dispatcherId, serviceId, price);
 
         // Isso aqui atualiza a lista na tela SEM precisar recarregar do banco:
         setServiceDetails(prev =>
@@ -66,7 +60,7 @@ export function useServiceDetails(dispatcherId: number) {
 
     // Função para remover o serviço detalhado do despachante
     async function removeServiceDetails(serviceId: number) {
-        await removeDispatcherServiceDetails(dispatcherId, serviceId)
+        await serviceDetailsDispatcher.removeDispatcherServiceDetails(dispatcherId, serviceId)
 
         // Isso remove o item da sua lista local instantaneamente para o usuário
         setServiceDetails(prev => prev.filter(s => s.service_id !== serviceId))

@@ -1,4 +1,4 @@
-import { listTimelineByIdTicket, createTimelineByTicket } from "@/services/ticket-service";
+import { ticketService } from "@/services/ticket-service";
 import type { TimelineResponse } from "@/types/ticket.types";
 import { useCallback, useEffect, useState } from "react";
 
@@ -32,7 +32,7 @@ export function useTicketTimeline(ticketId: number) {
             setError(null);
 
             // Chamada ao service (API)
-            const response = await listTimelineByIdTicket(ticketId);
+            const response = await ticketService.listTimelineByIdTicket(ticketId);
 
             // Atualiza os dados com a resposta
             setData(response);
@@ -49,7 +49,7 @@ export function useTicketTimeline(ticketId: number) {
         status: string; description: string;
     }) {
         try {
-            await createTimelineByTicket(ticketId, data);
+            await ticketService.createTimelineByTicket(ticketId, data);
 
             // 🔥 Atualiza timeline
             await fetchTimeline();

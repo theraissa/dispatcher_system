@@ -5,13 +5,13 @@ import { cpfMask } from "@/utils/masks"
 import { CreditCard, Mail, User } from "lucide-react"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { useRegisterUser } from "../../../hooks/use-register-user"
+import { useRegisterClient } from "../../../hooks/client/use-client-register"
 import ButtonSubmitForm from "../ui/button-submit-form"
 import InputForm from "../ui/input-form"
 import LabelForm from "../ui/label-form"
 
 export function FormClient() {
-  const { register, error, loading } = useRegisterUser()
+  const { register, error, loading } = useRegisterClient()
   const navigate = useNavigate()
 
   const [formData, setFormData] = useState({

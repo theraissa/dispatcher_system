@@ -1,5 +1,5 @@
-import { useDispatcherProfile } from "@/hooks/use-dispatcher-profile";
-import { useUpdateClientProfilePublic } from "@/hooks/use-user-profile-public"; // Importado para salvar os dados públicos
+import { useUpdateClientProfilePublic } from "@/hooks/client/use-user-profile-public"; // Importado para salvar os dados públicos
+import { useDispatcherProfile } from "@/hooks/dispatcher/use-dispatcher-profile";
 import { useState } from "react";
 
 import FormCommercial from "@/components/record/dispatcher-record/form-dispatcher/form-commercial";

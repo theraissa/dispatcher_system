@@ -1,4 +1,4 @@
-import { ClipboardList, User, Search, Home } from "lucide-react";
+import { ClipboardList, Home, Search, User } from "lucide-react";
 
 /**
  * Rotas da aplicação (frontend).
@@ -17,16 +17,16 @@ export const FRONTEND_ROUTES = {
 
     DISPATCHER: {
         INITIAL: "/dispatcher/initial",
-        DISPATCHER_PROFILE: "/dispatcher/profile",
-        CALLED: "/dispatcher/called",
-        CALLED_DETAILS: "/dispatcher/called-details/:ticketId",
+        PROFILE: "/dispatcher/profile",
+        TICKET: "/dispatcher/tickets",
+        TICKET_DETAILS: "/dispatcher/ticket-details/:ticketId",
     },
 
     CLIENT: {
         PROFILE: "/client/profile",
         SEARCH_DISPATCHER: "/client/search-dispatcher",
-        CALLED: "/client/called",
-        CALLED_DETAILS: "/client/called-details/:ticketId",
+        TICKET: "/client/tickets",
+        TICKET_DETAILS: "/client/ticket-details/:ticketId",
         CARD_PROFILE_DISPATCHER: "/client/profile-dispatcher/:userId",
     },
 
@@ -42,9 +42,9 @@ export const FRONTEND_ROUTES = {
  * Cada link tem um rótulo, caminho e ícone associado.
  */
 export const clientLinksNavbar = [
-    { label: "Buscar Despachantes", path: "/client/search-dispatcher", icon: Search },
-    { label: "Chamados", path: "/client/called", icon: ClipboardList },
-    { label: "Perfil", path: "/client/profile", icon: User },
+    { label: "Buscar Despachantes", path: FRONTEND_ROUTES.CLIENT.SEARCH_DISPATCHER, icon: Search },
+    { label: "Chamados", path: FRONTEND_ROUTES.CLIENT.TICKET, icon: ClipboardList },
+    { label: "Perfil", path: FRONTEND_ROUTES.CLIENT.PROFILE, icon: User },
 ];
 
 
@@ -53,7 +53,7 @@ export const clientLinksNavbar = [
  * Cada link tem um rótulo, caminho e ícone associado.
  */
 export const dispatcherLinksNavbar = [
-    { label: "Início", path: "/dispatcher/initial", icon: Home },
-    { label: "Chamados", path: "/dispatcher/called", icon: ClipboardList },
-    { label: "Perfil", path: "/dispatcher/profile", icon: User },
+    { label: "Início", path: FRONTEND_ROUTES.DISPATCHER.INITIAL, icon: Home },
+    { label: "Chamados", path: FRONTEND_ROUTES.DISPATCHER.TICKET, icon: ClipboardList },
+    { label: "Perfil", path: FRONTEND_ROUTES.DISPATCHER.PROFILE, icon: User },
 ];

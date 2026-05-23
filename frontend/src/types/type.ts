@@ -97,7 +97,7 @@ export type Service = {
     deleted_at?: string | null;
 }
 
-export type RolePermission = "dispatcher" | "user" | "admin"
+export type RolePermission = "despachante" | "cliente" | "admin"
 
 /**
  * Representa os dados necessários para o login do usuário.

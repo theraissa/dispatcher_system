@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useTicketChat } from "@/hooks/use-ticket-chat";
+import { useTicketChat } from "@/hooks/ticket/use-ticket-chat";
 import type { TicketUserResponse } from "@/types/ticket.types";
 import { formatDate } from "@/utils/formatters";
 import { Send, User } from "lucide-react";

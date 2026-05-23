@@ -1,4 +1,4 @@
-import { useDispatcherStatistics } from "@/hooks/use-dispatcher-statistics";
+import { useDispatcherStatistics } from "@/hooks/dispatcher/use-dispatcher-statistics";
 import { AlertCircle, CheckCircle2, Clock, TrendingUp } from "lucide-react";
 
 /**

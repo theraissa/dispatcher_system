@@ -1,8 +1,8 @@
 import FormProfileClient from "@/components/client/profile/profile-client-form";
 import ProfileHeader from "@/components/layout/profile-header";
 import { useAuthRequired } from "@/hooks/auth/auth-requirered";
-import { useClientProfile } from "@/hooks/use-client-profile";
-import { useUpdateClientProfilePublic } from "@/hooks/use-user-profile-public";
+import { useClientProfile } from "@/hooks/client/use-client-profile";
+import { useUpdateClientProfilePublic } from "@/hooks/client/use-user-profile-public";
 import { clientLinksNavbar } from "@/routes/frontend-routes";
 import { useState } from "react";
 import NavbarPage from "../../components/record/ui/navbar-page";

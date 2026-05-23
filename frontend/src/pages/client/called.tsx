@@ -2,7 +2,7 @@ import CalledContainer from "@/components/called/called-container";
 import CalledClientFilter from "@/components/called/called-filter";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuthRequired } from "@/hooks/auth/auth-requirered";
-import { useTickets } from "@/hooks/use-ticket";
+import { useTickets } from "@/hooks/ticket/use-ticket";
 import { clientLinksNavbar, FRONTEND_ROUTES } from "@/routes/frontend-routes";
 import type { TicketFilters } from "@/types/ticket.types";
 import { formatToInputDate } from "@/utils/formatters";

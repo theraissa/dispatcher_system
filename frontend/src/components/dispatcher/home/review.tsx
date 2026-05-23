@@ -5,7 +5,7 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel";
-import { useDispatcherReviews } from "@/hooks/use-dispatcher-reviews";
+import { useDispatcherReviews } from "@/hooks/dispatcher/use-dispatcher-reviews";
 import { formatDate } from "@/utils/formatters";
 import { MessageSquareQuote, Star } from "lucide-react";
 

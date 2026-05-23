@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { getMessages, createMessage } from "@/services/ticket-service";
+import { ticketService } from "@/services/ticket-service";
 import type { ListTicketMessage } from "@/types/ticket.types";
+import { useEffect, useState } from "react";
 
 
 /**
@@ -32,7 +32,7 @@ export function useTicketChat(ticketId: number, userId: number) {
     // Busca todas as mensagens do chamado no backend.
     async function fetchMessages() {
         try {
-            const data = await getMessages(ticketId);
+            const data = await ticketService.listMessages(ticketId);
             setMessages(data);
         } catch (error) {
             console.error("Erro ao buscar mensagens:", error);
@@ -51,7 +51,7 @@ export function useTicketChat(ticketId: number, userId: number) {
      */
     async function handleSend(message: string) {
         try {
-            const newMsg = await createMessage(ticketId, {
+            const newMsg = await ticketService.createMessage(ticketId, {
                 user_id: userId,
                 message
             });

@@ -1,101 +1,184 @@
 import { FRONTEND_ROUTES } from "@/routes/frontend-routes";
+import { authStorage } from "./auth-storage";
+
+/**
+ * URL base da API.
+ */
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 /**
  * Cliente HTTP centralizado da aplicação.
  *
  * Responsabilidades:
- * - Definir base URL
+ * - Definir URL base
+ * - Adicionar token JWT automaticamente
  * - Padronizar headers
- * - Tratar erros da API
- */
-
-const BASE_URL = import.meta.env.VITE_API_URL
-
-/**
- * Função genérica para realizar requisições HTTP.
+ * - Tratar erros HTTP
+ * - Suportar JSON e multipart/form-data
  */
 async function request<TResponse>(
     endpoint: string,
     options?: RequestInit
 ): Promise<TResponse> {
 
-    // Inclui token de autenticação, se disponível
-    const token = localStorage.getItem("token")
-    const response = await fetch(`${BASE_URL}${endpoint}`, {
-        headers: {
-            "Content-Type": "application/json",
-            ...(token && { Authorization: `Bearer ${token}` }),
-            ...options?.headers
-        },
-        ...options
-    })
+    /**
+     * Recupera token JWT persistido.
+     */
+    const token = authStorage.getToken();
 
+    /**
+     * Detecta se o body é multipart/form-data.
+     *
+     * IMPORTANTE:
+     * Quando usamos FormData:
+     * - NÃO devemos definir Content-Type manualmente
+     * - O navegador adiciona automaticamente:
+     *   multipart/form-data + boundary
+     */
+    const isFormData = options?.body instanceof FormData;
 
-    //Resposta precisa ser em JSON
-    let data
-    try {
-        data = await response.json()
-    } catch {
-        throw new Error("Resposta inválida do servidor (não é JSON)")
+    /**
+     * Headers padrão da aplicação.
+     */
+    const headers: HeadersInit = {
+
+        ...(token && {
+            Authorization: `Bearer ${token}`,
+        }),
+
+        /**
+         * JSON é o padrão da aplicação.
+         *
+         * Para FormData o Content-Type será removido abaixo.
+         */
+        "Content-Type": "application/json",
+
+        ...options?.headers,
+    };
+
+    /**
+     * Remove Content-Type quando o body é FormData.
+     */
+    if (isFormData) {
+        delete (headers as Record<string, string>)["Content-Type"];
     }
 
-    // Tratamento de erros
+    const response = await fetch(`${BASE_URL}${endpoint}`, {
+        ...options,
+        headers,
+    });
+
+    /**
+     * Tenta converter resposta para JSON.
+     */
+    let data: unknown;
+
+    try {
+        data = await response.json();
+    } catch {
+        throw new Error(
+            "Servidor retornou uma resposta inválida."
+        );
+    }
+
+    /**
+     * Tratamento global de erros HTTP.
+     */
     if (!response.ok) {
+
+        /**
+         * Sessão inválida ou expirada.
+         *
+         * Remove dados locais e redireciona login.
+         */
         if (response.status === 401) {
-            localStorage.removeItem("token")
-            localStorage.removeItem("user")
-            window.location.href = FRONTEND_ROUTES.LOGIN
+            authStorage.clear();
+
+            window.location.href = FRONTEND_ROUTES.LOGIN;
         }
 
-        throw new Error(
-            data?.description || data?.message || "Erro na requisição"
-        )
+        const errorMessage =
+            (data as { description?: string; message?: string })?.description ||
+            (data as { message?: string })?.message ||
+            "Erro inesperado na requisição.";
+
+        throw new Error(errorMessage);
     }
 
-    return data
+    return data as TResponse;
 }
 
 /**
- * API Client com métodos para cada verbo HTTP.
+ * API Client centralizado.
  *
- * Exemplo de uso:
- * apiClient.get("/users", { search: "John" })
- * apiClient.post("/login", { email, password })
+ * Responsável por abstrair:
+ * - fetch
+ * - headers
+ * - autenticação
+ * - serialização JSON
+ * - tratamento de erros
  */
 export const apiClient = {
 
-    // Método GET com suporte a query params
+    /**
+     * Requisição GET com suporte a query params.
+     */
     get: <TResponse>(
         endpoint: string,
         params?: Record<string, string | number | boolean | null | undefined>
     ) => {
-        const url = new URL(`${BASE_URL}${endpoint}`)
+
+        const url = new URL(`${BASE_URL}${endpoint}`);
 
         if (params) {
             Object.entries(params).forEach(([key, value]) => {
+
                 if (value !== "" && value != null) {
-                    url.searchParams.append(key, String(value))
+                    url.searchParams.append(key, String(value));
                 }
-            })
+            });
         }
 
-        return request<TResponse>(endpoint + url.search)
+        return request<TResponse>(endpoint + url.search);
     },
 
-    post: <TResponse, TBody = unknown>(endpoint: string, body?: TBody) =>
+    /**
+     * Requisição POST.
+     */
+    post: <TResponse, TBody = unknown>(
+        endpoint: string,
+        body?: TBody
+    ) =>
         request<TResponse>(endpoint, {
             method: "POST",
-            body: body ? JSON.stringify(body) : undefined
+
+            body:
+                body instanceof FormData
+                    ? body
+                    : JSON.stringify(body),
         }),
 
-    put: <TResponse, TBody = unknown>(endpoint: string, body?: TBody) =>
+    /**
+     * Requisição PUT.
+     */
+    put: <TResponse, TBody = unknown>(
+        endpoint: string,
+        body?: TBody
+    ) =>
         request<TResponse>(endpoint, {
             method: "PUT",
-            body: body ? JSON.stringify(body) : undefined
+
+            body:
+                body instanceof FormData
+                    ? body
+                    : JSON.stringify(body),
         }),
 
+    /**
+     * Requisição DELETE.
+     */
     delete: <TResponse>(endpoint: string) =>
         request<TResponse>(endpoint, {
-            method: "DELETE"
-        })
-}
+            method: "DELETE",
+        }),
+};

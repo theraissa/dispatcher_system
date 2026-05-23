@@ -1,5 +1,6 @@
 import { useAuth } from "@/hooks/auth/use-auth";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { FRONTEND_ROUTES } from "./frontend-routes";
 
 /**
  * Componente responsável por proteger rotas da aplicação.
@@ -16,17 +17,19 @@ import { Navigate, Outlet } from "react-router-dom";
  *   → Permite o acesso à rota renderizando o conteúdo filho (`Outlet`).
  *
  * Exemplo:
- * <Route element={<ProtectedRoutes />}>
+ * <Route element={<ProtectedRoute />}>
  *   <Route path="/dashboard" element={<Dashboard />} />
  * </Route>
  *
  */
-export default function ProtectedRoutes() {
-    const { user } = useAuth();
+export default function ProtectedRoute() {
+    const { isAuthenticated } = useAuth();
+    const location = useLocation();
 
-    if (!user) {
-        return <Navigate to="/login" replace />;
+    if (!isAuthenticated) {
+        return <Navigate to={FRONTEND_ROUTES.HOME} replace state={{ from: location }} />;
     }
 
     return <Outlet />;
 }
+

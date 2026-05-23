@@ -1,7 +1,6 @@
-import { getPendingDispatchers, updateStatusDispatcher } from "@/services/admin-dispatcher";
+import { adminService } from "@/services/admin-service";
 import type { ListDispatcherAdmin, StatusType } from "@/types/admin.type";
-import { useState, useEffect } from "react";
-
+import { useEffect, useState } from "react";
 
 
 /*
@@ -17,7 +16,7 @@ export function useAdminDispatchers() {
     const loadDispatchers = async () => {
         try {
             setLoading(true);
-            const response = await getPendingDispatchers();
+            const response = await adminService.getPendingDispatchers();
             setDispatchers(response);
         } catch (err) {
             console.error("Erro ao carregar despachantes:", err);
@@ -38,7 +37,7 @@ export function useAdminDispatchers() {
         status: StatusType
     ) => {
         try {
-            await updateStatusDispatcher(id, { status });
+            await adminService.updateStatusDispatcher(id, { status });
 
             // Como a lista é de "pending", remove da tela
             setDispatchers((prev) => prev.filter((d) => d.id !== id));

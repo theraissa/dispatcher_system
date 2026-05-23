@@ -1,13 +1,6 @@
+import { ticketService } from "@/services/ticket-service";
+import type { ListTicketReview, TicketReviewSummary } from "@/types/ticket.types";
 import { useEffect, useState } from "react";
-import {
-    getReviewSummaryDispatcher,
-    listReviewsDispatcher
-} from "@/services/ticket-service";
-
-import type {
-    ListTicketReview,
-    TicketReviewSummary
-} from "@/types/ticket.types";
 
 /**
  * Hook responsável por buscar e gerenciar avaliações de um despachante.
@@ -37,7 +30,7 @@ export function useDispatcherReviews(userId: number) {
 
         try {
             setLoadingReviews(true);
-            const data = await listReviewsDispatcher(userId);
+            const data = await ticketService.listReviewsDispatcher(userId);
             setReviews(data);
         } catch (error) {
             console.error("Erro ao buscar avaliações:", error);
@@ -54,7 +47,7 @@ export function useDispatcherReviews(userId: number) {
 
         try {
             setLoadingSummary(true);
-            const data = await getReviewSummaryDispatcher(userId);
+            const data = await ticketService.getReviewSummaryDispatcher(userId);
             setSummary(data);
         } catch (error) {
             console.error("Erro ao buscar resumo:", error);

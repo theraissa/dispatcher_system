@@ -1,5 +1,5 @@
+import { ticketService } from "@/services/ticket-service";
 import { useState } from "react";
-import { createReview } from "@/services/ticket-service";
 
 
 /**
@@ -42,7 +42,7 @@ export function useTicketReview(ticketId: number, userId: number) {
         try {
             setLoading(true);
 
-            await createReview(ticketId, {
+            await ticketService.createReview(ticketId, {
                 user_id: userId,
                 rating,
                 comment,

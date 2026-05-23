@@ -1,4 +1,4 @@
-import { getDispatcherTicketStatistics } from "@/services/ticket-service";
+import { ticketService } from "@/services/ticket-service";
 import type { TicketStatisticsDispatcher } from "@/types/ticket.types";
 import { useEffect, useState } from "react";
 
@@ -36,7 +36,7 @@ export function useDispatcherStatistics(userId: number) {
                 setLoading(true);
 
                 // Chamada ao serviço que retorna as estatísticas
-                const response = await getDispatcherTicketStatistics(userId);
+                const response = await ticketService.getDispatcherTicketStatistics(userId);
 
                 // Atualiza o estado com os dados recebidos
                 setStatistics(response);

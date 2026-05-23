@@ -1,4 +1,4 @@
-import { searchDispatchers } from "@/services/search-dispatcher";
+import { dispatcherService } from "@/services/dispatcher-service";
 import type { ProfileDispatcher } from "@/types/dispatcher.types";
 import { useEffect, useState } from "react";
 
@@ -23,7 +23,7 @@ export function useSearchDispatchers(query: string) {
         setLoading(true);
 
         // Se não houver query, busca dados iniciais
-        const result = await searchDispatchers(query || "");
+        const result = await dispatcherService.searchDispatchers(query || "");
 
         setData(result);
 

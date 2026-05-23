@@ -1,77 +1,73 @@
-import type { ProfilePublicUser, ProfileUser } from "@/types/user.types"
-import { BACKEND_ROUTES } from "../routes/backend-routes"
-import { apiClient } from "./api-client"
+import type { ProfilePublicUser, ProfileUser } from "@/types/user.types";
+import { BACKEND_ROUTES } from "../routes/backend-routes";
+import { apiClient } from "./api-client";
 
 
-/**
- * Busca o perfil completo do usuário cliente
- */
-export async function getClientProfile(userId: number) {
-    const response = await apiClient.get<ProfileUser>(
-        BACKEND_ROUTES.user.getById(userId)
-    )
-    return response
-}
+export const clientService = {
 
-/**
- * Atualiza o perfil do usuário cliente
- */
-export async function updateClientProfile(userId: number, data: ProfileUser) {
-    const response = await apiClient.put<ProfileUser>(
-        BACKEND_ROUTES.user.updateById(userId), data
-    )
-    return response
-}
+    /**
+     * Busca o perfil completo do usuário cliente.
+     */
+    getClientProfile(userId: number) {
+        return apiClient.get<ProfileUser>(
+            BACKEND_ROUTES.user.getById(userId)
+        );
+    },
 
-/**
- * Atualiza o perfil público do usuário cliente.
- */
-export async function updateClientProfilePublic(userId: number, data: ProfilePublicUser) {
-    // Cria estrutura multipart/form-data
-    const formData = new FormData()
+    /**
+     * Atualiza o perfil do usuário cliente.
+     */
+    updateClientProfile(userId: number, data: ProfileUser) {
+        return apiClient.put<ProfileUser>(
+            BACKEND_ROUTES.user.updateById(userId),
+            data
+        );
+    },
 
-    // Adiciona dados textuais do perfil
-    formData.append(
-        "data",
-        JSON.stringify({
-            instagram: data.instagram,
-            website: data.website,
-        })
-    )
+    /**
+     * Atualiza informações públicas do perfil.
+     *
+     * Essa rota utiliza multipart/form-data
+     * para permitir upload de imagem.
+     */
+    updateClientProfilePublic(
+        userId: number,
+        data: ProfilePublicUser
+    ) {
 
-    // Adiciona imagem do perfil, se existir
-    if (data.photo instanceof File) { // Garante que é um arquivo válido antes de anexar
-        formData.append("photo", data.photo)
-    }
+        /**
+         * Estrutura multipart/form-data.
+         */
+        const formData = new FormData();
 
-    // Recupera token JWT do usuário autenticado
-    const token = localStorage.getItem("token")
+        /**
+         * Dados textuais do perfil.
+         */
+        formData.append(
+            "data",
+            JSON.stringify({
+                instagram: data.instagram,
+                website: data.website,
+            })
+        );
 
-    // Realiza requisição de atualização do perfil
-    const response = await fetch(
-        `${import.meta.env.VITE_API_URL}${BACKEND_ROUTES.user.updateProfilePublicById(userId)}`,
-        {
-            method: "PUT",
-            headers: {
-                // Adiciona autenticação na requisição
-                ...(token && {
-                    Authorization: `Bearer ${token}`,
-                }),
-            },
-            // Envia dados multipart/form-data
-            body: formData,
+        /**
+         * Adiciona foto apenas se existir.
+         */
+        if (data.photo instanceof File) {
+            formData.append("photo", data.photo);
         }
-    )
 
-    // Converte resposta da API para JSON
-    const responseData = await response.json()
-
-    if (!response.ok) {
-        throw new Error(
-            responseData?.description ||
-            responseData?.message ||
-            "Erro ao atualizar perfil"
-        )
-    }
-    return responseData
-}
+        /**
+         * O apiClient detecta automaticamente:
+         * - FormData
+         * - Authorization
+         * - Content-Type
+         * - Tratamento de erro
+         */
+        return apiClient.put(
+            BACKEND_ROUTES.user.updateProfilePublicById(userId),
+            formData
+        );
+    },
+};

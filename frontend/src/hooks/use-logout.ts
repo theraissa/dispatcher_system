@@ -1,40 +1,45 @@
-import { useAuth } from "@/hooks/auth/use-auth"
-import { useNavigate } from "react-router-dom"
-import { FRONTEND_ROUTES } from "../routes/frontend-routes"
-import { logoutRequest } from "../services/logout-request"
+import { useAuth } from "@/hooks/auth/use-auth";
+import { FRONTEND_ROUTES } from "@/routes/frontend-routes";
+import { logoutRequest } from "@/services/auth";
+import { useNavigate } from "react-router-dom";
+
 
 /**
  * Hook responsável pelo logout do usuário.
  *
  * Responsabilidades:
- * - Notificar backend para invalidar o token (blacklist Redis)
- * - Limpar estado global de autenticação
- * - Redirecionar usuário para tela inicial
+ * - Revogar token JWT no backend
+ * - Limpar sessão local
+ * - Redirecionar usuário
  */
 export function useLogout() {
-    const navigate = useNavigate()
-    const { signOut } = useAuth()
+    const navigate = useNavigate();
+    const { signOut } = useAuth();
 
+    /**
+     * Finaliza sessão do usuário.
+     */
     async function logout() {
-        try {
-            /**
-             * Invalida o token no backend
-             */
-            await logoutRequest()
-        } catch (error) {
-            console.error("Erro ao invalidar token no servidor:", error)
-        } finally {
-            /**
-             * Limpa estado global + localStorage
-             */
-            signOut()
 
+        try {
+            // Solicita invalidação do token no backend.
+            await logoutRequest();
+
+        } catch (error) {
             /**
-             * Redireciona para página inicial do sistema.
+             * Mesmo se backend falhar,
+             * sessão local ainda deve ser encerrada.
              */
-            navigate(FRONTEND_ROUTES.HOME)
+            console.error("Erro ao invalidar token:", error);
+        } finally {
+            // Limpa estado global e localStorage.
+            signOut();
+            // Retorna usuário para tela inicial.
+            navigate(FRONTEND_ROUTES.HOME);
         }
     }
 
-    return { logout }
+    return {
+        logout,
+    };
 }

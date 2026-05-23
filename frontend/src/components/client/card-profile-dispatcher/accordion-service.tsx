@@ -1,5 +1,5 @@
+import { useTickets } from "@/hooks/ticket/use-ticket";
 import { useServiceDetails } from "@/hooks/use-service-details";
-import { useTickets } from "@/hooks/use-ticket";
 import { FRONTEND_ROUTES } from "@/routes/frontend-routes";
 import * as Accordion from "@radix-ui/react-accordion";
 import { Check, ChevronDown, FileText, Loader2 } from "lucide-react";

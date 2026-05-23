@@ -1,34 +1,53 @@
 import { useAuth } from "@/hooks/auth/use-auth";
+import { FRONTEND_ROUTES } from "@/routes/frontend-routes";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 /**
- * Hook para páginas protegidas que exigem autenticação.
+ * Hook responsável por proteger páginas privadas da aplicação.
  *
- * Responsável por:
- * - Garantir que existe um usuário autenticado
- * - Redirecionar automaticamente para `/login` caso não exista
- * - Retornar o `user` já tipado como NÃO nulo
+ * Objetivo:
+ * - Garantir que apenas usuários autenticados acessem determinadas telas.
+ * - Redirecionar automaticamente usuários não autenticados.
  *
- * Comportamento:
- * 1. Verifica se há usuário autenticado
- * 2. Se não houver:
- *    - Redireciona para `/login`
- *    - Interrompe execução (throw)
+ * Funcionamento:
+ * 1. Recupera o estado global de autenticação através do `useAuth`.
+ * 2. Verifica se o usuário possui um token válido (`isAuthenticated`).
+ * 3. Caso NÃO esteja autenticado:
+ *    - Redireciona automaticamente para a tela de login.
+ *
+ * Esse hook é normalmente utilizado dentro de páginas privadas:
+ *
+ * Exemplo:
+ * ```tsx
+ * const { user } = useAuthRequired();
+ * ```
  */
 export function useAuthRequired() {
-    const { user, ...rest } = useAuth();
+
+    // Recupera informações globais de autenticação.
+    const auth = useAuth();
+
+    // Hook do React Router utilizado para navegação programática.
     const navigate = useNavigate();
 
+    /**
+     * Effect executado sempre que o estado de autenticação mudar.
+     *
+     * Caso o usuário não esteja autenticado,
+     * ele será redirecionado para a tela de login.
+     */
     useEffect(() => {
-        if (!user) {
-            navigate("/login");
+        if (!auth.isAuthenticated) {
+            navigate(FRONTEND_ROUTES.LOGIN, {
+                replace: true,
+            });
         }
-    }, [user, navigate]);
+    }, [auth.isAuthenticated, navigate]);
 
-    if (!user) {
-        throw new Error("Usuário não está autenticado!");
-    }
-
-    return { user, ...rest };
+    /**
+     * Retorna os dados globais de autenticação
+     * para uso na página protegida.
+     */
+    return auth;
 }

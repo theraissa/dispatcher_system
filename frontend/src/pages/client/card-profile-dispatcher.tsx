@@ -5,8 +5,8 @@ import { FeedbackState } from "@/components/record/ui/feedback-state";
 import NavbarPage from "@/components/record/ui/navbar-page";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuthRequired } from "@/hooks/auth/auth-requirered";
-import { useDispatcherProfile } from "@/hooks/use-dispatcher-profile";
-import { useDispatcherReviews } from "@/hooks/use-dispatcher-reviews";
+import { useDispatcherProfile } from "@/hooks/dispatcher/use-dispatcher-profile";
+import { useDispatcherReviews } from "@/hooks/dispatcher/use-dispatcher-reviews";
 import { clientLinksNavbar } from "@/routes/frontend-routes";
 import { useParams } from "react-router-dom";
 

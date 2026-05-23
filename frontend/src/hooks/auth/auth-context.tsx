@@ -1,91 +1,161 @@
 import { AuthContext, type UserContext } from "@/types/type";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 /**
- * Provider responsável por gerenciar o estado global de autenticação da aplicação.
+ * Provider global responsável por gerenciar autenticação da aplicação.
  *
- * Esse componente encapsula toda a lógica de:
- * - Armazenamento do usuário autenticado
- * - Persistência do token JWT
- * - Sincronização com o localStorage
+ * Esse componente encapsula toda lógica relacionada à sessão do usuário,
+ * funcionando como uma "fonte global de verdade" da autenticação.
  *
- * Ele permite que qualquer componente da aplicação acesse os dados de autenticação
- * através do hook `useAuth`, evitando acesso direto ao localStorage.
+ * Responsabilidades:
+ * - Armazenar usuário autenticado
+ * - Armazenar token JWT
+ * - Persistir sessão no localStorage
+ * - Restaurar sessão após refresh da página
+ * - Expor funções de login/logout
+ * - Compartilhar estado global via Context API
  *
- * Fluxo:
- * 1. Ao inicializar, tenta recuperar `user` e `token` do localStorage.
- * 2. Se existirem, popula o estado automaticamente (sessão persistida).
- * 3. `signIn` é usado no login para salvar os dados.
- * 4. `signOut` é usado no logout para limpar sessão.
+ * Fluxo de funcionamento:
  *
- * @param children Componentes filhos que terão acesso ao contexto de autenticação.
+ * 1. Quando a aplicação inicia:
+ *    - O provider tenta recuperar dados salvos no localStorage.
+ *    - Caso existam:
+ *      → restaura automaticamente a sessão do usuário.
+ *
+ * 2. Durante o login:
+ *    - `signIn()` salva usuário + token no estado React.
+ *    - Também persiste os dados no localStorage.
+ *
+ * 3. Durante o logout:
+ *    - `signOut()` remove dados do estado.
+ *    - Remove também os dados persistidos.
+ *
+ * 4. Qualquer componente da aplicação pode acessar:
+ *    - usuário autenticado
+ *    - token JWT
+ *    - funções de login/logout
+ *
+ * através do hook:
+ *
+ * ```tsx
+ * const auth = useAuth();
+ * ```
  */
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
 
     /**
-     * Estado do usuário autenticado.
+     * Estado global do usuário autenticado.
      *
-     * Inicialização lazy:
-     * - Executa apenas na primeira renderização.
-     * - Recupera dados persistidos no navegador.
+     * Lazy Initialization:
+     * - Essa função executa apenas na primeira renderização.
+     * - Evita acessar localStorage em todos renders.
+     *
+     * Objetivo:
+     * - Restaurar sessão automaticamente após refresh da página.
      */
     const [user, setUser] = useState<UserContext | null>(() => {
         const storedUser = localStorage.getItem("user");
+
         return storedUser ? JSON.parse(storedUser) : null;
     });
 
     /**
-     * Estado do token JWT.
+     * Estado global do token JWT.
      *
-     * Utilizado para autenticação nas requisições com o backend.
+     * Responsável por:
+     * - autenticação nas requisições
+     * - controle de sessão
+     * - proteção de rotas
      */
     const [token, setToken] = useState<string | null>(() => {
         return localStorage.getItem("token");
     });
 
     /**
-     * Define os dados de autenticação após login.
+     * Realiza login no frontend.
      *
-     * Responsável por:
-     * - Atualizar o estado global (React)
-     * - Persistir os dados no localStorage
+     * Responsabilidades:
+     * - Atualizar estado React
+     * - Persistir sessão no navegador
      *
      * @param user Dados do usuário autenticado
-     * @param token Token JWT retornado pelo backend
+     * @param token JWT retornado pelo backend
      */
     function signIn(user: UserContext, token: string) {
+        /**
+         * Atualiza estado global React.
+         *
+         * Isso faz a aplicação inteira saber
+         * que o usuário está autenticado.
+         */
         setUser(user);
         setToken(token);
 
+        /**
+         * Persiste sessão no navegador.
+         *
+         * Sem isso:
+         * - usuário perderia login ao atualizar página.
+         */
         localStorage.setItem("user", JSON.stringify(user));
         localStorage.setItem("token", token);
     }
 
     /**
-     * Limpa os dados de autenticação (logout).
+     * Realiza logout da aplicação.
      *
-     * Responsável por:
-     * - Resetar o estado global
-     * - Remover dados persistidos
+     * Responsabilidades:
+     * - Limpar estado React
+     * - Remover persistência local
      */
     function signOut() {
+        // Limpa estado global da aplicação.
         setUser(null);
         setToken(null);
 
+        // Remove dados persistidos do navegador.
         localStorage.removeItem("user");
         localStorage.removeItem("token");
     }
 
+    /**
+     * Objeto compartilhado globalmente pelo Context API.
+     *
+     * useMemo evita recriação desnecessária do objeto
+     * a cada renderização do Provider.
+     *
+     * Sem useMemo:
+     * - todos componentes consumidores rerenderizariam sempre.
+     *
+     * Com useMemo:
+     * - valor só muda quando user/token mudarem.
+     */
+    const value = useMemo(
+        () => ({
+            // Usuário autenticado.
+            user,
+            // Token JWT atual.
+            token,
+            // Flag booleana indicando autenticação.
+            isAuthenticated: !!token,
+            // Função responsável pelo login.
+            signIn,
+            // Função responsável pelo logout.
+            signOut,
+        }),
+        [user, token]
+    );
+
+    /**
+     * Disponibiliza o contexto global de autenticação
+     * para toda aplicação React.
+     */
     return (
-        <AuthContext.Provider
-            value={{
-                user, // Dados do usuário autenticado
-                token, // Token JWT
-                isAuthenticated: !!token, // Flag booleana de autenticação
-                signIn, // Função de login
-                signOut, // Função de logout
-            }}
-        >
+        <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
     );

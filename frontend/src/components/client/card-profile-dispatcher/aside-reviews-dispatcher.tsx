@@ -1,5 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { useDispatcherReviews } from "@/hooks/use-dispatcher-reviews";
+import { useDispatcherReviews } from "@/hooks/dispatcher/use-dispatcher-reviews";
 import { formatDate } from "@/utils/formatters";
 import { Star } from "lucide-react";
 

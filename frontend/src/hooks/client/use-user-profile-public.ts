@@ -1,4 +1,4 @@
-import { updateClientProfilePublic } from "@/services/client-service"
+import { clientService } from "@/services/client-service"
 import type { ProfilePublicUser } from "@/types/user.types"
 import { useState } from "react"
 
@@ -22,7 +22,7 @@ export function useUpdateClientProfilePublic() {
             // Inicia loading
             setIsLoading(true)
             // Executa atualização do perfil
-            return await updateClientProfilePublic(userId, data)
+            return await clientService.updateClientProfilePublic(userId, data)
 
         } finally {
             // Finaliza loading mesmo em caso de erro

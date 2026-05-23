@@ -1,4 +1,4 @@
-import { createTicket, getTicketById, listTicketsByIdUser } from "@/services/ticket-service";
+import { ticketService } from "@/services/ticket-service";
 import type { CreateTicketRequest, ListTicketUserResponse, TicketUserResponse } from "@/types/ticket.types";
 import { useEffect, useState } from "react";
 
@@ -22,7 +22,7 @@ export function useTickets(userId: number) {
 
         try {
             setLoading(true);
-            const response = await listTicketsByIdUser(userId);
+            const response = await ticketService.listTicketsByIdUser(userId);
             setTickets(response);
 
         } catch (error) {
@@ -38,7 +38,7 @@ export function useTickets(userId: number) {
     async function fetchTicketById(ticketId: number) {
         try {
             setLoading(true);
-            const ticket = await getTicketById(ticketId);
+            const ticket = await ticketService.getTicketById(ticketId);
             setSelectedTicket(ticket);
             return ticket;
 
@@ -56,7 +56,7 @@ export function useTickets(userId: number) {
     async function handleCreateTicket(data: CreateTicketRequest) {
         try {
             setLoading(true);
-            await createTicket(data);
+            await ticketService.createTicket(data);
             await fetchTickets();
         } catch (error) {
             console.error("Erro ao criar chamado:", error);
