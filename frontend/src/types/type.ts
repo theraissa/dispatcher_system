@@ -134,13 +134,12 @@ export const AuthContext = createContext({} as AuthContextType);
 export interface PaginatedResponse<T> {
     // Lista de itens da página atual.
     items: T[];
-
     // Quantidade total de registros.
     total: number;
-
     // Página atual.
     page: number;
-
+    // Quantidade de páginas.
+    pages: number
     // Quantidade de itens por página.
     per_page: number;
 }

@@ -1,6 +1,11 @@
 import { useAuth } from "@/hooks/auth/use-auth";
+import type { RolePermission } from "@/types/type";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { FRONTEND_ROUTES } from "./frontend-routes";
+
+type ProtectedRouteProps = {
+    allowedRoles?: RolePermission[];
+};
 
 /**
  * Componente responsável por proteger rotas da aplicação.
@@ -15,21 +20,39 @@ import { FRONTEND_ROUTES } from "./frontend-routes";
  *   → Redireciona automaticamente para a tela de login (`/login`).
  * - Caso exista:
  *   → Permite o acesso à rota renderizando o conteúdo filho (`Outlet`).
- *
- * Exemplo:
- * <Route element={<ProtectedRoute />}>
- *   <Route path="/dashboard" element={<Dashboard />} />
- * </Route>
- *
  */
-export default function ProtectedRoute() {
-    const { isAuthenticated } = useAuth();
+export default function ProtectedRoute({ allowedRoles = [] }: ProtectedRouteProps) {
+
+    const { isAuthenticated, user } = useAuth();
     const location = useLocation();
 
-    if (!isAuthenticated) {
-        return <Navigate to={FRONTEND_ROUTES.HOME} replace state={{ from: location }} />;
+    /**
+     * Usuário não autenticado
+     */
+    if (!isAuthenticated || !user) {
+        return (
+            <Navigate
+                to={FRONTEND_ROUTES.LOGIN}
+                replace
+                state={{ from: location }}
+            />
+        );
+    }
+
+    /**
+     * Usuário autenticado mas sem permissão
+     */
+    if (
+        allowedRoles.length > 0 &&
+        !allowedRoles.includes(user.role)
+    ) {
+        return (
+            <Navigate
+                to={FRONTEND_ROUTES.HOME}
+                replace
+            />
+        );
     }
 
     return <Outlet />;
 }
-

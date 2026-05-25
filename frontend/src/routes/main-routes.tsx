@@ -21,18 +21,19 @@ export function MainRoutes() {
           />
         ))}
 
-        {/* Admin */}
-        {adminRoutes.map((route) => (
-          <Route
-            key={route.path}
-            path={route.path}
-            element={route.element}
-          />
-        ))}
+        {/* ADMIN */}
+        <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+          {adminRoutes.map((route) => (
+            <Route
+              key={route.path}
+              path={route.path}
+              element={route.element}
+            />
+          ))}
+        </Route>
 
-        {/* Protegidas */}
-        <Route element={<ProtectedRoute />}>
-
+        {/* CLIENTE */}
+        <Route element={<ProtectedRoute allowedRoles={["cliente"]} />}>
           {clientRoutes.map((route) => (
             <Route
               key={route.path}
@@ -40,7 +41,10 @@ export function MainRoutes() {
               element={route.element}
             />
           ))}
+        </Route>
 
+        {/* DESPACHANTE */}
+        <Route element={<ProtectedRoute allowedRoles={["despachante"]} />}>
           {dispatcherRoutes.map((route) => (
             <Route
               key={route.path}
@@ -48,9 +52,9 @@ export function MainRoutes() {
               element={route.element}
             />
           ))}
-
         </Route>
       </Routes>
     </BrowserRouter>
   );
 }
+

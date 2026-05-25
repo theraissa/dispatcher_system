@@ -43,11 +43,8 @@ export default function CardProfileDispatcher() {
 
     return (
         <div className="min-h-screen bg-[#F3EDE2]">
-            <NavbarPage
-                title="Central do Cliente"
-                shortTitle="C"
-                links={clientLinksNavbar}
-            />
+            <NavbarPage links={clientLinksNavbar} />
+
             <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-6 md:pt-10 pb-20">
                 <header className="mb-8 md:mb-12">
                     <h1 className="text-2xl md:text-4xl font-extrabold text-[#1E1E1E] tracking-tight">

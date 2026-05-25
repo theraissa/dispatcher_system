@@ -1,10 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card"
 import InputPassword from "@/components/ui/input-password"
-import { FRONTEND_ROUTES } from "@/routes/frontend-routes"
 import { cpfMask } from "@/utils/masks"
 import { CreditCard, Mail, User } from "lucide-react"
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { toast } from "sonner"
 import { useRegisterClient } from "../../../hooks/client/use-client-register"
 import ButtonSubmitForm from "../ui/button-submit-form"
 import InputForm from "../ui/input-form"
@@ -12,7 +11,6 @@ import LabelForm from "../ui/label-form"
 
 export function FormClient() {
   const { register, error, loading } = useRegisterClient()
-  const navigate = useNavigate()
 
   const [formData, setFormData] = useState({
     name: "",
@@ -21,6 +19,14 @@ export function FormClient() {
     password: "",
     confirmar_senha: ""
   })
+
+  useEffect(() => {
+    if (error) {
+      toast.error("Erro no cadastro", {
+        description: error,
+      })
+    }
+  }, [error])
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target
@@ -31,25 +37,18 @@ export function FormClient() {
     event.preventDefault()
 
     if (formData.password !== formData.confirmar_senha) {
-      alert("As senhas não coincidem!")
+      toast.warning("As senhas não coincidem!", {
+        description: "Certifique-se de digitar a mesma senha em ambos os campos."
+      })
       return
     }
 
-    try {
-      await register({
-        name: formData.name,
-        cpf: formData.cpf,
-        email: formData.email,
-        password: formData.password
-      })
-
-      navigate(FRONTEND_ROUTES.LOGIN, {
-        state: { email: formData.email }
-      })
-
-    } catch (err) {
-      console.error("Erro ao registrar usuário:", err)
-    }
+    await register({
+      name: formData.name,
+      cpf: formData.cpf,
+      email: formData.email,
+      password: formData.password
+    })
   }
 
   return (
@@ -57,12 +56,6 @@ export function FormClient() {
       rounded-[24px] md:rounded-[40px] 
       p-4 md:p-8 bg-white">
       <CardContent className="p-2 md:p-6">
-        {error && (
-          <div className="p-3 mb-4 bg-red-50 border border-red-100 rounded-xl text-center">
-            <p className="text-red-500 text-sm">{error}</p>
-          </div>
-        )}
-
         <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-2 md:gap-4">
 
           {/* Nome */}

@@ -20,7 +20,7 @@ export default function InitialSearchDisp() {
 
   return (
     <div className="min-h-screen bg-[#F3EDE2]">
-      <NavbarPage title="Central do Cliente" shortTitle="C" links={clientLinksNavbar} />
+      <NavbarPage links={clientLinksNavbar} />
 
       <main className="py-8 md:py-12 px-4 sm:px-6">
         <div className="text-center mb-8 md:mb-10 space-y-2">

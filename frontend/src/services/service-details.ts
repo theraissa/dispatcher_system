@@ -17,9 +17,9 @@ export const serviceDetailsDispatcher = {
     /**
      * Busca os serviços detalhados do despachante pelo seu ID.
      */
-    getServiceDetailsDispatcher(dispatcherId: number) {
+    getServiceDetailsDispatcher(dispatcherId: number, page: number, per_page: number) {
         return apiClient.get<PaginatedResponse<AssociateServiceDetailsResponse>>(
-            BACKEND_ROUTES.dispatcher.getServiceDetailsById(dispatcherId)
+            BACKEND_ROUTES.dispatcher.getServiceDetailsById(dispatcherId), { page, per_page }
         )
     },
     /**

@@ -25,6 +25,7 @@ export type TicketUserResponse = {
 * Informações do usuário/cliente que estão presente no Ticket.
 */
 export type UserInfoTicket = {
+    id: number;
     name: string;
     email: string;
     contact: number;
@@ -41,6 +42,7 @@ export type UserInfoTicket = {
 * Informações do despachante que estão presente no Ticket.
 */
 export type DispatcherInfoTicket = {
+    id: number;
     name: string;
     email: string;
     contact: number;

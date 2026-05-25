@@ -30,6 +30,7 @@ type FormProfileClientProps = {
         value: any
     ) => void;
     isEditing: boolean;
+    showPasswordFields?: boolean;
 };
 
 
@@ -45,7 +46,7 @@ type FormProfileClientProps = {
  * - Quando `isEditing` é false → inputs ficam somente leitura
  * - Quando `isEditing` é true → inputs ficam editáveis
  */
-export default function FormProfileClient({ data, handleChange, isEditing }: FormProfileClientProps) {
+export default function FormProfileClient({ data, handleChange, isEditing, showPasswordFields = false }: FormProfileClientProps) {
 
     // Função auxiliar para adaptar o evento do InputForm ao seu handleChange original
     const onInputChange = (entity: "user" | "address") => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -169,7 +170,7 @@ export default function FormProfileClient({ data, handleChange, isEditing }: For
                 readOnly={!isEditing}
             />
 
-            {isEditing && (
+            {showPasswordFields && (
                 <InlineFields>
                     <InlineField>
                         <LabelForm title="Nova Senha" />

@@ -15,10 +15,11 @@ type FormPersonalProps = {
   user: CreateUserType;
   onChange: (section: "user", field: any, value: string) => void;
   readOnly: boolean;
+  showPasswordFields?: boolean;
 }
 
 
-export default function FormPersonal({ user, onChange, readOnly }: FormPersonalProps) {
+export default function FormPersonal({ user, onChange, readOnly, showPasswordFields = false }: FormPersonalProps) {
 
   function handleUserChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target
@@ -96,29 +97,35 @@ export default function FormPersonal({ user, onChange, readOnly }: FormPersonalP
         />
       </div>
 
-      <InlineFields>
-        <InlineField>
-          <LabelForm title="Senha" />
-          <InputPassword
-            name="password"
-            icon={<Lock size={18} />}
-            value={user.password}
-            onChange={handleUserChange}
-            readOnly={readOnly}
-          />
-        </InlineField>
+      {showPasswordFields && (
+        <InlineFields>
+          <InlineField>
+            <LabelForm title="Senha" />
+            <InputPassword
+              name="password"
+              icon={<Lock size={18} />}
+              value={user.password}
+              onChange={handleUserChange}
+              readOnly={readOnly}
+            />
+          </InlineField>
 
-        <InlineField>
-          <LabelForm title="Confirmar Senha" />
-          <InputPassword
-            name="confirm_password"
-            icon={<Lock size={18} />}
-            value={user.confirm_password}
-            onChange={handleUserChange}
-            readOnly={readOnly}
-          />
-        </InlineField>
-      </InlineFields>
+          <InlineField>
+            <LabelForm title="Confirmar Senha" />
+            <InputPassword
+              name="confirm_password"
+              icon={<Lock size={18} />}
+              value={user.confirm_password}
+              onChange={handleUserChange}
+              readOnly={readOnly}
+            />
+          </InlineField>
+        </InlineFields>
+      )}
+      {!showPasswordFields && (
+        <Separator className="my-11 opacity-0" />
+      )}
+
     </SectionForm>
   )
 }

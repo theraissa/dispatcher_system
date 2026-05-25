@@ -56,6 +56,7 @@ export const BACKEND_ROUTES = {
         getReviewSummary: (userId: number) => `/ticket/${userId}/review/summary`,
         listReviews: (userId: number) => `/ticket/${userId}/review`,
         createReviewTicket: (ticketId: number) => `/ticket/${ticketId}/review`,
+        updateReviewTicket: (ticketId: number, reviewId: number) => `/ticket/${ticketId}/review/${reviewId}`,
 
         listTimelineTicket: (ticketId: number) => `/ticket/${ticketId}/timeline`,
         createTimelineTicket: (ticketId: number) => `/ticket/${ticketId}/timeline`,

@@ -15,9 +15,9 @@ export const ticketService = {
     /**
      * Lista os chamados do usuário pelo seu ID.
      */
-    listTicketsByIdUser(userId: number) {
+    listTicketsByIdUser(userId: number, page: number, per_page: number) {
         return apiClient.get<PaginatedResponse<ListTicketResponse>>(
-            BACKEND_ROUTES.tickets.listTicketsByUser(userId)
+            BACKEND_ROUTES.tickets.listTicketsByUser(userId), { page, per_page }
         );
     },
 
@@ -65,7 +65,14 @@ export const ticketService = {
     }): Promise<TicketReview> {
         return apiClient.post(BACKEND_ROUTES.tickets.createReviewTicket(ticketId), data);
     },
-
+    /**
+     * Atualiza um review ao final do chamado para o despachante.
+     */
+    updateReview(ticketId: number, reviewId: number, data: {
+        rating: number; comment?: string;
+    }): Promise<TicketReview> {
+        return apiClient.put(BACKEND_ROUTES.tickets.updateReviewTicket(ticketId, reviewId), data);
+    },
 
     /**
      * Lista os timeline do chamado pelo seu ID.

@@ -26,7 +26,7 @@ export default function CalledDispatcher() {
     const { user } = useAuthRequired();
 
     // Hook responsável por buscar os chamados do usuário
-    const { tickets, loading } = useTickets(user?.id);
+    const { tickets, loading, ticketPagination, refetch } = useTickets(user?.id);
 
     // Estado que armazena os filtros definidos pelo usuário
     const [filters, setFilters] = useState<TicketFilters>({});
@@ -66,11 +66,7 @@ export default function CalledDispatcher() {
     return (
         <div className="min-h-screen bg-[#F3EDE2]">
             {/* Navbar */}
-            <NavbarPage
-                title="Central do Despachante"
-                shortTitle="D"
-                links={dispatcherLinksNavbar}
-            />
+            <NavbarPage links={dispatcherLinksNavbar} />
             <main className="max-w-6xl mx-auto py-10 px-6">
 
                 {/* TÍTULO E RESUMO */}
@@ -93,6 +89,8 @@ export default function CalledDispatcher() {
                         <CalledContainer
                             tickets={filteredTickets}
                             detailsRoute={FRONTEND_ROUTES.DISPATCHER.TICKET_DETAILS}
+                            pagination={ticketPagination}
+                            onPageChange={(newPage) => refetch(newPage, ticketPagination.per_page)}
                         />
                     )}
                 </div>

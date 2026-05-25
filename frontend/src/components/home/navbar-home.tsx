@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
-import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { FRONTEND_ROUTES } from "@/routes/frontend-routes";
+import { Briefcase, ChevronDown, Menu, User, Workflow, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 /**
@@ -25,6 +26,9 @@ export default function NavbarHome() {
   // Estado para controlar se o menu mobile está aberto ou fechado
   const [isOpen, setIsOpen] = useState(false);
 
+  const [showRegisterMenu, setShowRegisterMenu] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
   // Estilização compartilhada dos itens de navegação
   // block no mobile para ocupar a linha toda, md:inline-block no desktop
   const navItemStyles = cn(
@@ -37,21 +41,41 @@ export default function NavbarHome() {
    */
   const toggleMenu = () => setIsOpen(!isOpen);
 
+  // Fecha o dropdown se o usuário clicar fora dele
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowRegisterMenu(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
     <header className="w-full h-[60px] bg-[#21314D] text-white flex items-center justify-between px-4 md:px-6 shadow-md sticky top-0 z-50">
 
       {/* Container da Logo */}
-      <div className="flex items-center gap-2">
-        <div className="w-7 h-7 bg-white/10 rounded-md flex items-center justify-center font-extrabold text-lg">
-          D
+      <Link
+        to={FRONTEND_ROUTES.HOME}
+        className="flex items-center gap-2.5 group cursor-pointer select-none"
+      >
+        {/* Box do Ícone */}
+        <div className="w-8 h-8 bg-white/10 rounded-xl flex items-center justify-center font-extrabold text-lg border border-white/5 shadow-inner transition-all duration-300 group-hover:bg-white/20 group-hover:scale-105">
+          {/* Ícone representando os processos conectados do despachante */}
+          <Workflow className="w-4 h-4 text-white transition-transform duration-500 group-hover:rotate-12" />
         </div>
-        <span className="font-semibold text-lg tracking-tight">Dispatcher</span>
-      </div>
+
+        {/* Nome da Aplicação */}
+        <span className="font-bold text-lg tracking-tight transition-colors group-hover:text-zinc-200">
+          Conecta Despachante
+        </span>
+      </Link>
 
       {/* Navegação e Ações */}
       <div className="flex items-center gap-4">
 
-        {/* Menu Desktop: visível apenas em telas médias (md) ou superiores */}
+        {/* Menu Desktop */}
         <nav className="hidden md:flex items-center gap-1">
           <button onClick={() => handleScroll("carousel-section")} className={navItemStyles}>
             Funcionalidades
@@ -63,40 +87,88 @@ export default function NavbarHome() {
 
         {/* Área de Botões (Login/Cadastro) */}
         <div className="flex items-center gap-2 border-l border-white/15 pl-3">
-          <Link to="/login" className="px-3 py-1.5 bg-white text-[#21314D] font-semibold text-xs md:text-sm rounded-lg">
+          <Link to="/login" className="px-3 py-1.5 bg-white text-[#21314D] font-semibold text-xs md:text-sm rounded-lg hover:bg-zinc-100 transition-colors">
             Login
           </Link>
-          {/* Oculta o botão 'Cadastrar' em telas muito pequenas (sm) para evitar quebra de layout */}
-          <Link to="/register/client" className="hidden sm:block px-3 py-1.5 bg-[#3E5879] text-white font-semibold text-xs md:text-sm rounded-lg">
-            Cadastrar
-          </Link>
+
+          {/* BOTÃO CADASTRAR COM DROPDOWN (DESKTOP) */}
+          <div className="relative hidden sm:block" ref={dropdownRef}>
+            <button
+              onClick={() => setShowRegisterMenu(!showRegisterMenu)}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#3E5879] text-white font-semibold text-xs md:text-sm rounded-lg hover:bg-[#344a66] transition-all cursor-pointer"
+            >
+              Cadastrar
+              <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", showRegisterMenu && "rotate-180")} />
+            </button>
+
+            {/* Menu Suspenso de Opções */}
+            {showRegisterMenu && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-zinc-100 py-1.5 z-50 text-zinc-800 animate-in fade-in slide-in-from-top-2 duration-200">
+                <Link
+                  to={FRONTEND_ROUTES.REGISTER.CLIENT}
+                  onClick={() => setShowRegisterMenu(false)}
+                  className="flex items-center gap-2 px-4 py-2.5 text-xs md:text-sm font-medium hover:bg-zinc-50 transition-colors"
+                >
+                  <User className="w-4 h-4 text-[#21314D]" />
+                  Cliente
+                </Link>
+                <Link
+                  to={FRONTEND_ROUTES.REGISTER.DISPATCHER}
+                  onClick={() => setShowRegisterMenu(false)}
+                  className="flex items-center gap-2 px-4 py-2.5 text-xs md:text-sm font-medium hover:bg-zinc-50 border-t border-zinc-100 transition-colors"
+                >
+                  <Briefcase className="w-4 h-4 text-[#3E5879]" />
+                  Despachante
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Botão de Menu Mobile: visível apenas em telas menores que 'md' */}
+        {/* Botão de Menu Mobile */}
         <button className="md:hidden p-1 transition-colors hover:text-white/70" onClick={toggleMenu}>
           {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
 
-      {/* Menu Dropdown Mobile: Renderizado condicionalmente quando isOpen é true */}
+      {/* Menu Dropdown Mobile */}
       {isOpen && (
-        <div className="absolute top-[60px] left-0 w-full bg-[#21314D] border-t border-white/10 p-4 flex flex-col gap-4 md:hidden animate-in slide-in-from-top duration-300">
+        <div className="absolute top-[60px] left-0 w-full bg-[#21314D] border-t border-white/10 p-4 flex flex-col gap-2 md:hidden animate-in slide-in-from-top duration-300">
           <button
             onClick={() => { handleScroll("carousel-section"); setIsOpen(false); }}
-            className="text-left py-2 border-b border-white/5 text-white/90"
+            className="text-left py-2.5 border-b border-white/5 text-white/90 font-medium"
           >
             Funcionalidades
           </button>
           <button
             onClick={() => { handleScroll("about-section"); setIsOpen(false); }}
-            className="text-left py-2 border-b border-white/5 text-white/90"
+            className="text-left py-2.5 border-b border-white/5 text-white/90 font-medium"
           >
             Sobre
           </button>
-          {/* Link extra apenas para mobile para facilitar o acesso ao cadastro */}
-          <Link to="/register/client" className="py-2 text-[#D8C4B6]" onClick={() => setIsOpen(false)}>
-            Criar nova conta
-          </Link>
+
+          {/* SEÇÃO DE CADASTRO EXPANDIDA NO MOBILE */}
+          <div className="flex flex-col gap-1.5 pt-2">
+            <span className="text-[10px] uppercase tracking-widest text-white/40 font-bold px-1">
+              Criar nova conta
+            </span>
+            <Link
+              to={FRONTEND_ROUTES.REGISTER.CLIENT}
+              className="flex items-center gap-2 py-2 px-2 text-white/90 hover:bg-white/5 rounded-lg"
+              onClick={() => setIsOpen(false)}
+            >
+              <User className="w-4 h-4 text-[#D8C4B6]" />
+              Cadastro como Cliente
+            </Link>
+            <Link
+              to={FRONTEND_ROUTES.REGISTER.DISPATCHER}
+              className="flex items-center gap-2 py-2 px-2 text-white/90 hover:bg-white/5 rounded-lg"
+              onClick={() => setIsOpen(false)}
+            >
+              <Briefcase className="w-4 h-4 text-[#D8C4B6]" />
+              Cadastro como Despachante
+            </Link>
+          </div>
         </div>
       )}
     </header>

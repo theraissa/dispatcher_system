@@ -1,26 +1,41 @@
-import { serviceDetailsDispatcher } from "@/services/service-details"
-import type { AssociateServiceDetailsResponse, ServiceDetails, ServiceResponse } from "@/types/service.types"
-import { useCallback, useEffect, useState } from "react"
+import { serviceDetailsDispatcher } from "@/services/service-details";
+import type { AssociateServiceDetailsResponse, ServiceDetails, ServiceResponse } from "@/types/service.types";
+import type { PaginatedResponse } from "@/types/type";
+import { useCallback, useEffect, useState } from "react";
 
+
+type PaginationMetadata = Omit<PaginatedResponse<AssociateServiceDetailsResponse>, "items">;
 
 /**
  * Hook personalizado para gerenciar os serviços do perfil do despachante.
  */
 export function useServiceDetails(dispatcherId: number) {
-
     const [serviceDetails, setServiceDetails] = useState<AssociateServiceDetailsResponse[]>([])
     const [allServices, setAllServices] = useState<ServiceResponse[]>([])
     const [loading, setLoading] = useState(true)
 
-    // Função que busca dados do servidor e guarda nos 'estados' acima
-    const fetchData = useCallback(async () => {
-        setLoading(true); // Começa o carregamento
+    const [pagination, setPagination] = useState<PaginationMetadata>({
+        page: 1,
+        per_page: 10,
+        total: 1,
+        pages: 1,
+    })
+
+    const fetchData = useCallback(async (page: number = 1, per_page: number = 10) => {
+        setLoading(true);
         try {
             const [details, catalog] = await Promise.all([
-                serviceDetailsDispatcher.getServiceDetailsDispatcher(dispatcherId),
+                serviceDetailsDispatcher.getServiceDetailsDispatcher(dispatcherId, page, per_page),
                 serviceDetailsDispatcher.getAllServices()
             ]);
             setServiceDetails(details.items);
+            setPagination({
+                page: details.page,
+                per_page: details.per_page,
+                total: details.total,
+                pages: details.pages,
+            });
+
             setAllServices(catalog);
         } catch (error) {
             console.error("Erro ao buscar serviços:", error);
@@ -31,45 +46,41 @@ export function useServiceDetails(dispatcherId: number) {
 
     useEffect(() => {
         if (!dispatcherId) return;
-        fetchData();
+        fetchData(1);
     }, [dispatcherId, fetchData]);
 
-    // Função para criar um serviço detalhado para o despachante.
     async function createServiceDetails(newServices: ServiceDetails[]) {
         await Promise.all(
             newServices.map(service =>
                 serviceDetailsDispatcher.createServiceDetailsDispatcher(dispatcherId, service.id)
             )
         )
-        fetchData(); // Recarrega a lista após criar
+        fetchData(pagination.page);
     }
 
-    // Função para atualizar o serviço detalhado do despachante.
     async function updateServiceDetails(serviceId: number, price: number) {
         await serviceDetailsDispatcher.updateServiceDetailsDispatcher(dispatcherId, serviceId, price);
-
-        // Isso aqui atualiza a lista na tela SEM precisar recarregar do banco:
         setServiceDetails(prev =>
-            prev.map(s =>
-                s.service_id === serviceId
-                    ? { ...s, price }
-                    : s
-            )
+            prev.map(s => s.service_id === serviceId ? { ...s, price } : s)
         )
     }
 
-    // Função para remover o serviço detalhado do despachante
     async function removeServiceDetails(serviceId: number) {
         await serviceDetailsDispatcher.removeDispatcherServiceDetails(dispatcherId, serviceId)
 
-        // Isso remove o item da sua lista local instantaneamente para o usuário
-        setServiceDetails(prev => prev.filter(s => s.service_id !== serviceId))
+        if (serviceDetails.length === 1 && pagination.page > 1) {
+            fetchData(pagination.page - 1)
+        } else {
+            fetchData(pagination.page);
+        }
     }
 
     return {
         serviceDetails,
         allServices,
         loading,
+        pagination,
+        fetchData,
         createServiceDetails,
         updateServiceDetails,
         removeServiceDetails,

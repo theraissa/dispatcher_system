@@ -94,11 +94,8 @@ export default function TicketDetailsDispatcher() {
         <div className="min-h-screen bg-[#F3EDE2]">
 
             {/* Navbar */}
-            <NavbarPage
-                title="Central do Despachante"
-                shortTitle="D"
-                links={dispatcherLinksNavbar}
-            />
+            <NavbarPage links={dispatcherLinksNavbar} />
+
 
             <main className="max-w-6xl mx-auto py-10 px-6">
 
@@ -146,6 +143,7 @@ export default function TicketDetailsDispatcher() {
                         <TicketChat
                             userId={user.id}
                             ticket={selectedTicket}
+                            isDispatcher={true}
                         />
                     </div>
 

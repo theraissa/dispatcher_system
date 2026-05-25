@@ -122,7 +122,7 @@ export default function ProfileClient() {
 
     return (
         <div className="min-h-screen bg-[#F3EDE2]">
-            <NavbarPage title="Central do Cliente" shortTitle="C" links={clientLinksNavbar} />
+            <NavbarPage links={clientLinksNavbar} />
 
             <main className="max-w-4xl mx-auto py-6 md:py-10 px-4 md:px-6">
                 <div className={`transition-opacity duration-500 ${(loading || isUpdatingPublic) ? 'opacity-70' : 'opacity-100'}`}>

@@ -1,9 +1,21 @@
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination";
 import { cn } from "@/lib/utils";
 import type { ListTicketResponse } from "@/types/ticket.types";
+import type { PaginatedResponse } from "@/types/type";
 import { formatDate } from "@/utils/formatters";
 import { AlertCircle, CheckCircle2, Clock, PlayCircle, XCircle } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+
+type PaginationMetadata = Omit<PaginatedResponse<ListTicketResponse>, "items">;
+
 
 /**
  * Props do componente responsável por listar os chamados do cliente.
@@ -11,6 +23,8 @@ import { Link } from "react-router-dom";
 type CalledContainerProps = {
     tickets: ListTicketResponse[];
     detailsRoute: string;
+    pagination: PaginationMetadata;
+    onPageChange: (page: number) => void;
 };
 
 
@@ -26,7 +40,7 @@ type TabType = "em andamento" | "finalizados";
  * - Permitir navegação para a tela de detalhes ao clicar em um chamado
  * - Apresentar informações resumidas (serviço, data, despachante, status)
  */
-export default function CalledContainer({ tickets, detailsRoute }: CalledContainerProps) {
+export default function CalledContainer({ tickets, detailsRoute, pagination, onPageChange }: CalledContainerProps) {
     const [activeTab, setActiveTab] = useState<TabType>("em andamento");
 
     const filteredTickets = tickets.filter((ticket) => {
@@ -37,6 +51,13 @@ export default function CalledContainer({ tickets, detailsRoute }: CalledContain
 
         return activeTab === "finalizados" ? isFinished : !isFinished;
     });
+    console.log("pagination CalledContainer", pagination);
+
+    const handlePageChange = (newPage: number) => {
+        if (pagination?.pages && newPage >= 1 && newPage <= pagination.pages) {
+            onPageChange?.(newPage);
+        }
+    };
 
     return (
         <div className="bg-white p-4 md:p-8 rounded-[40px] border border-zinc-100 shadow-sm min-h-[400px] relative border-t-[6px] border-t-[#21314D]">
@@ -135,6 +156,73 @@ export default function CalledContainer({ tickets, detailsRoute }: CalledContain
                     </div>
                 )}
             </div>
+
+
+            {/* ========================================================
+                BARRA DE PAGINAÇÃO
+               ======================================================== */}
+            {pagination?.pages && pagination.pages > 1 ? (
+                <div className="mt-8 pt-6 border-t border-zinc-100 w-full">
+                    <Pagination>
+                        <PaginationContent>
+
+                            {/* Botão Voltar */}
+                            <PaginationItem>
+                                <PaginationPrevious
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        handlePageChange(pagination.page - 1);
+                                    }}
+                                    className={cn(
+                                        "cursor-pointer",
+                                        pagination.page === 1 && "pointer-events-none opacity-40"
+                                    )}
+                                />
+                            </PaginationItem>
+
+                            {/* Renderização das Páginas Numéricas */}
+                            {Array.from({ length: pagination.pages }, (_, index) => {
+                                const pageNumber = index + 1;
+                                return (
+                                    <PaginationItem key={pageNumber}>
+                                        <PaginationLink
+                                            href="#"
+                                            isActive={pagination.page === pageNumber}
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                handlePageChange(pageNumber);
+                                            }}
+                                            className="cursor-pointer font-bold rounded-xl"
+                                        >
+                                            {pageNumber}
+                                        </PaginationLink>
+                                    </PaginationItem>
+                                );
+                            })}
+
+                            {/* Botão Avançar */}
+                            <PaginationItem>
+                                <PaginationNext
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        handlePageChange(pagination.page + 1);
+                                    }}
+                                    className={cn(
+                                        "cursor-pointer",
+                                        pagination.page === pagination.pages && "pointer-events-none opacity-40"
+                                    )}
+                                />
+                            </PaginationItem>
+
+                        </PaginationContent>
+                    </Pagination>
+                    <div className="text-center text-xs md:text-sm text-zinc-400 mt-3 font-medium">
+                        Mostrando {filteredTickets.length} de {pagination.total} chamados totais.
+                    </div>
+                </div>
+            ) : null}
         </div>
     );
 }

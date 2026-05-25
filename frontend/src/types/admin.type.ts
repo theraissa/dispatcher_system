@@ -13,4 +13,4 @@ export type DispatcherAdmin = {
 export type ListDispatcherAdmin = DispatcherAdmin[];
 
 // Tipo para o status do cadastro do despachante.
-export type StatusType = "aprovado" | "negado" | "pendente"
+export type StatusType = "aprovado" | "negado" | "pendente" | "expirado"

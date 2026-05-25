@@ -1,56 +1,48 @@
-import { Briefcase, Loader2, Plus, Search } from "lucide-react";
-import { useState } from "react";
-
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious
+} from "@/components/ui/pagination";
 import { useServiceDetails } from "@/hooks/use-service-details";
 import { cn } from "@/lib/utils";
+import { Briefcase, Loader2, Plus, Search } from "lucide-react";
+import { useState } from "react";
 import { ProfileCard, ProfileContainer } from "./layout/profile-card";
 import ServiceDetails from "./profile-service-details";
 import SelectServices from "./select-services";
 import ServiceActionButtons from "./ui/profile-buttons-action-service";
 
-/**
- * Componente responsável por gerenciar os serviços do usuário (dispatcher).
- *
- * Ele controla três fluxos principais:
- * - Visualização dos serviços ativos (view)
- * - Seleção de novos serviços (select)
- * - Edição de detalhes de um serviço específico (details)
- */
+
+
 export default function ProfileServices({ dispatcherId }: { dispatcherId: number }) {
-
-  // Texto usado para filtrar serviços por nome.
   const [search, setSearch] = useState("");
-
-  /**
-   * Controla o modo atual da tela:
-   * - view: lista de serviços ativos
-   * - select: seleção de novos serviços
-   * - details: edição de um serviço específico
-   */
   const [mode, setMode] = useState<"view" | "select" | "details">("view");
-
-  // Serviço atualmente selecionado para edição/detalhamento.
   const [selectedService, setSelectedService] = useState<any | null>(null);
 
-  // Hook responsável por operações relacionadas aos serviços do dispatcher.
   const {
     serviceDetails,
     allServices,
     loading,
+    pagination,
+    fetchData,
     createServiceDetails,
     updateServiceDetails,
     removeServiceDetails
   } = useServiceDetails(dispatcherId);
 
-  /**
-   * Lista de serviços filtrada pelo campo de busca.
-   * A comparação é feita de forma case-insensitive.
-   */
   const filteredServices = serviceDetails.filter((s) =>
     s.service_name.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Feedback visual de carregamento inicial
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= pagination.pages) {
+      fetchData(newPage);
+    }
+  };
+
   if (loading) return (
     <div className="flex flex-col items-center justify-center p-20 text-zinc-400">
       <Loader2 className="animate-spin mb-4" size={32} />
@@ -58,14 +50,7 @@ export default function ProfileServices({ dispatcherId }: { dispatcherId: number
     </div>
   );
 
-  // =========================
-  // MODO: SELEÇÃO DE SERVIÇOS
-  // =========================
   if (mode === "select") {
-    /**
-     * Remove serviços já existentes do usuário,
-     * evitando duplicação na seleção.
-     */
     const availableServices = allServices.filter(
       (s) => !serviceDetails.some(
         (userService) => userService.id === s.id || userService.service_id === s.id
@@ -76,9 +61,7 @@ export default function ProfileServices({ dispatcherId }: { dispatcherId: number
       <SelectServices
         availableServices={availableServices}
         currentServices={serviceDetails as any[]}
-        // Cancela seleção e retorna para lista principal.
         onCancel={() => setMode("view")}
-        // Adiciona novos serviços e volta para lista principal.
         onAdd={(services: any[]) => {
           createServiceDetails(services);
           setMode("view");
@@ -87,16 +70,11 @@ export default function ProfileServices({ dispatcherId }: { dispatcherId: number
     );
   }
 
-  // =========================
-  // MODO: DETALHES DO SERVIÇO
-  // =========================
   if (mode === "details" && selectedService) {
     return (
       <ServiceDetails
         serviceDetails={selectedService}
-        // Retorna para a lista sem salvar alterações adicionais.
         onBack={() => setMode("view")}
-        // Atualiza o valor do serviço e retorna para a lista.
         onSave={async (service_id, price) => {
           await updateServiceDetails(service_id, price);
           setMode("view");
@@ -105,16 +83,10 @@ export default function ProfileServices({ dispatcherId }: { dispatcherId: number
     );
   }
 
-  // =========================
-  // MODO: LISTA PRINCIPAL
-  // =========================
   return (
     <ProfileContainer>
       <ProfileCard>
-
-        {/* =========================
-            HEADER DA LISTAGEM
-           ========================= */}
+        {/* HEADER DA LISTAGEM */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div className="flex items-center gap-3">
             <div className="p-2.5 bg-[#21314D]/5 rounded-xl text-[#21314D]">
@@ -125,7 +97,6 @@ export default function ProfileServices({ dispatcherId }: { dispatcherId: number
             </h3>
           </div>
 
-          {/* Botão para abrir modo de seleção - Adaptável para mobile */}
           <button
             onClick={() => setMode("select")}
             className="w-full sm:w-auto cursor-pointer flex items-center justify-center gap-2 bg-[#21314D] text-white px-5 py-3 sm:py-2.5 rounded-2xl text-sm font-bold hover:bg-[#1A263D] transition-all active:scale-95 shadow-md shadow-blue-900/10"
@@ -135,15 +106,12 @@ export default function ProfileServices({ dispatcherId }: { dispatcherId: number
           </button>
         </div>
 
-        {/* =========================
-            CAMPO DE BUSCA
-           ========================= */}
+        {/* CAMPO DE BUSCA */}
         <div className="relative group mb-6">
           <Search
             className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-[#21314D] transition-colors"
             size={18}
           />
-
           <input
             type="text"
             placeholder="Pesquisar em meus serviços..."
@@ -153,22 +121,16 @@ export default function ProfileServices({ dispatcherId }: { dispatcherId: number
           />
         </div>
 
-        {/* =========================
-            LISTA DE SERVIÇOS
-           ========================= */}
-        <div className="grid grid-cols-1 gap-3">
+        {/* LISTA DE SERVIÇOS */}
+        <div className="grid grid-cols-1 gap-3 mb-6">
           {filteredServices.map((service) => (
             <ServiceItem
               key={service.id}
-              /**
-               * Ao clicar no item, abre tela de detalhes.
-               */
               onClick={() => {
                 setSelectedService(service);
                 setMode("details");
               }}
             >
-              {/* Nome e subtitulo informativo */}
               <div className="flex flex-col gap-0.5">
                 <span className="font-bold text-[#1E1E1E] text-[15px] md:text-base leading-tight">
                   {service.service_name}
@@ -179,21 +141,12 @@ export default function ProfileServices({ dispatcherId }: { dispatcherId: number
               </div>
 
               <div className="flex items-center gap-1">
-                {/* Botões de ação (editar/excluir) */}
                 <ServiceActionButtons
-                  /**
-                   * Abre edição do serviço.
-                   * stopPropagation impede disparar o onClick do ServiceItem.
-                   */
                   onEdit={(e) => {
                     e.stopPropagation();
                     setSelectedService(service);
                     setMode("details");
                   }}
-
-                  /**
-                   * Remove o serviço do usuário.
-                   */
                   onDelete={(e) => {
                     e.stopPropagation();
                     removeServiceDetails(service.service_id);
@@ -203,7 +156,6 @@ export default function ProfileServices({ dispatcherId }: { dispatcherId: number
             </ServiceItem>
           ))}
 
-          {/* Estado vazio da busca */}
           {filteredServices.length === 0 && (
             <div className="py-16 px-6 text-center bg-zinc-50/50 rounded-[32px] border-2 border-dashed border-zinc-200">
               <div className="mx-auto w-12 h-12 bg-zinc-100 rounded-full flex items-center justify-center text-zinc-400 mb-4">
@@ -215,18 +167,78 @@ export default function ProfileServices({ dispatcherId }: { dispatcherId: number
             </div>
           )}
         </div>
+
+        {/* =========================
+            COMPONENTE DE PAGINAÇÃO
+           ========================= */}
+        {pagination.pages > 1 && (
+          <div className="mt-6 pt-4 border-t border-zinc-100">
+            <Pagination>
+              <PaginationContent>
+
+                {/* Botão Voltar */}
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handlePageChange(pagination.page - 1);
+                    }}
+                    className={cn(
+                      "cursor-pointer",
+                      pagination.page === 1 && "pointer-events-none opacity-40"
+                    )}
+                  />
+                </PaginationItem>
+
+                {/* Gera os botões baseados no pagination.pages (que vai valer 2) */}
+                {Array.from({ length: pagination.pages }, (_, index) => {
+                  const pageNumber = index + 1;
+                  return (
+                    <PaginationItem key={pageNumber}>
+                      <PaginationLink
+                        href="#"
+                        isActive={pagination.page === pageNumber}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handlePageChange(pageNumber);
+                        }}
+                        className="cursor-pointer font-bold rounded-xl"
+                      >
+                        {pageNumber}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                })}
+
+                {/* Botão Avançar */}
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handlePageChange(pagination.page + 1);
+                    }}
+                    className={cn(
+                      "cursor-pointer",
+                      pagination.page === pagination.pages && "pointer-events-none opacity-40"
+                    )}
+                  />
+                </PaginationItem>
+
+              </PaginationContent>
+            </Pagination>
+            <div className="text-center text-xs md:text-base text-zinc-400 mt-2 font-medium">
+              Mostrando {filteredServices.length} de {pagination.total} serviços ativos.
+            </div>
+          </div>
+        )}
+
       </ProfileCard>
     </ProfileContainer>
   );
 }
 
-
-/**
- * Componente visual de item da lista de serviços.
- * 
- * Centraliza os estilos de hover, bordas e animação de clique 
- * para garantir consistência visual entre dispositivos.
- */
 const ServiceItem = ({
   children,
   onClick,

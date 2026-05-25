@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { useTicketChat } from "@/hooks/ticket/use-ticket-chat";
 import type { TicketUserResponse } from "@/types/ticket.types";
 import { formatDate } from "@/utils/formatters";
-import { Send, User } from "lucide-react";
+import { Lock, Send, User } from "lucide-react";
 import { useState } from "react";
 
 
@@ -22,6 +22,12 @@ type TicketChatProps = {
      * Contém informações do despachante e contexto do chat.
      */
     ticket: TicketUserResponse;
+
+    /**
+     * Indica se o usuário autenticado é um despachante.
+     * Usado para exibir o nome correto do outro participante.
+     */
+    isDispatcher?: boolean;
 }
 
 /**
@@ -36,13 +42,25 @@ type TicketChatProps = {
  * Integração:
  * - Utiliza o hook `useTicketChat` para comunicação com backend
  */
-export function TicketChat({ userId, ticket }: TicketChatProps) {
+export function TicketChat({ userId, ticket, isDispatcher = false }: TicketChatProps) {
 
     // Hook responsável por buscar mensagens e enviar novas
     const { messages, handleSend } = useTicketChat(ticket.id, userId);
 
     // Estado local do input de mensagem
     const [message, setMessage] = useState("");
+
+    const otherParticipantName = isDispatcher
+        ? ticket.user.name
+        : ticket.dispatcher.name;
+
+    // Normalização e verificação se o ticket está em status final
+    const currentStatus = ticket.status.toLowerCase();
+    const isChatLocked =
+        currentStatus.includes("concluído") ||
+        currentStatus.includes("finalizado") ||
+        currentStatus.includes("encerrado") ||
+        currentStatus.includes("cancelado");
 
     /**
      * Handler de envio do formulário.
@@ -58,6 +76,7 @@ export function TicketChat({ userId, ticket }: TicketChatProps) {
         handleSend(message);
         setMessage("");
     }
+
 
     return (
         <section className="bg-white rounded-[24px] md:rounded-[32px] shadow-sm border border-zinc-100 overflow-hidden flex flex-col h-[500px] md:h-[600px] border-t-[6px] border-t-[#21314D]">
@@ -76,7 +95,7 @@ export function TicketChat({ userId, ticket }: TicketChatProps) {
                     {/* Nome do outro participante (despachante) */}
                     <div>
                         <h3 className="text-sm md:text-base font-bold truncate">
-                            {ticket.dispatcher.name}
+                            {otherParticipantName}
                         </h3>
                     </div>
                 </div>
@@ -129,28 +148,37 @@ export function TicketChat({ userId, ticket }: TicketChatProps) {
             </div>
 
             {/* =========================
-               INPUT DE ENVIO
+               INPUT DE ENVIO OU AVISO DE BLOQUEIO
                ========================= */}
             <div className="p-4 md:p-6 bg-white border-t">
-                <form
-                    onSubmit={onSubmit}
-                    className="flex gap-2 items-center bg-zinc-50 p-1.5 rounded-xl border border-zinc-100 focus-within:border-[#21314D]/30 focus-within:bg-white transition-all"
-                >
-                    <Input
-                        placeholder="Escreva uma mensagem..."
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                        className="text-sm md:text-base h-9 md:h-11 border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 font-medium"
-                    />
-
-                    <Button
-                        type="submit"
-                        disabled={!message.trim()}
-                        className="h-10 px-4 bg-[#21314D] hover:bg-[#1A263D] rounded-xl shadow-lg transition-all active:scale-95 disabled:opacity-30"
+                {isChatLocked ? (
+                    // Renderiza o aviso amigável quando o chat estiver bloqueado
+                    <div className="flex items-center justify-center gap-2 bg-zinc-50 text-zinc-400 border border-dashed border-zinc-200 p-4 rounded-xl text-xs md:text-sm font-bold uppercase tracking-wider select-none">
+                        <Lock size={14} className="text-zinc-300" />
+                        Este chamado foi arquivado. O chat está fechado para novas mensagens.
+                    </div>
+                ) : (
+                    // Renderiza o formulário normalmente se o chamado estiver aberto
+                    <form
+                        onSubmit={onSubmit}
+                        className="flex gap-2 items-center bg-zinc-50 p-1.5 rounded-xl border border-zinc-100 focus-within:border-[#21314D]/30 focus-within:bg-white transition-all"
                     >
-                        <Send size={16} className="text-white" />
-                    </Button>
-                </form>
+                        <Input
+                            placeholder="Escreva uma mensagem..."
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                            className="text-sm md:text-base h-9 md:h-11 border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 font-medium"
+                        />
+
+                        <Button
+                            type="submit"
+                            disabled={!message.trim()}
+                            className="h-10 px-4 bg-[#21314D] hover:bg-[#1A263D] rounded-xl shadow-lg transition-all active:scale-95 disabled:opacity-30"
+                        >
+                            <Send size={16} className="text-white" />
+                        </Button>
+                    </form>
+                )}
             </div>
         </section>
     );

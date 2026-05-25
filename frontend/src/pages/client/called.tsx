@@ -27,7 +27,7 @@ export default function CalledClient() {
     const { user } = useAuthRequired();
 
     // Hook responsável por buscar os chamados do usuário
-    const { tickets, loading } = useTickets(user?.id);
+    const { tickets, loading, ticketPagination, refetch } = useTickets(user?.id);
 
     // Estado que armazena os filtros definidos pelo usuário
     const [filters, setFilters] = useState<TicketFilters>({});
@@ -60,15 +60,11 @@ export default function CalledClient() {
         );
     });
 
-
     return (
         <div className="min-h-screen bg-[#F3EDE2]">
             {/* Navbar principal da página */}
-            <NavbarPage
-                title="Central do Cliente"
-                shortTitle="C"
-                links={clientLinksNavbar}
-            />
+            <NavbarPage links={clientLinksNavbar} />
+
 
             <main className="max-w-6xl mx-auto py-8 md:py-10 px-4 md:px-6">
                 {/* Cabeçalho da página */}
@@ -92,6 +88,8 @@ export default function CalledClient() {
                         <CalledContainer
                             tickets={filteredTickets}
                             detailsRoute={FRONTEND_ROUTES.CLIENT.TICKET_DETAILS}
+                            pagination={ticketPagination}
+                            onPageChange={(newPage) => refetch(newPage, ticketPagination.per_page)}
                         />
                     )}
                 </div>

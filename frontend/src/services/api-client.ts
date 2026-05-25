@@ -91,7 +91,7 @@ async function request<TResponse>(
          *
          * Remove dados locais e redireciona login.
          */
-        if (response.status === 401) {
+        if (response.status === 401 && token) {
             authStorage.clear();
 
             window.location.href = FRONTEND_ROUTES.LOGIN;

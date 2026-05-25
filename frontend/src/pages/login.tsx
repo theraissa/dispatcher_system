@@ -1,9 +1,10 @@
 import { Mail } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useLogin } from "../hooks/use-login";
 
 import InputPassword from "@/components/ui/input-password";
+import { toast } from "sonner";
 import ButtonSubmitForm from "../components/record/ui/button-submit-form";
 import InputForm from "../components/record/ui/input-form";
 import LabelForm from "../components/record/ui/label-form";
@@ -33,6 +34,14 @@ export default function Login() {
         setFormData((prev) => ({ ...prev, [name]: value }));
     }
 
+    useEffect(() => {
+        if (error) {
+            toast.error("Erro no cadastro", {
+                description: error,
+            })
+        }
+    }, [error])
+
     /**
      * Tenta realizar o login chamando o hook customizado.
      */
@@ -53,13 +62,6 @@ export default function Login() {
                 <Card className="w-full max-w-[450px] border-none shadow-sm rounded-[24px] md:rounded-[40px] py-6 md:py-10 px-2 md:px-4 bg-white">
                     <CardContent>
                         <form onSubmit={handleSubmit} className="space-y-6">
-
-                            {/* Mensagem de Erro: Feedback visual imediato */}
-                            {error && (
-                                <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-center animate-in fade-in zoom-in duration-300">
-                                    <span className="text-xs text-red-600 font-semibold">{error}</span>
-                                </div>
-                            )}
 
                             {/* Campo de Email */}
                             <div className="space-y-2">

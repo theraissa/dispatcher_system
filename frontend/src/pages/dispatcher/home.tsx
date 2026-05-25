@@ -17,11 +17,7 @@ export default function HomeDispatcher() {
     return (
         <div className="min-h-screen bg-[#F3EDE2]">
             {/* Navbar principal do painel */}
-            <NavbarPage
-                title="Central do Despachante"
-                shortTitle="D"
-                links={dispatcherLinksNavbar}
-            />
+            <NavbarPage links={dispatcherLinksNavbar} />
 
             <main className="max-w-[1400px] mx-auto py-6 md:py-10 px-4 md:px-6 space-y-8 md:space-y-12">
                 {/* Banner de boas-vindas / destaque */}

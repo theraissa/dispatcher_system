@@ -83,86 +83,88 @@ export default function AccordionServiceDispatcher({ userId, dispatcherId }: { u
                 </p>
             </div>
 
-            {/* Accordion com os serviços */}
-            <Accordion.Root type="single" collapsible className="space-y-3">
+            <div className="overflow-y-auto max-h-[700px] pr-2 scrollbar-thin scrollbar-thumb-zinc-200 scrollbar-track-transparent">
+                {/* Accordion com os serviços */}
+                <Accordion.Root type="single" collapsible className="space-y-3">
 
-                {serviceDetails.map((service, idx) => (
-                    <Accordion.Item
-                        key={service.id}
-                        value={`item-${idx}`}
-                        className="border border-zinc-100 rounded-2xl overflow-hidden transition-all data-[state=open]:border-zinc-200 data-[state=open]:bg-zinc-50/30"
-                    >
+                    {serviceDetails.map((service, idx) => (
+                        <Accordion.Item
+                            key={service.id}
+                            value={`item-${idx}`}
+                            className="border border-zinc-100 rounded-2xl overflow-hidden transition-all data-[state=open]:border-zinc-200 data-[state=open]:bg-zinc-50/30"
+                        >
 
-                        {/* Header clicável */}
-                        <Accordion.Header>
-                            <Accordion.Trigger className="flex items-center justify-between w-full p-5 text-left hover:bg-zinc-50 transition-all group">
+                            {/* Header clicável */}
+                            <Accordion.Header>
+                                <Accordion.Trigger className="flex items-center justify-between w-full p-5 text-left hover:bg-zinc-50 transition-all group">
 
-                                <div className="flex items-center gap-4">
+                                    <div className="flex items-center gap-4">
 
-                                    {/* Ícone do serviço */}
-                                    <div className="w-10 h-10 bg-zinc-100 rounded-xl flex items-center justify-center text-zinc-400 group-data-[state=open]:text-[#21314D] transition-colors">
-                                        <FileText size={18} />
+                                        {/* Ícone do serviço */}
+                                        <div className="w-10 h-10 bg-zinc-100 rounded-xl flex items-center justify-center text-zinc-400 group-data-[state=open]:text-[#21314D] transition-colors">
+                                            <FileText size={18} />
+                                        </div>
+
+                                        {/* Nome do serviço vindo da API */}
+                                        <span className="font-bold text-zinc-800">
+                                            {service.service_name}
+                                        </span>
                                     </div>
 
-                                    {/* Nome do serviço vindo da API */}
-                                    <span className="font-bold text-zinc-800">
-                                        {service.service_name}
-                                    </span>
-                                </div>
+                                    {/* Ícone de expansão */}
+                                    <ChevronDown
+                                        size={18}
+                                        className="text-zinc-400 group-data-[state=open]:rotate-180 transition-transform"
+                                    />
+                                </Accordion.Trigger>
+                            </Accordion.Header>
 
-                                {/* Ícone de expansão */}
-                                <ChevronDown
-                                    size={18}
-                                    className="text-zinc-400 group-data-[state=open]:rotate-180 transition-transform"
-                                />
-                            </Accordion.Trigger>
-                        </Accordion.Header>
+                            {/* Conteúdo expandido */}
+                            <Accordion.Content className="animate-in slide-in-from-top-2 duration-200">
+                                <div className="px-5 pb-5">
 
-                        {/* Conteúdo expandido */}
-                        <Accordion.Content className="animate-in slide-in-from-top-2 duration-200">
-                            <div className="px-5 pb-5">
+                                    <div className="bg-white rounded-xl p-6 border border-zinc-100 shadow-sm">
 
-                                <div className="bg-white rounded-xl p-6 border border-zinc-100 shadow-sm">
-
-                                    {/* Preço do serviço */}
-                                    {service.price && (
-                                        <p className="text-sm font-bold text-[#21314D] mb-4">
-                                            Valor: R$ {service.price}
-                                        </p>
-                                    )}
-
-                                    {/* Documentação (placeholder пока) */}
-                                    <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-4">
-                                        Documentação Necessária:
-                                    </p>
-
-                                    <ul className="space-y-2 mb-4">
-                                        <li className="flex items-center gap-2 text-sm text-zinc-600">
-                                            <Check size={14} className="text-green-500" />
-                                            Documentação será informada no atendimento
-                                        </li>
-                                    </ul>
-
-                                    {/* Botão para criar chamado */}
-                                    <button
-                                        onClick={() => onSolicitarAtendimento(service.service_id)}
-                                        disabled={creatingTicket}
-                                        className="bg-[#21314D] text-white h-12 w-full rounded-xl font-bold text-xs hover:bg-[#1A263D] active:scale-[0.98] transition-all shadow-sm flex items-center justify-center gap-2"
-                                    >
-                                        {creatingTicket ? (
-                                            // Loader enquanto cria o chamado
-                                            <Loader2 size={18} className="animate-spin" />
-                                        ) : (
-                                            "Solicitar Atendimento"
+                                        {/* Preço do serviço */}
+                                        {service.price && (
+                                            <p className="text-sm font-bold text-[#21314D] mb-4">
+                                                Valor: R$ {service.price}
+                                            </p>
                                         )}
-                                    </button>
 
+                                        {/* Documentação (placeholder пока) */}
+                                        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-4">
+                                            Documentação Necessária:
+                                        </p>
+
+                                        <ul className="space-y-2 mb-4">
+                                            <li className="flex items-center gap-2 text-sm text-zinc-600">
+                                                <Check size={14} className="text-green-500" />
+                                                Documentação será informada no atendimento
+                                            </li>
+                                        </ul>
+
+                                        {/* Botão para criar chamado */}
+                                        <button
+                                            onClick={() => onSolicitarAtendimento(service.service_id)}
+                                            disabled={creatingTicket}
+                                            className="bg-[#21314D] text-white h-12 w-full rounded-xl font-bold text-xs hover:bg-[#1A263D] active:scale-[0.98] transition-all shadow-sm flex items-center justify-center gap-2"
+                                        >
+                                            {creatingTicket ? (
+                                                // Loader enquanto cria o chamado
+                                                <Loader2 size={18} className="animate-spin" />
+                                            ) : (
+                                                "Solicitar Atendimento"
+                                            )}
+                                        </button>
+
+                                    </div>
                                 </div>
-                            </div>
-                        </Accordion.Content>
-                    </Accordion.Item>
-                ))}
-            </Accordion.Root>
+                            </Accordion.Content>
+                        </Accordion.Item>
+                    ))}
+                </Accordion.Root>
+            </div>
         </section>
     );
 }

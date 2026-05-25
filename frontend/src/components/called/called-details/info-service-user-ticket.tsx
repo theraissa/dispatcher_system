@@ -126,18 +126,35 @@ export function InfoServiceAndUser({ ticket }: InfoServiceAndUserProps) {
                     </p>
                 </div>
 
-                {/* BOTÃO DE CANCELAR */}
-                <div className="flex justify-end pt-6 border-t">
-                    {ticket.status.toLowerCase() !== "cancelado" && ticket.status.toLowerCase() !== "encerrado" && (
-                        <button
-                            onClick={handleCancelConfirmation}
-                            className="cursor-pointer flex items-center gap-2 bg-red-50 hover:bg-red-500 text-red-500 hover:text-white px-6 py-2.5 rounded-xl text-xs md:text-sm font-bold transition-all border border-red-200 active:scale-95"
-                        >
-                            <XCircle size={16} />
-                            Encerrar Chamado
-                        </button>
-                    )}
-                </div>
+                {/* ========================================================
+                        ÁREA DE AÇÕES / BOTÃO DE CANCELAR
+                    ======================================================== */}
+                {(() => {
+                    // Normaliza o status atual para evitar problemas de caixa alta/baixa
+                    const currentStatus = ticket.status.toLowerCase();
+
+                    // Define uma lista com todos os status considerados "finais"
+                    const isFinishedOrClosed =
+                        currentStatus.includes("concluído") ||
+                        currentStatus.includes("finalizado") ||
+                        currentStatus.includes("encerrado") ||
+                        currentStatus.includes("cancelado");
+
+                    // Só renderiza a div e o botão se o chamado NÃO estiver finalizado/encerrado
+                    if (isFinishedOrClosed) return null;
+
+                    return (
+                        <div className="flex justify-end pt-6 border-t">
+                            <button
+                                onClick={handleCancelConfirmation}
+                                className="cursor-pointer flex items-center gap-2 bg-red-50 hover:bg-red-500 text-red-500 hover:text-white px-6 py-2.5 rounded-xl text-xs md:text-sm font-bold transition-all border border-red-200 active:scale-95"
+                            >
+                                <XCircle size={16} />
+                                Encerrar Chamado
+                            </button>
+                        </div>
+                    );
+                })()}
             </div>
         </section>
     );

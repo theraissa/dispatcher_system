@@ -1,7 +1,8 @@
-import { Link, useLocation } from "react-router-dom";
-import { LogOut } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { useLogout } from "@/hooks/use-logout";
+import { cn } from "@/lib/utils";
+import { FRONTEND_ROUTES } from "@/routes/frontend-routes";
+import { LogOut, Workflow } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 
 /**
  * Estrutura de um link de navegação da Navbar.
@@ -22,10 +23,6 @@ type NavLink = {
  * com links dinâmicos e botão de logout.
  */
 type NavbarPageProps = {
-  // Título principal exibido na navbar.
-  title: string;
-  // Sigla ou título reduzido exibido no ícone da esquerda.
-  shortTitle?: string;
   // Lista de links de navegação exibidos na navbar.
   links: NavLink[];
 };
@@ -39,11 +36,7 @@ type NavbarPageProps = {
  * - Destacar rota ativa
  * - Permitir logout do usuário
  */
-export default function NavbarPage({
-  title,
-  shortTitle = "P",
-  links,
-}: NavbarPageProps) {
+export default function NavbarPage({ links }: NavbarPageProps) {
 
   /**
    * Objeto que contém informações da rota atual.
@@ -73,18 +66,20 @@ export default function NavbarPage({
       {/* =========================
           LADO ESQUERDO (IDENTIDADE)
          ========================= */}
-      <div className="flex items-center gap-3">
-
-        {/* Ícone/sigla da aplicação */}
-        <div className="w-8 h-8 bg-white/10 rounded-md flex items-center justify-center font-extrabold text-sm">
-          {shortTitle}
+      <Link
+        to={FRONTEND_ROUTES.HOME || "/"}
+        className="flex-1 flex items-center gap-2.5 group cursor-pointer select-none"
+      >
+        {/* Box do Ícone */}
+        <div className="w-8 h-8 bg-white/10 rounded-xl flex items-center justify-center border border-white/5 shadow-inner transition-all duration-300 group-hover:bg-white/20 group-hover:scale-105 shrink-0">
+          <Workflow className="w-4 h-4 text-white transition-transform duration-500 group-hover:rotate-12" />
         </div>
 
-        {/* Título principal */}
-        <span className="text-base font-bold tracking-tight hidden sm:block italic opacity-90">
-          {title}
+        {/* Nome da Aplicação*/}
+        <span className="font-bold text-sm md:text-lg tracking-tight transition-colors group-hover:text-zinc-200 hidden sm:block">
+          Conecta Despachante
         </span>
-      </div>
+      </Link>
 
       {/* =========================
           NAVEGAÇÃO (LADO DIREITO)

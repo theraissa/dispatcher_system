@@ -18,11 +18,7 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-[#F3EDE2]">
-      <NavbarPage
-        title="Central do Despachante"
-        shortTitle="D"
-        links={dispatcherLinksNavbar}
-      />
+      <NavbarPage links={dispatcherLinksNavbar} />
 
       <main className="max-w-[1800px] mx-auto px-6 md:px-10 py-10">
         <Tabs

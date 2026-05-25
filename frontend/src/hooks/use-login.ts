@@ -14,12 +14,10 @@ import { useNavigate } from "react-router-dom";
  * - Redirecionar usuário conforme seu papel
  */
 export function useLogin() {
+
     const navigate = useNavigate();
-
     const { signIn } = useAuth();
-
     const [loading, setLoading] = useState(false);
-
     const [error, setError] = useState("");
 
     /**
@@ -28,7 +26,6 @@ export function useLogin() {
     async function login(data: LoginRequest) {
         try {
             setLoading(true);
-
             setError("");
 
             /**
@@ -55,22 +52,23 @@ export function useLogin() {
              */
             if (user.role === "despachante") {
                 navigate(FRONTEND_ROUTES.DISPATCHER.INITIAL);
+                return;
+            }
 
+            if (user.role === "admin") {
+                navigate(FRONTEND_ROUTES.ADMIN.INITIAL);
                 return;
             }
 
             navigate(FRONTEND_ROUTES.CLIENT.PROFILE);
 
         } catch (err: unknown) {
-
             if (err instanceof Error) {
                 setError(err.message);
 
                 return;
             }
-
             setError("Erro inesperado ao realizar login.");
-
         } finally {
             setLoading(false);
         }

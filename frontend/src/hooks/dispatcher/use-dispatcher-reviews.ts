@@ -22,6 +22,8 @@ export function useDispatcherReviews(userId: number) {
     const [loadingReviews, setLoadingReviews] = useState(false);
     const [loadingSummary, setLoadingSummary] = useState(false);
 
+    const [updatingReview, setUpdatingReview] = useState(false);
+
     /**
      * Busca todas as avaliações do despachante.
      */
@@ -57,6 +59,39 @@ export function useDispatcherReviews(userId: number) {
     }
 
     /**
+     * Atualiza um Review
+     */
+    async function updateReview(
+        ticketId: number,
+        reviewId: number,
+        data: {
+            rating: number;
+            comment?: string;
+        }
+    ) {
+        try {
+            setUpdatingReview(true);
+
+            await ticketService.updateReview(
+                ticketId,
+                reviewId,
+                data
+            );
+
+            // recarrega avaliações
+            await fetchReviews();
+
+            // atualiza resumo
+            await fetchSummary();
+
+        } catch (error) {
+            console.error("Erro ao atualizar avaliação:", error);
+        } finally {
+            setUpdatingReview(false);
+        }
+    }
+
+    /**
      * Carrega dados iniciais automaticamente.
      */
     useEffect(() => {
@@ -67,16 +102,15 @@ export function useDispatcherReviews(userId: number) {
     }, [userId]);
 
     return {
-        // dados
         reviews,
         summary,
 
-        // estados
         loadingReviews,
         loadingSummary,
+        updatingReview,
 
-        // ações
         fetchReviews,
         fetchSummary,
+        updateReview,
     };
 }

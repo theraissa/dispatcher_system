@@ -1,11 +1,13 @@
 import { TicketChat } from '@/components/called/called-details/chat-ticket';
 import { InfoServiceAndUser } from "@/components/called/called-details/info-service-user-ticket";
+import { TicketReviewCard } from '@/components/called/called-details/review-card-ticket';
 import { TimelineTicket } from '@/components/called/called-details/timeline-ticket';
 import { ReviewModal } from "@/components/called/modal/review-modal";
 import { AsideProfileDispatcher } from '@/components/client/card-profile-dispatcher/aside-profile';
 import { FeedbackState } from '@/components/record/ui/feedback-state';
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuthRequired } from '@/hooks/auth/auth-requirered';
+import { useDispatcherReviews } from '@/hooks/dispatcher/use-dispatcher-reviews';
 import { useTickets } from "@/hooks/ticket/use-ticket";
 import { useTicketReview } from "@/hooks/ticket/use-ticket-review";
 import { clientLinksNavbar } from "@/routes/frontend-routes";
@@ -51,6 +53,13 @@ export default function TicketDetails() {
     // Hook responsável por gerenciar tickets
     const { selectedTicket, loading, fetchTicketById } = useTickets(user.id);
 
+    const {
+        reviews,
+        fetchReviews,
+        updateReview,
+        updatingReview,
+    } = useDispatcherReviews(selectedTicket?.dispatcher?.id ?? 0);
+
     // Controla a abertura/fechamento do modal de avaliação.
     const [isReviewOpen, setIsReviewOpen] = useState(false);
     const [initialRating, setInitialRating] = useState(0); // <-- Novo estado
@@ -60,29 +69,47 @@ export default function TicketDetails() {
         Number(ticketId),
         user.id
     );
-
     /**
-     * Efeito responsável por buscar os dados do chamado
-     * sempre que o `ticketId` mudar.
-     */
+         * Efeito responsável por buscar os dados do chamado
+         * sempre que o `ticketId` mudar.
+         */
     useEffect(() => {
         if (!ticketId) return;
-
         fetchTicketById(Number(ticketId));
     }, [ticketId]);
 
+    // LÓGICA DE DETECÇÃO DA AVALIAÇÃO DO CHAMADO ATUAL
+    const currentTicketReview = reviews?.find(
+        (review: any) => Number(review.ticket_id) === Number(ticketId)
+    );
+
+    // Determina se o usuário já avaliou ou se o chamado ainda está elegível
+    const hasBeenReviewed = !!currentTicketReview;
+
     /**
-     * Manipula o envio da avaliação do usuário.
+     * Centraliza a submissão do modal (Criação vs Edição)
      */
     async function handleReviewSubmit(data: { rating: number; comment?: string }) {
         try {
-            await handleSubmit(data);
+            if (hasBeenReviewed && currentTicketReview) {
+                // MODO EDIÇÃO: Dispara a rota de PUT/PATCH usando o id do review existente
+                await updateReview(
+                    Number(ticketId),
+                    currentTicketReview.id,
+                    data
+                );
+                toast.success("Avaliação atualizada com sucesso!");
+            } else {
+                // MODO CRIAÇÃO: Dispara a rota de POST tradicional
+                await handleSubmit(data);
+                toast.success("Avaliação enviada com sucesso!");
+                // Recarrega a lista para fazer o card aparecer
+                await fetchReviews();
+            }
 
-            toast.success("Avaliação enviada com sucesso!");
             setIsReviewOpen(false);
-
         } catch (err: any) {
-            toast.error(err.message);
+            toast.error(err.message || "Ocorreu um erro ao processar sua avaliação.");
         }
     }
 
@@ -126,11 +153,7 @@ export default function TicketDetails() {
         <div className="min-h-screen bg-[#F3EDE2]">
 
             {/* Navbar principal da área do cliente */}
-            <NavbarPage
-                title="Central do Cliente"
-                shortTitle="C"
-                links={clientLinksNavbar}
-            />
+            <NavbarPage links={clientLinksNavbar} />
 
             <main className="max-w-6xl mx-auto py-6 md:py-10 px-4 md:px-6">
 
@@ -190,7 +213,7 @@ export default function TicketDetails() {
                                 setInitialRating(rating);
                                 setIsReviewOpen(true);
                             }}
-                            canReview={true}
+                            canReview={!hasBeenReviewed}
                         />
 
                         {/* Modal para avaliar o despachante */}
@@ -202,8 +225,20 @@ export default function TicketDetails() {
                                 setInitialRating(0);
                             }}
                             onSubmit={handleReviewSubmit}
-                            loading={reviewLoading}
+                            loading={hasBeenReviewed ? updatingReview : reviewLoading}
                         />
+
+                        {/* Card visual da avaliação com o gatilho de edição */}
+                        {hasBeenReviewed && currentTicketReview && (
+                            <TicketReviewCard
+                                review={currentTicketReview}
+                                clientName={user.name || selectedTicket.user.name}
+                                onEdit={() => {
+                                    setInitialRating(currentTicketReview.rating);
+                                    setIsReviewOpen(true);
+                                }}
+                            />
+                        )}
                     </aside>
                 </div>
             </main>

@@ -16,7 +16,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 md:gap-8">
 
           {/* Coluna 1: Área do Profissional */}
-          <div className="flex flex-col">
+          {/* <div className="flex flex-col">
             <h4 className={titleStyles}>Despachante</h4>
             <ul className="space-y-2">
               <li>
@@ -25,10 +25,10 @@ export default function Footer() {
                 </Link>
               </li>
             </ul>
-          </div>
+          </div> */}
 
           {/* Coluna 2: Acesso Administrativo */}
-          <div className="flex flex-col">
+          {/* <div className="flex flex-col">
             <h4 className={titleStyles}>Gestão</h4>
             <ul className="space-y-2">
               <li>
@@ -37,7 +37,7 @@ export default function Footer() {
                 </Link>
               </li>
             </ul>
-          </div>
+          </div> */}
 
           {/* Coluna 3: Ajuda e Documentação */}
           <div className="flex flex-col">

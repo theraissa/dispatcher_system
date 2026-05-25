@@ -31,7 +31,7 @@ export const FRONTEND_ROUTES = {
     },
 
     ADMIN: {
-        ROOT: "/admin",
+        INITIAL: "/admin",
         DISPATCHERS: "/admin/dispatcher",
         SERVICES: "/admin/services",
     },

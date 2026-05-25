@@ -1,4 +1,7 @@
 import { cn } from "@/lib/utils";
+import { FRONTEND_ROUTES } from "@/routes/frontend-routes";
+import { Workflow } from "lucide-react";
+import { Link } from "react-router-dom";
 
 /**
  * Propriedades da Navbar.
@@ -25,11 +28,20 @@ export default function Navbar({ title, className }: NavbarProps) {
       {/* 
           Lado Esquerdo: Logo. 
       */}
-      <div className="flex-1 flex items-center">
-        <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center border border-white/5">
-          <span className="font-bold text-xl">D</span> {/* Alterado para D de Dispatcher conforme as anteriores */}
+      <Link
+        to={FRONTEND_ROUTES.HOME || "/"}
+        className="flex-1 flex items-center gap-2.5 group cursor-pointer select-none"
+      >
+        {/* Box do Ícone */}
+        <div className="w-8 h-8 bg-white/10 rounded-xl flex items-center justify-center border border-white/5 shadow-inner transition-all duration-300 group-hover:bg-white/20 group-hover:scale-105 shrink-0">
+          <Workflow className="w-4 h-4 text-white transition-transform duration-500 group-hover:rotate-12" />
         </div>
-      </div>
+
+        {/* Nome da Aplicação*/}
+        <span className="font-bold text-sm md:text-lg tracking-tight transition-colors group-hover:text-zinc-200 hidden sm:block">
+          Conecta Despachante
+        </span>
+      </Link>
 
       {/* 
           Título Centralizado: 

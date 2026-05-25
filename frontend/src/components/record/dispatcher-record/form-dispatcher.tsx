@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { toast } from "sonner"
 import { useRegisterDispatcher } from "../../../hooks/dispatcher/use-dispatcher-register"
 import FormsContainer from "../../layout/form-container"
 import FormSubmit from "../../layout/form-submit"
@@ -37,6 +38,14 @@ export default function FormDispatcher() {
     }
   })
 
+  useEffect(() => {
+    if (error) {
+      toast.error("Erro no cadastro", {
+        description: error,
+      })
+    }
+  }, [error])
+
   function handleChange(section: FormSection, field: string, value: string) {
     setFormData(prev => ({
       ...prev,
@@ -55,13 +64,15 @@ export default function FormDispatcher() {
   return (
     <div className="w-full flex-1 flex flex-col py-10 md:py-18">
       <FormSubmit onSubmit={handleSubmit}>
-        {error && <span style={{ color: "red" }}>{error}</span>}
 
         <FormsContainer>
+
+
           <FormPersonal
             user={formData.user}
             onChange={handleChange}
             readOnly={false}
+            showPasswordFields={true}
           />
 
           <FormCommercial
