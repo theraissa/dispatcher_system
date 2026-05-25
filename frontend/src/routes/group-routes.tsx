@@ -93,7 +93,7 @@ export const dispatcherRoutes = [
 
 export const adminRoutes = [
     {
-        path: FRONTEND_ROUTES.ADMIN.ROOT,
+        path: FRONTEND_ROUTES.ADMIN.INITIAL,
         element: <AdminDashboard />,
     },
 

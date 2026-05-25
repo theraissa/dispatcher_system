@@ -62,7 +62,7 @@ export default function AdminDispatchers() {
                    BOTÃO DE VOLTAR
                    ========================= */}
                 <button
-                    onClick={() => navigate(FRONTEND_ROUTES.ADMIN.ROOT)}
+                    onClick={() => navigate(FRONTEND_ROUTES.ADMIN.INITIAL)}
                     className="flex items-center gap-2 text-zinc-500 hover:text-[#21314D] font-bold text-sm mb-6 transition-colors"
                 >
                     <ArrowLeft size={18} /> Voltar ao Painel
