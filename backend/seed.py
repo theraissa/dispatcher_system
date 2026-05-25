@@ -34,6 +34,7 @@ def seed():
         contact="55999999999",
         email="pedro@gmail.com",
         password=new_password,
+        role="despachante",
         instagram="https://instagram.com/pedro",
         website="https://pedrodespachante.com",
     )
@@ -45,11 +46,20 @@ def seed():
         contact="55888888888",
         email="maria@gmail.com",
         password=new_password,
+        role="despachante",
         instagram="https://instagram.com/maria",
         website="https://mariadespachante.com",
     )
 
-    db.session.add_all([user1, user2])
+    admin = UserDB(
+        name="Administrador",
+        cpf="00000000000",
+        email="admin@admin.com",
+        password=new_password,
+        role="admin",
+    )
+
+    db.session.add_all([user1, user2, admin])
     db.session.flush()
 
     # =========================

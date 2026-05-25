@@ -9,7 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import joinedload
 
 from database.tables import DispatcherDB
-from models.auth import StatusType
+from models.auth import DispatcherStatusEnum
 
 
 class AdminService:
@@ -34,7 +34,7 @@ class AdminService:
             self.db.session.query(DispatcherDB)
             .options(joinedload(DispatcherDB.user))
             .filter(
-                DispatcherDB.status == "pendente",
+                DispatcherDB.status == DispatcherStatusEnum.PENDENTE,
                 DispatcherDB.deleted_at.is_(None),
             )
             .all()
@@ -49,7 +49,7 @@ class AdminService:
             for dispatcher in dispatchers
         ]
 
-    def update_dispatcher_status(self, dispatcher_id: int, status: StatusType) -> dict:
+    def update_dispatcher_status(self, dispatcher_id: int, status: DispatcherStatusEnum) -> dict:
         """
         Atualizar o status do cadastro do despachante no sistema.
 

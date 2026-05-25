@@ -12,6 +12,7 @@ from sqlalchemy.orm import joinedload
 from werkzeug.security import generate_password_hash
 
 from database.tables import AddressDB, DispatcherDB, ServiceDB, ServiceDetailsDB, UserDB
+from models.auth import UserRoleEnum
 from models.dispatcher import (
     CreateDispatcherFullRequest,
     DispatcherFilters,
@@ -124,6 +125,7 @@ class DispatcherService:
                 contact=data.user.contact,
                 email=data.user.email,
                 password=new_password,
+                role=UserRoleEnum.DESPACHANTE,
             )
 
             self.db.session.add(new_user)

@@ -1,8 +1,8 @@
 """initial migrate
 
-Revision ID: 7f42bcbb59ed
+Revision ID: 0d65f568e7f4
 Revises: 
-Create Date: 2026-05-23 17:06:40.600208
+Create Date: 2026-05-25 00:02:21.621920
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '7f42bcbb59ed'
+revision = '0d65f568e7f4'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -35,13 +35,16 @@ def upgrade():
     sa.Column('contact', sa.String(), nullable=True),
     sa.Column('email', sa.String(), nullable=False),
     sa.Column('password', sa.String(), nullable=False),
+    sa.Column('role', sa.String(), nullable=False),
     sa.Column('photo', sa.String(), nullable=True),
     sa.Column('instagram', sa.String(), nullable=True),
     sa.Column('website', sa.String(), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
     sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('cpf'),
+    sa.UniqueConstraint('email')
     )
     op.create_table('address',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
@@ -70,7 +73,8 @@ def upgrade():
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
     sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('regis_crdd')
     )
     op.create_table('service_details',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),

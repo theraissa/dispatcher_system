@@ -45,6 +45,7 @@ class AssociateServiceDetailsDispatcherService:
                 ServiceDetailsDB.dispatcher_id == dispatcher_id,
                 ServiceDetailsDB.deleted_at.is_(None),
             )
+            .order_by(ServiceDetailsDB.updated_at.desc())
             .paginate(
                 page=page,
                 per_page=per_page,

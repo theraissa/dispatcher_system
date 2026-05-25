@@ -14,7 +14,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 
 from database.tables import TicketDB, TicketReviewDB, UserDB
-from models.ticket import CreateReviewRequest, ReviewResponse, ReviewSummaryResponse, TicketTimeline
+from models.ticket import CreateReviewRequest, ReviewResponse, ReviewSummaryResponse, TicketTimeline, UpdateReviewRequest
 
 
 class TicketReviewService:
@@ -107,6 +107,48 @@ class TicketReviewService:
         self.db.session.commit()
 
         return ReviewResponse.model_validate(review)
+
+    def update_review(self, ticket_id: int, review_id: int, data: UpdateReviewRequest) -> ReviewResponse:
+        """
+        Atualiza uma avaliação existente.
+        Permite que o autor da avaliação edite sua nota/comentário.
+
+        Args:
+            review_id (int): ID da avaliação.
+            data (UpdateReviewRequest): Dados atualizados.
+        Returns:
+            ReviewResponse: Avaliação atualizada.
+        """
+        ticket = TicketDB.query.filter(TicketDB.id == ticket_id).first()
+        if not ticket:
+            abort(404, description="Chamado não encontrado.")
+
+        update_review = TicketReviewDB.query.filter(
+            TicketReviewDB.id == review_id,
+            TicketReviewDB.ticket_id == ticket_id,
+        ).first()
+        if not update_review:
+            abort(404, description="Avaliação não encontrada.")
+
+        context_user_id = int(get_jwt_identity())
+
+        if update_review.user_id != context_user_id:
+            abort(403, description="Você não possui permissão para editar esta avaliação.")
+
+        current_status = TicketTimeline(ticket.status)
+
+        if current_status != TicketTimeline.FINALIZADO:
+            abort(400, description="A avaliação só pode ser editada em chamados finalizados.")
+
+        if data.rating < 1 or data.rating > 5:
+            abort(400, description="A avaliação deve estar entre 1 e 5.")
+
+        update_review.rating = data.rating
+        update_review.comment = data.comment
+
+        self.db.session.commit()
+
+        return ReviewResponse.model_validate(update_review)
 
     def get_dispatcher_review_summary(self, user_id: int) -> ReviewSummaryResponse:
         """

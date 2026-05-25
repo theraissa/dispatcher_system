@@ -2,13 +2,27 @@
 Modelos de dados para autenticação e autorização.
 """
 
-from typing import Literal, Optional
+from enum import Enum
+from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
-RoleType = Literal["cliente", "despachante", "admin"]
 
-StatusType = Literal["aprovado", "negado", "pendente"]
+class UserRoleEnum(str, Enum):
+    """O tipo de papel do usuário"""
+
+    CLIENTE = "cliente"
+    DESPACHANTE = "despachante"
+    ADMIN = "admin"
+
+
+class DispatcherStatusEnum(str, Enum):
+    """Status do perfil do despachante"""
+
+    APROVADO = "aprovado"
+    NEGADO = "negado"
+    PENDENTE = "pendente"
+    EXPIRADO = "expirado"
 
 
 class LoginUserRequest(BaseModel):
@@ -27,7 +41,7 @@ class LoginUserResponse(BaseModel):
     dispatcher_id: Optional[int]
     name: str
     email: str
-    role: RoleType
+    role: UserRoleEnum
     token: str
 
     model_config = ConfigDict(from_attributes=True)

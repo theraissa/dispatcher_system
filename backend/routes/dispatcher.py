@@ -88,7 +88,13 @@ def register_dispatcher_routes(
     @jwt_required()
     def get_services_from_dispatcher(dispatcher_id):
         """Lista todos os serviços detalhados associados a um despachante."""
-        services = associate_service.get_services_details_from_dispatcher(dispatcher_id)
+        page = request.args.get("page", default=1, type=int)
+        per_page = request.args.get("per_page", default=10, type=int)
+        services = associate_service.get_services_details_from_dispatcher(
+            dispatcher_id,
+            page=page,
+            per_page=per_page,
+        )
         return jsonify(services.model_dump(mode="json")), 200
 
     @app.post("/api/dispatcher-system/dispatcher/<int:dispatcher_id>/service/<int:service_id>")

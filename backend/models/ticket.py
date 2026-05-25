@@ -46,6 +46,7 @@ class ServiceDetailsInfo(BaseModel):
 class DispatcherInfo(BaseModel):
     """Modelo com informações do Despachante."""
 
+    id: int
     name: str
     email: str
     contact: str
@@ -61,6 +62,7 @@ class DispatcherInfo(BaseModel):
 class UserInfo(BaseModel):
     """Modelo com informações do usuário."""
 
+    id: int
     name: str
     email: str
     contact: str
@@ -189,11 +191,21 @@ class ListTicketMessageResponse(RootModel):
 # ========== Modelos relacionado as Reviews do Ticket ==========
 
 
-class CreateReviewRequest(BaseModel):
-    """Modelo de criação do review"""
+class BaseReview(BaseModel):
+    """Parâmetros base para avaliar"""
 
     rating: int
     comment: Optional[str] = None
+
+
+class CreateReviewRequest(BaseReview):
+    """Modelo de criação do review"""
+
+    model_config = ConfigDict(extra="ignore")
+
+
+class UpdateReviewRequest(BaseReview):
+    """Modelo de atualização do review"""
 
     model_config = ConfigDict(extra="ignore")
 

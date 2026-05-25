@@ -40,6 +40,7 @@ from sqlalchemy import Column, DateTime, ForeignKey, Integer, Numeric, String
 from sqlalchemy.sql import func
 
 from database import db
+from models.auth import DispatcherStatusEnum, UserRoleEnum
 
 
 class UserDB(db.Model):
@@ -48,12 +49,13 @@ class UserDB(db.Model):
     __tablename__ = "user"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    cpf = Column(String, nullable=False)
+    cpf = Column(String, unique=True, nullable=False)
     name = Column(String, nullable=False)
     date_birth = Column(String)
     contact = Column(String)
-    email = Column(String, nullable=False)
+    email = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
+    role = Column(String, nullable=False, default=UserRoleEnum.CLIENTE)
     photo = Column(String)
     instagram = Column(String)
     website = Column(String)
@@ -96,9 +98,9 @@ class DispatcherDB(db.Model):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
-    regis_crdd = Column(String, nullable=False)
+    regis_crdd = Column(String, unique=True, nullable=False)
     date_exp_regis = Column(DateTime, nullable=False)
-    status = Column(String, default="pendente", nullable=False)
+    status = Column(String, nullable=False, default=DispatcherStatusEnum.PENDENTE)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DateTime(timezone=True))

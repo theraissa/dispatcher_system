@@ -73,6 +73,7 @@ class TicketService:
             created_at=ticket.created_at,
             deleted_at=ticket.deleted_at,
             user=UserInfo(
+                id=ticket.user.id,
                 name=ticket.user.name,
                 email=ticket.user.email,
                 contact=ticket.user.contact,
@@ -91,6 +92,7 @@ class TicketService:
                 description=ticket.service_details.service.description,
             ),
             dispatcher=DispatcherInfo(
+                id=ticket.dispatcher.id,
                 name=ticket.dispatcher.user.name,
                 email=ticket.dispatcher.user.email,
                 contact=ticket.dispatcher.user.address.contact,
@@ -149,7 +151,7 @@ class TicketService:
         else:
             query = query.filter(TicketDB.user_id == user_id)
 
-        paginated = query.order_by(TicketDB.created_at.desc()).paginate(
+        paginated = query.order_by(TicketDB.updated_at.desc()).paginate(
             page=page,
             per_page=per_page,
             error_out=False,

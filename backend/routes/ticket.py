@@ -17,6 +17,7 @@ from models.ticket import (
     CreateReviewRequest,
     CreateTicketRequest,
     CreateTimelineRequest,
+    UpdateReviewRequest,
 )
 from services.message import MessageService
 from services.review import TicketReviewService
@@ -57,7 +58,9 @@ def register_ticket_routes(
     @jwt_required()
     def list_user_tickets(user_id) -> Response:
         """Lista todos os chamados associados a um usuário."""
-        listed_tickets_user = ticket_service.list_tickets_by_user(user_id)
+        page = request.args.get("page", default=1, type=int)
+        per_page = request.args.get("per_page", default=10, type=int)
+        listed_tickets_user = ticket_service.list_tickets_by_user(user_id, page, per_page)
         return jsonify(listed_tickets_user.model_dump(mode="json")), 200
 
     @app.post("/api/dispatcher-system/ticket")
@@ -123,6 +126,14 @@ def register_ticket_routes(
         data = CreateReviewRequest(**request.get_json())
         created_review = review_service.create_review(ticket_id, data)
         return jsonify(created_review.model_dump(mode="json")), 201
+
+    @app.put("/api/dispatcher-system/ticket/<int:ticket_id>/review/<int:review_id>")
+    @jwt_required()
+    def update_review(ticket_id, review_id):
+        """Atualizar uma avaliação para um chamado finalizado."""
+        body = UpdateReviewRequest.model_validate(request.get_json())
+        updated_review = review_service.update_review(ticket_id, review_id, body)
+        return jsonify(updated_review.model_dump(mode="json")), 200
 
     # ==========================================================
     # TIMELINE (histórico de eventos do chamado)

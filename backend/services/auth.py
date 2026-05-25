@@ -10,7 +10,7 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash
 
 from database.tables import DispatcherDB, UserDB
-from models.auth import LoginUserRequest, LoginUserResponse, RoleType
+from models.auth import DispatcherStatusEnum, LoginUserRequest, LoginUserResponse, UserRoleEnum
 from storage import redis_client
 
 
@@ -25,6 +25,11 @@ class AuthService:
     def login(self, user_data: LoginUserRequest) -> LoginUserResponse:
         """
         Realiza autenticação do usuário.
+
+        Args:
+            user_data (LoginUserRequest): Informação de acesso.
+        Returns:
+            LoginUserResponse: Informações de autenticação.
         """
         user = UserDB.query.filter(
             UserDB.email == user_data.email,
@@ -37,24 +42,28 @@ class AuthService:
         if not check_password_hash(user.password, user_data.password):
             abort(401, description="Credenciais inválidas.")
 
-        dispatcher = DispatcherDB.query.filter(
-            DispatcherDB.user_id == user.id,
-            DispatcherDB.deleted_at.is_(None),
-        ).first()
+        dispatcher = None
 
-        if dispatcher:
-            if dispatcher.status == "pendente":
+        if user.role == UserRoleEnum.DESPACHANTE:
+
+            dispatcher = DispatcherDB.query.filter(
+                DispatcherDB.user_id == user.id,
+                DispatcherDB.deleted_at.is_(None),
+            ).first()
+
+            if not dispatcher:
+                abort(401, description="Despachante inválido.")
+
+            if dispatcher.status == DispatcherStatusEnum.PENDENTE:
                 abort(401, description="Seu registro está pendente.")
 
-            if dispatcher.status == "negado":
+            if dispatcher.status == DispatcherStatusEnum.NEGADO:
                 abort(401, description="Seu registro foi negado.")
-
-        role: RoleType = "despachante" if dispatcher and dispatcher.status == "aprovado" else "cliente"
 
         token = create_access_token(
             identity=str(user.id),
             additional_claims={
-                "role": role,
+                "role": user.role,
             },
             expires_delta=timedelta(hours=1),
         )
@@ -64,7 +73,7 @@ class AuthService:
             dispatcher_id=dispatcher.id if dispatcher else None,
             name=user.name,
             email=user.email,
-            role=role,
+            role=user.role,
             token=token,
         )
 
