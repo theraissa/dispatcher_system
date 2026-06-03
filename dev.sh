@@ -1,6 +1,7 @@
 #!/bin/bash
 
 COMPOSE="docker compose --env-file .env.dev -f docker-compose.yml -f docker-compose.dev.yml"
+TEST_COMPOSE="docker compose -f docker-compose.test.yml"
 
 # Função para atualizar o ambiente virtual local
 update_venv() {
@@ -44,12 +45,39 @@ case "$1" in
     $COMPOSE build --no-cache
     ;;
 
+  unit)
+    if [ -n "$2" ]; then
+      echo "🧪 Executando teste unitário: $2"
+      $TEST_COMPOSE run --rm unit pytest -v "$2"
+    else
+      echo "🧪 Executando todos os testes unitários..."
+      $TEST_COMPOSE run --rm unit pytest tests/unit -v
+    fi
+    ;;
+
+  integration)
+    if [ -n "$2" ]; then
+      echo "🔗 Executando teste de integração: $2"
+      $TEST_COMPOSE run --rm integration pytest -v "$2"
+    else
+      echo "🔗 Executando todos os testes de integração..."
+      $TEST_COMPOSE run --rm integration pytest tests/integration -v
+    fi
+    ;;
+
+  coverage)
+    echo "📊 Executando cobertura de testes..."
+    $TEST_COMPOSE run --rm integration \
+        pytest tests --cov=services --cov=routes --cov=admin \
+        --cov-report=term-missing --cov-report=html
+    ;;
+
   venv)
     update_venv
     ;;
 
   *)
-    echo "Uso: ./dev.sh {start|stop|restart|build|venv}"
+    echo "Uso: ./dev.sh {start|stop|restart|build|unit|integration|coverage|venv}"
     exit 1
     ;;
 esac
