@@ -11,12 +11,13 @@ interface Props {
     dispatchers: Dispatcher[];
     onApprove: (id: number) => void;
     onReject: (id: number) => void;
-    loading?: boolean; // Adicionei suporte a loading
+    onRowClick: (id: number) => void;
+    loading?: boolean;
 }
 
-export default function AdminDispatcherList({ dispatchers, onApprove, onReject, loading }: Props) {
+export default function AdminDispatcherList({ dispatchers, onApprove, onReject, onRowClick, loading }: Props) {
 
-    // Estado de Carregamento (opcional, mas bom para UX)
+    // Estado de Carregamento
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center py-20 text-zinc-400 gap-3">
@@ -25,6 +26,7 @@ export default function AdminDispatcherList({ dispatchers, onApprove, onReject, 
             </div>
         );
     }
+    console.log("Lista de despachantes pendentes:", dispatchers); // Log para verificar os dados recebidos
 
     return (
         <div className="w-full max-w-4xl mx-auto space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -46,6 +48,7 @@ export default function AdminDispatcherList({ dispatchers, onApprove, onReject, 
                     dispatcher={d}
                     onApprove={onApprove}
                     onReject={onReject}
+                    onClick={() => onRowClick(d.id)}
                 />
             ))}
 

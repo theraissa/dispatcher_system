@@ -21,7 +21,7 @@ export default function ProfileInfo({ dispatcherId, userId }:
         loading,
         handleChange,
         handleSubmit,
-    } = useDispatcherProfile(userId, dispatcherId);
+    } = useDispatcherProfile(dispatcherId, userId);
 
     // Hook para salvar os dados públicos (Instagram, Website, Foto)
     const { updateProfile, isLoading: isUpdatingPublic } = useUpdateClientProfilePublic();

@@ -1,18 +1,13 @@
+import Navbar from "@/components/record/ui/navbar-with-title";
 import { useAdminDispatchers } from "@/hooks/use-admin-dispatchers";
 import { FRONTEND_ROUTES } from "@/routes/frontend-routes";
-import { ArrowLeft, Search, ShieldAlert } from "lucide-react";
+import { ArrowLeft, Search } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminDispatcherList from "../../components/admin/dispatcher-list";
 
 /**
  * Página de administração responsável por gerenciar despachantes pendentes.
- *
- * Responsabilidades:
- * - Buscar e exibir a lista de despachantes com status "pending"
- * - Permitir filtragem por nome ou e-mail
- * - Aprovar ou rejeitar despachantes
- * - Navegar de volta ao painel administrativo
  */
 export default function AdminDispatchers() {
     // Hook de navegação entre rotas
@@ -26,37 +21,28 @@ export default function AdminDispatchers() {
 
     /**
      * Filtra os despachantes com base no texto digitado.
-     *
-     * A busca é feita em:
-     * - Nome
-     * - E-mail
-     *
-     * Obs: comparação case-insensitive
      */
     const filtered = dispatchers.filter(d =>
         d.name.toLowerCase().includes(search.toLowerCase()) ||
         d.email.toLowerCase().includes(search.toLowerCase())
     );
 
-    /**
-     * Aprova um despachante.
-     * Apenas delega a ação para o hook.
-     */
     const handleApprove = (id: number) => {
         updateStatus(id, "aprovado");
     };
 
-    /**
-     * Rejeita um despachante.
-     * Apenas delega a ação para o hook.
-     */
     const handleReject = (id: number) => {
         updateStatus(id, "negado");
     };
 
     return (
-        <div className="min-h-screen bg-[#F8F9FA] p-6 md:p-10">
-            <div className="max-w-5xl mx-auto">
+        <div className="min-h-screen bg-[#F8F9FA] font-sans">
+
+            {/* Navbar superior colada no topo */}
+            <Navbar title="Gerenciar Despachantes" />
+
+            {/* CONTAINER DO CONTEÚDO*/}
+            <div className="pt-6 md:pt-10 px-6 md:px-10 pb-16 max-w-5xl mx-auto">
 
                 {/* =========================
                    BOTÃO DE VOLTAR
@@ -79,12 +65,6 @@ export default function AdminDispatchers() {
                         <p className="text-zinc-500 text-sm">
                             Gerencie o ingresso de novos profissionais no sistema.
                         </p>
-                    </div>
-
-                    {/* Indicador visual de quantidade pendente */}
-                    <div className="bg-red-50 text-red-600 px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2">
-                        <ShieldAlert size={16} />
-                        {dispatchers.length} aguardando
                     </div>
                 </header>
 
@@ -110,10 +90,11 @@ export default function AdminDispatchers() {
                    ========================= */}
                 <div className="bg-white border border-zinc-100 rounded-[24px] p-2 md:p-6 shadow-sm">
                     <AdminDispatcherList
-                        dispatchers={filtered}     // lista já filtrada
-                        onApprove={handleApprove}  // ação de aprovação
-                        onReject={handleReject}    // ação de rejeição
-                        loading={loading}          // controle de loading
+                        dispatchers={filtered}
+                        onApprove={handleApprove}
+                        onReject={handleReject}
+                        onRowClick={(id) => navigate(FRONTEND_ROUTES.ADMIN.DISPATCHER_DETAILS.replace(":dispatcherId", String(id)))}
+                        loading={loading}
                     />
                 </div>
             </div>

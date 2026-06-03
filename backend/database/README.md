@@ -159,7 +159,6 @@ Chat entre cliente e despachante dentro do chamado.
 **Campos:**
 
 * `message`
-* `is_system_message`
 
 ---
 

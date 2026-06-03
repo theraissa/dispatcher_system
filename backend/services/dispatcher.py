@@ -60,12 +60,12 @@ class DispatcherService:
         ]
         return PaginatedResponse[DispatcherFullResponse].from_pagination(paginated, response)
 
-    def get_dispatcher_by_id(self, user_id: int) -> DispatcherFullResponse:
+    def get_dispatcher_by_id(self, dispatcher_id: int) -> DispatcherFullResponse:
         """
-        Recupera os dados completos de um despachante pelo ID do usuário associado.
+        Recupera os dados completos de um despachante pelo ID do despachante.
 
         Args:
-            user_id (int): ID do usuário vinculado ao despachante.
+            dispatcher_id (int): ID do despachante.
         Returns:
             DispatcherFullResponse: Lista os dados completos de um despachante.
         """
@@ -76,13 +76,13 @@ class DispatcherService:
                 joinedload(DispatcherDB.user).joinedload(UserDB.address),
             )
             .filter(
-                DispatcherDB.user_id == user_id,
+                DispatcherDB.id == dispatcher_id,
                 DispatcherDB.deleted_at.is_(None),
             )
             .first()
         )
         if not dispatcher:
-            abort(404, description=f"Despachante com o ID {user_id} não foi encontrado.")
+            abort(404, description=f"Despachante com o ID {dispatcher_id} não foi encontrado.")
 
         return DispatcherFullResponse(
             user=UserResponse.model_validate(dispatcher.user),

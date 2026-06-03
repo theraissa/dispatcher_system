@@ -1,8 +1,8 @@
-"""initial migrate
+"""initial_migrate
 
-Revision ID: 0d65f568e7f4
+Revision ID: 77f9c4e343e4
 Revises: 
-Create Date: 2026-05-25 00:02:21.621920
+Create Date: 2026-06-01 12:35:08.761553
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '0d65f568e7f4'
+revision = '77f9c4e343e4'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -107,7 +107,6 @@ def upgrade():
     sa.Column('ticket_id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('message', sa.String(), nullable=False),
-    sa.Column('is_system_message', sa.Boolean(), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
     sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
     sa.ForeignKeyConstraint(['ticket_id'], ['ticket.id'], ),
@@ -117,16 +116,11 @@ def upgrade():
     op.create_table('ticket_review',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('ticket_id', sa.Integer(), nullable=False),
-    sa.Column('dispatcher_id', sa.Integer(), nullable=False),
-    sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('user_name', sa.String(), nullable=False),
     sa.Column('rating', sa.Integer(), nullable=False),
     sa.Column('comment', sa.String(), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
-    sa.ForeignKeyConstraint(['dispatcher_id'], ['dispatcher.id'], ),
     sa.ForeignKeyConstraint(['ticket_id'], ['ticket.id'], ),
-    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('ticket_id')
     )

@@ -14,7 +14,7 @@ export default function AdminDashboardCard({ title, description, icon, onClick, 
     <button
       onClick={onClick}
       className={cn(
-        "group relative w-full text-left bg-white p-6 rounded-[32px] border border-zinc-100 shadow-sm transition-all duration-300",
+        "cursor-pointer group relative w-full text-left bg-white p-6 rounded-[32px] border border-zinc-100 shadow-sm transition-all duration-300",
         "hover:shadow-xl hover:-translate-y-1 hover:border-[#21314D]/20",
         className
       )}

@@ -1,4 +1,5 @@
 import AdminDashboard from "@/pages/admin/admin-dashboard";
+import AdminDispatcherDetails from "@/pages/admin/admin-dispatcher-details.tsx";
 import AdminDispatchers from "@/pages/admin/admin-dispatchers";
 import AdminServices from "@/pages/admin/admin-service";
 import CalledClient from "@/pages/client/called";
@@ -100,6 +101,11 @@ export const adminRoutes = [
     {
         path: FRONTEND_ROUTES.ADMIN.DISPATCHERS,
         element: <AdminDispatchers />,
+    },
+
+    {
+        path: FRONTEND_ROUTES.ADMIN.DISPATCHER_DETAILS,
+        element: <AdminDispatcherDetails />,
     },
 
     {

@@ -191,7 +191,6 @@ class TicketMessageDB(db.Model):
     ticket_id = Column(Integer, ForeignKey("ticket.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     message = Column(String, nullable=False)
-    is_system_message = Column(db.Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     deleted_at = Column(DateTime(timezone=True))
 
@@ -206,9 +205,6 @@ class TicketReviewDB(db.Model):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     ticket_id = Column(Integer, ForeignKey("ticket.id"), nullable=False, unique=True)
-    dispatcher_id = Column(Integer, ForeignKey("dispatcher.id"), nullable=False)
-    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
-    user_name = Column(String, nullable=False)
     rating = Column(Integer, nullable=False)
     comment = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

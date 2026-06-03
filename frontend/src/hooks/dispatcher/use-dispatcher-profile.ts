@@ -12,7 +12,7 @@ import { dispatcherService } from "../../services/dispatcher-service"
  * - Atualizar campos do formulário dinamicamente
  * - Enviar atualizações para a API
  */
-export function useDispatcherProfile(userId: number, dispatcherId: number) {
+export function useDispatcherProfile(dispatcherId: number, userId?: number) {
 
     const [data, setData] = useState<ProfileDispatcher>()
     const [loading, setLoading] = useState(true)
@@ -23,9 +23,9 @@ export function useDispatcherProfile(userId: number, dispatcherId: number) {
             return
         }
 
-        // Função para buscar os dados do perfil do despachante
         async function fetchData() {
             try {
+                setLoading(true) // Garante o reset do loading ao mudar de id
                 const profile = await dispatcherService.getDispatcherProfile(dispatcherId)
                 setData(profile)
             } catch (error) {
@@ -38,17 +38,13 @@ export function useDispatcherProfile(userId: number, dispatcherId: number) {
         fetchData()
     }, [dispatcherId])
 
-    // Função genérica para atualizar campos do perfil
-    function handleChange<
-        T extends keyof ProfileDispatcher
-    >(
+    function handleChange<T extends keyof ProfileDispatcher>(
         entity: T,
         field: keyof ProfileDispatcher[T],
         value: string
     ) {
         setData(prev => {
             if (!prev) return prev
-
             return {
                 ...prev,
                 [entity]: {
@@ -59,9 +55,9 @@ export function useDispatcherProfile(userId: number, dispatcherId: number) {
         })
     }
 
-    // Função para enviar atualizações para a API
     async function handleSubmit() {
-        if (!data) return
+        // Proteção caso seja um admin visualizando sem um userId definido
+        if (!data || !userId) return
         await dispatcherService.updateDispatcherProfile(userId, data)
     }
 

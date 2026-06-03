@@ -24,7 +24,7 @@ import LabelForm from "../../ui/label-form"
 type FormCommercialProps = {
   dispatcher: CreateDispatcher;
   address: CreateAddress;
-  onChange: (section: "dispatcher" | "address", field: any, value: string) => void;
+  onChange?: (section: "dispatcher" | "address", field: any, value: string) => void;
   readOnly: boolean;
 };
 
@@ -33,12 +33,12 @@ export default function FormCommercial({ dispatcher, address, onChange, readOnly
 
   function handleDispatcherChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target
-    onChange("dispatcher", name, value)
+    onChange?.("dispatcher", name, value)
   }
 
   function handleAddressChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target
-    onChange("address", name, value)
+    onChange?.("address", name, value)
   }
 
   const [cities, setCities] = useState<{ value: string; label: string }[]>([]);
@@ -184,7 +184,7 @@ export default function FormCommercial({ dispatcher, address, onChange, readOnly
               // Atualiza o estado
               handleAddressChange({ target: { name: "state", value: val } } as any)
               // Limpa a cidade selecionada anteriormente
-              onChange("address", "city", "")
+              onChange?.("address", "city", "")
             }}
           />
         </InlineField>

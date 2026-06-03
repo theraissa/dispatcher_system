@@ -13,7 +13,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 
-from database.tables import TicketDB, TicketReviewDB, UserDB
+from database.tables import DispatcherDB, TicketDB, TicketReviewDB, UserDB
 from models.ticket import CreateReviewRequest, ReviewResponse, ReviewSummaryResponse, TicketTimeline, UpdateReviewRequest
 
 
@@ -34,20 +34,37 @@ class TicketReviewService:
         Returns:
             list[ReviewResponse]: Lista de avaliações ordenadas da mais recente para a mais antiga.
         """
-        user = UserDB.query.options(joinedload(UserDB.dispatcher)).filter(UserDB.id == user_id).first()
-        if not user or not user.dispatcher:
-            abort(404, description=f"Despachante com o ID {user_id} não encontrado.")
+        dispatcher = DispatcherDB.query.filter(
+            DispatcherDB.user_id == user_id,
+            DispatcherDB.deleted_at.is_(None),
+        ).first()
 
-        dispatcher_id = user.dispatcher.id
+        if not dispatcher:
+            abort(
+                404,
+                description=f"Despachante vinculado ao usuário {user_id} não encontrado.",
+            )
 
         reviews = (
             self.db.session.query(TicketReviewDB)
-            .filter(TicketReviewDB.dispatcher_id == dispatcher_id)
+            .join(TicketDB)
+            .options(joinedload(TicketReviewDB.ticket).joinedload(TicketDB.user))
+            .filter(TicketDB.dispatcher_id == dispatcher.id)
             .order_by(TicketReviewDB.created_at.desc())
             .all()
         )
 
-        return [ReviewResponse.model_validate(review).model_dump(mode="json") for review in reviews]
+        return [
+            ReviewResponse(
+                id=review.id,
+                ticket_id=review.ticket_id,
+                user_name=review.ticket.user.name,
+                rating=review.rating,
+                comment=review.comment,
+                created_at=review.created_at,
+            ).model_dump(mode="json")
+            for review in reviews
+        ]
 
     def create_review(self, ticket_id: int, data: CreateReviewRequest) -> ReviewResponse:
         """
@@ -96,9 +113,6 @@ class TicketReviewService:
 
         review = TicketReviewDB(
             ticket_id=ticket.id,
-            dispatcher_id=ticket.dispatcher_id,
-            user_id=context_user_id,
-            user_name=user.name,
             rating=data.rating,
             comment=data.comment,
         )
@@ -106,7 +120,14 @@ class TicketReviewService:
         self.db.session.add(review)
         self.db.session.commit()
 
-        return ReviewResponse.model_validate(review)
+        return ReviewResponse(
+            id=review.id,
+            ticket_id=ticket_id,
+            user_name=user.name,
+            rating=data.rating,
+            comment=data.comment,
+            created_at=review.created_at,
+        )
 
     def update_review(self, ticket_id: int, review_id: int, data: UpdateReviewRequest) -> ReviewResponse:
         """
@@ -132,8 +153,11 @@ class TicketReviewService:
 
         context_user_id = int(get_jwt_identity())
 
-        if update_review.user_id != context_user_id:
-            abort(403, description="Você não possui permissão para editar esta avaliação.")
+        user = UserDB.query.filter(UserDB.id == context_user_id, UserDB.deleted_at.is_(None)).first()
+        if not user:
+            abort(404, description="Usuário não foi encontrado")
+        if ticket.user_id != context_user_id:
+            abort(403, description="Você não possui permissão para editar este chamado.")
 
         current_status = TicketTimeline(ticket.status)
 
@@ -148,7 +172,14 @@ class TicketReviewService:
 
         self.db.session.commit()
 
-        return ReviewResponse.model_validate(update_review)
+        return ReviewResponse(
+            id=update_review.id,
+            ticket_id=ticket_id,
+            user_name=user.name,
+            rating=data.rating,
+            comment=data.comment,
+            created_at=update_review.created_at,
+        )
 
     def get_dispatcher_review_summary(self, user_id: int) -> ReviewSummaryResponse:
         """
@@ -168,15 +199,20 @@ class TicketReviewService:
 
         dispatcher_id = user.dispatcher.id
 
-        result = (
-            self.db.session.query(func.avg(TicketReviewDB.rating), func.count(TicketReviewDB.id))
-            .filter(TicketReviewDB.dispatcher_id == dispatcher_id)
+        # filtramos apenas os tickets do despachante informado.
+        average_rating, total_reviews = (
+            self.db.session.query(
+                # Calcula a média de todas as notas.
+                func.avg(TicketReviewDB.rating),
+                # Conta quantas avaliações existem.
+                func.count(TicketReviewDB.id),
+            )
+            .join(TicketDB, TicketDB.id == TicketReviewDB.ticket_id)
+            .filter(TicketDB.dispatcher_id == dispatcher_id)
             .one()
         )
 
-        average_rating, total_reviews = result
-
         return ReviewSummaryResponse(
-            average_rating=round(float(average_rating), 1) if average_rating else 0.0,
+            average_rating=round(float(average_rating), 1) if average_rating is not None else 0.0,
             total_reviews=total_reviews,
         )

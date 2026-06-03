@@ -10,7 +10,7 @@ Este módulo agrupa endpoints responsáveis por:
 from flask import Flask, Response, jsonify, request
 from flask_jwt_extended import jwt_required
 
-from models.dispatcher import CreateDispatcherFullRequest, UpdateDispatcherFullRequest
+from models.dispatcher import CreateDispatcherFullRequest, DispatcherFilters, UpdateDispatcherFullRequest
 from services.associate_service_details import AssociateServiceDetailsDispatcherService
 from services.dispatcher import DispatcherService
 
@@ -76,8 +76,14 @@ def register_dispatcher_routes(
     @jwt_required()
     def search_dispatchers() -> Response:
         """Busca despachantes com base em um filtro (query)."""
-        query = request.args.get("query")
-        dispatchers = dispatcher_service.search_dispatchers(query)
+        filters = DispatcherFilters.model_validate(
+            {
+                "name": request.args.get("name"),
+                "city": request.args.get("city"),
+                "service_name": request.args.get("service_name"),
+            }
+        )
+        dispatchers = dispatcher_service.search_dispatchers(filters=filters)
         return jsonify(dispatchers.model_dump(mode="json")), 200
 
     # ==========================================================

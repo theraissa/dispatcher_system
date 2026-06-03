@@ -25,7 +25,7 @@ export default function CardProfileDispatcher() {
     const dispatcherId = Number(userId);
 
     const { user } = useAuthRequired();
-    const { data, loading } = useDispatcherProfile(user.id, dispatcherId!);
+    const { data, loading } = useDispatcherProfile(dispatcherId!, user.id);
     const { reviews, summary } = useDispatcherReviews(dispatcherId);
 
     if (loading) {

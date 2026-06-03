@@ -11,12 +11,15 @@ type AdminDispatcherCardProps = {
   dispatcher: Dispatcher;
   onApprove: (id: number) => void;
   onReject: (id: number) => void;
+  onClick: (id: number) => void;
 };
 
-
-export default function AdminDispatcherCard({ dispatcher, onApprove, onReject }: AdminDispatcherCardProps) {
+export default function AdminDispatcherCard({ dispatcher, onApprove, onClick, onReject }: AdminDispatcherCardProps) {
   return (
-    <div className="w-full bg-white p-5 rounded-[32px] border border-zinc-100 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 transition-all hover:shadow-md">
+    <div
+      onClick={() => onClick(dispatcher.id)}
+      className="cursor-pointer w-full bg-white p-5 rounded-[32px] border border-zinc-100 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 transition-all hover:shadow-md"
+    >
 
       <div className="flex items-center gap-4 w-full sm:w-auto">
         {/* Avatar / Inicial */}
@@ -39,9 +42,13 @@ export default function AdminDispatcherCard({ dispatcher, onApprove, onReject }:
       {/* Ações */}
       <div className="flex items-center gap-3 w-full sm:w-auto border-t sm:border-t-0 pt-4 sm:pt-0">
         <button
-          onClick={() => onReject(dispatcher.id)}
+          // 2. AJUSTADO: e.stopPropagation() evita que a tela de detalhes abra ao clicar em Reprovar
+          onClick={(e) => {
+            e.stopPropagation();
+            onReject(dispatcher.id);
+          }}
           className={cn(
-            "flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all",
+            "cursor-pointer flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all",
             "bg-red-50 text-red-600 hover:bg-red-100 active:scale-95"
           )}
         >
@@ -50,9 +57,13 @@ export default function AdminDispatcherCard({ dispatcher, onApprove, onReject }:
         </button>
 
         <button
-          onClick={() => onApprove(dispatcher.id)}
+          // 3. AJUSTADO: e.stopPropagation() evita que a tela de detalhes abra ao clicar em Aprovar
+          onClick={(e) => {
+            e.stopPropagation();
+            onApprove(dispatcher.id);
+          }}
           className={cn(
-            "flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all",
+            "cursor-pointer flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all",
             "bg-[#21314D] text-white hover:bg-[#1A263D] shadow-sm active:scale-95"
           )}
         >
