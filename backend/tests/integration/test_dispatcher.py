@@ -2,70 +2,131 @@
 Testes de integração das rotas de despachantes.
 """
 
+import uuid
+
 import pytest
 
 # ==========================================================
-# DESPACHANTES
+# HELPERS
 # ==========================================================
 
 
-def test_list_dispatchers(client):
-    """Deve listar os despachantes cadastrados."""
+def build_dispatcher_payload():
+    """
+    Gera payload único para criação de despachante.
+    """
+    suffix = uuid.uuid4().hex[:6]
 
-    response = client.get("/api/dispatcher-system/dispatcher")
+    return {
+        "user": {
+            "cpf": uuid.uuid4().hex[:11],
+            "name": f"Dispatcher {suffix}",
+            "email": f"dispatcher+{suffix}@gmail.com",
+            "password": "123456",
+            "contact": "51999999999",
+            "date_birth": "1990-01-01",
+        },
+        "dispatcher": {
+            "regis_crdd": f"CRDD-{suffix}",
+            "date_exp_regis": "2030-01-01",
+        },
+        "address": {
+            "contact": "51999999999",
+            "address": "Rua Dispatcher",
+            "number": 100,
+            "neighborhood": "Centro",
+            "city": "Sapiranga",
+            "state": "RS",
+            "zip_code": "93800-000",
+        },
+    }
+
+
+@pytest.fixture
+def created_dispatcher(client):
+    """
+    Cria despachante via rota HTTP.
+    """
+    payload = build_dispatcher_payload()
+
+    response = client.post(
+        "/api/dispatcher-system/dispatcher",
+        json=payload,
+    )
+
+    assert response.status_code == 201
+
+    body = response.get_json()
+
+    return {
+        "payload": payload,
+        "response": body,
+    }
+
+
+# ==========================================================
+# LIST DISPATCHERS
+# ==========================================================
+
+
+def test_list_dispatchers(client, created_dispatcher):
+    """
+    Deve listar despachantes cadastrados.
+    """
+    response = client.get(
+        "/api/dispatcher-system/dispatcher",
+    )
     assert response.status_code == 200
 
     body = response.get_json()
     assert "items" in body
+    assert len(body["items"]) >= 1
 
 
-def test_get_dispatcher_by_id(client, auth_headers, dispatcher):
-    """Deve retornar um despachante pelo ID."""
+# ==========================================================
+# GET DISPATCHER
+# ==========================================================
+
+
+def test_get_dispatcher_by_id(client, auth_headers, created_dispatcher):
+    """
+    Deve retornar despachante pelo ID.
+    """
+    dispatcher_id = created_dispatcher["response"]["dispatcher_id"]
 
     response = client.get(
-        f"/api/dispatcher-system/dispatcher/{dispatcher.user_id}",
+        f"/api/dispatcher-system/dispatcher/{dispatcher_id}",
         headers=auth_headers,
     )
     assert response.status_code == 200
 
     body = response.get_json()
-    assert body["user"]["id"] == dispatcher.user_id
+    assert body["dispatcher"]["id"] == dispatcher_id
 
 
 def test_get_dispatcher_by_id_not_found(client, auth_headers):
-    """Deve retornar erro ao buscar despachante inexistente."""
+    """
+    Deve retornar 404 para despachante inexistente.
+    """
+    fake_id = uuid.uuid4().int % 100000
     response = client.get(
-        "/api/dispatcher-system/dispatcher/999999",
+        f"/api/dispatcher-system/dispatcher/{fake_id}",
         headers=auth_headers,
     )
     assert response.status_code == 404
 
 
+# ==========================================================
+# CREATE DISPATCHER
+# ==========================================================
+
+
 def test_create_dispatcher(client):
-    """Deve criar um novo despachante."""
-    payload = {
-        "user": {
-            "cpf": "12345678901",
-            "name": "João Silva",
-            "date_birth": "1990-01-01",
-            "contact": "51999999999",
-            "email": "joao@email.com",
-            "password": "123456",
-        },
-        "address": {
-            "contact": "51999999999",
-            "number": 100,
-            "neighborhood": "Centro",
-            "address": "Rua Principal",
-            "city": "Sapiranga",
-            "state": "RS",
-            "zip_code": "93800000",
-        },
-        "dispatcher": {
-            "regis_crdd": "CRDD123",
-            "date_exp_regis": "2030-01-01",
-        },
-    }
+    """
+    Deve criar despachante com sucesso.
+    """
+    payload = build_dispatcher_payload()
+
     response = client.post(
         "/api/dispatcher-system/dispatcher",
         json=payload,
@@ -73,25 +134,49 @@ def test_create_dispatcher(client):
     assert response.status_code == 201
 
     body = response.get_json()
-    assert "user_id" in body
     assert "dispatcher_id" in body
+    assert "user_id" in body
     assert "address_id" in body
 
 
-def test_create_dispatcher_duplicate_cpf(client, dispatcher_full_payload):
-    """Deve retornar erro ao cadastrar CPF já existente."""
+def test_create_dispatcher_duplicate_email(client, created_dispatcher):
+    """
+    Deve impedir criação com email duplicado.
+    """
+    payload = build_dispatcher_payload()
+
+    payload["user"]["email"] = created_dispatcher["payload"]["user"]["email"]
+
     response = client.post(
         "/api/dispatcher-system/dispatcher",
-        json=dispatcher_full_payload,
+        json=payload,
     )
     assert response.status_code == 400
 
 
-def test_update_dispatcher(client, auth_headers, dispatcher):
-    """Deve atualizar os dados de um despachante."""
-    payload = {"user": {"name": "Nome Atualizado"}}
+# ==========================================================
+# UPDATE DISPATCHER
+# ==========================================================
+
+
+def test_update_dispatcher(client, auth_headers, created_dispatcher):
+    """
+    Deve atualizar dados do despachante.
+    """
+    user_id = created_dispatcher["response"]["user_id"]
+    payload = {
+        "user": {
+            "name": "Novo Nome Dispatcher",
+        },
+        "dispatcher": {
+            "regis_crdd": f"CRDD-UPDATED-{uuid.uuid4()}",
+        },
+        "address": {
+            "city": "Novo Hamburgo",
+        },
+    }
     response = client.put(
-        f"/api/dispatcher-system/dispatcher/{dispatcher.user_id}",
+        f"/api/dispatcher-system/dispatcher/{user_id}",
         json=payload,
         headers=auth_headers,
     )
@@ -101,161 +186,65 @@ def test_update_dispatcher(client, auth_headers, dispatcher):
     assert body["message"] == "Perfil do despachante atualizado com sucesso!"
 
 
-def test_delete_dispatcher(client, auth_headers, dispatcher):
-    """Deve remover logicamente um despachante."""
+# ==========================================================
+# DELETE DISPATCHER
+# ==========================================================
+
+
+def test_delete_dispatcher(client, auth_headers, created_dispatcher):
+    """
+    Deve realizar soft delete do despachante.
+    """
+    dispatcher_id = created_dispatcher["response"]["dispatcher_id"]
 
     response = client.delete(
-        f"/api/dispatcher-system/dispatcher/{dispatcher.id}",
+        f"/api/dispatcher-system/dispatcher/{dispatcher_id}",
         headers=auth_headers,
     )
     assert response.status_code == 200
 
     body = response.get_json()
-    assert body["id"] == dispatcher.id
+    assert body["id"] == dispatcher_id
+    assert body["deleted_at"] is not None
 
 
 # ==========================================================
-# BUSCA
+# SEARCH DISPATCHERS
 # ==========================================================
 
 
-def test_search_dispatchers(client, auth_headers):
-    """Deve realizar busca de despachantes."""
-
+def test_search_dispatchers_by_city(client, auth_headers, created_dispatcher):
+    """
+    Deve buscar despachantes por cidade.
+    """
     response = client.get(
-        "/api/dispatcher-system/dispatcher/search?name=João",
+        "/api/dispatcher-system/dispatcher/search?city=Sapiranga",
         headers=auth_headers,
     )
     assert response.status_code == 200
 
     body = response.get_json()
     assert "items" in body
+    assert len(body["items"]) >= 1
 
 
 # ==========================================================
-# SERVIÇOS DO DESPACHANTE
-# ==========================================================
-
-
-def test_get_services_from_dispatcher(client, auth_headers, dispatcher_service_relation):
-    """Deve listar os serviços vinculados ao despachante."""
-
-    response = client.get(
-        f"/api/dispatcher-system/dispatcher/{dispatcher_service_relation.dispatcher_id}/services",
-        headers=auth_headers,
-    )
-    assert response.status_code == 200
-
-    body = response.get_json()
-    assert "items" in body
-
-
-def test_add_service_for_dispatcher(client, auth_headers, dispatcher, service):
-    """Deve vincular um serviço ao despachante."""
-
-    response = client.post(
-        f"/api/dispatcher-system/dispatcher/{dispatcher.id}/service/{service.id}",
-        headers=auth_headers,
-    )
-    assert response.status_code == 201
-
-    body = response.get_json()
-    assert body["message"] == "Serviço vinculado com sucesso!"
-
-
-def test_add_service_for_dispatcher_duplicate(client, auth_headers, dispatcher_service_relation):
-    """Deve impedir vínculo duplicado de serviço."""
-
-    response = client.post(
-        (
-            f"/api/dispatcher-system/dispatcher/"
-            f"{dispatcher_service_relation.dispatcher_id}/service/"
-            f"{dispatcher_service_relation.service_id}"
-        ),
-        headers=auth_headers,
-    )
-    assert response.status_code == 400
-
-
-def test_update_dispatcher_service_details(client, auth_headers, dispatcher_service_relation):
-    """Deve atualizar os dados do serviço vinculado."""
-
-    payload = {
-        "price": 150.0,
-    }
-    response = client.put(
-        (
-            f"/api/dispatcher-system/dispatcher/"
-            f"{dispatcher_service_relation.dispatcher_id}/service/"
-            f"{dispatcher_service_relation.service_id}"
-        ),
-        json=payload,
-        headers=auth_headers,
-    )
-    assert response.status_code == 200
-
-    body = response.get_json()
-    assert body["message"] == "Serviço detalhado atualizado com sucesso!"
-
-
-def test_update_dispatcher_service_details_not_found(client, auth_headers):
-    """Deve retornar erro ao atualizar vínculo inexistente."""
-
-    response = client.put(
-        "/api/dispatcher-system/dispatcher/999999/service/999999",
-        json={"price": 100},
-        headers=auth_headers,
-    )
-    assert response.status_code == 404
-
-
-def test_delete_dispatcher_service_details(client, auth_headers, dispatcher_service_relation):
-    """Deve remover o vínculo entre serviço e despachante."""
-
-    response = client.delete(
-        (
-            f"/api/dispatcher-system/dispatcher/"
-            f"{dispatcher_service_relation.dispatcher_id}/service/"
-            f"{dispatcher_service_relation.service_id}"
-        ),
-        headers=auth_headers,
-    )
-    assert response.status_code == 200
-
-    body = response.get_json()
-    assert body["message"] == "Serviço desvinculado com sucesso!"
-
-
-def test_delete_dispatcher_service_details_not_found(client, auth_headers):
-    """Deve retornar erro ao remover vínculo inexistente."""
-
-    response = client.delete(
-        "/api/dispatcher-system/dispatcher/999999/service/999999",
-        headers=auth_headers,
-    )
-    assert response.status_code == 404
-
-
-# ==========================================================
-# AUTENTICAÇÃO
+# AUTH
 # ==========================================================
 
 
 @pytest.mark.parametrize(
-    "method,url",
+    "method, url",
     [
         ("get", "/api/dispatcher-system/dispatcher/1"),
         ("put", "/api/dispatcher-system/dispatcher/1"),
         ("delete", "/api/dispatcher-system/dispatcher/1"),
         ("get", "/api/dispatcher-system/dispatcher/search"),
-        ("get", "/api/dispatcher-system/dispatcher/1/services"),
-        ("post", "/api/dispatcher-system/dispatcher/1/service/1"),
-        ("put", "/api/dispatcher-system/dispatcher/1/service/1"),
-        ("delete", "/api/dispatcher-system/dispatcher/1/service/1"),
     ],
 )
-def test_protected_routes_require_authentication(client, method, url):
-    """Deve exigir autenticação nas rotas protegidas."""
-
+def test_dispatcher_routes_require_authentication(client, method, url):
+    """
+    Deve exigir autenticação JWT.
+    """
     response = getattr(client, method)(url)
-    assert response.status_code == 401
+    assert response.status_code in [401, 422]

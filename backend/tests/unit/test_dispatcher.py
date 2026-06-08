@@ -2,6 +2,7 @@
 Testes unitários do serviço DispatcherService.
 """
 
+from datetime import datetime
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -37,23 +38,36 @@ def user():
     user.name = "João"
     user.email = "joao@email.com"
     user.password = "123456"
-    user.address = None
+    user.date_birth = "1990-01-01"
+    user.contact = "51999999999"
+    user.photo = None
+    user.instagram = None
+    user.website = None
     user.deleted_at = None
     return user
 
 
 @pytest.fixture
-def address():
+def address(user):
     """Mock de endereço."""
     address = MagicMock()
     address.id = 10
-    address.user_id = 1
-    address.city = "Sapiranga"
+    address.user_id = user.id
+    address.contact = "51999999999"
+    address.number = 123
+    address.neighborhood = "Bairro Teste"
+    address.address = "Rua Teste"
+    address.city = "Cidade Teste"
+    address.state = "Estado Teste"
+    address.zip_code = "99999-999"
+    address.created_at = datetime.now()
+    address.updated_at = datetime.now()
+    address.deleted_at = None
     return address
 
 
 @pytest.fixture
-def dispatcher(user):
+def dispatcher(user, address):
     """Mock de despachante."""
     dispatcher = MagicMock()
     dispatcher.id = 5
@@ -61,6 +75,9 @@ def dispatcher(user):
     dispatcher.user = user
     dispatcher.deleted_at = None
     dispatcher.regis_crdd = "CRDD123"
+
+    user.address = address
+
     return dispatcher
 
 
@@ -131,7 +148,7 @@ def test_list_dispatcher_success(
 
     db.session.query.return_value.options.return_value.filter.return_value.paginate.return_value = pagination
 
-    paginated_response_mock.from_pagination.return_value = "resultado"
+    paginated_response_mock.__getitem__.return_value.from_pagination.return_value = "resultado"
 
     result = service.list_dispatcher()
 
@@ -375,7 +392,7 @@ def test_search_dispatchers_without_filters(paginated_response_mock, service, db
 
     query.distinct.return_value.paginate.return_value = pagination
 
-    paginated_response_mock.from_pagination.return_value = "resultado"
+    paginated_response_mock.__getitem__.return_value.from_pagination.return_value = "resultado"
 
     result = service.search_dispatchers()
 
@@ -398,7 +415,7 @@ def test_search_dispatchers_with_filters(paginated_response_mock, service, db, d
 
     query.join.return_value.filter.return_value.distinct.return_value.paginate.return_value = pagination
 
-    paginated_response_mock.from_pagination.return_value = "resultado"
+    paginated_response_mock.__getitem__.return_value.from_pagination.return_value = "resultado"
 
     result = service.search_dispatchers(filters)
 

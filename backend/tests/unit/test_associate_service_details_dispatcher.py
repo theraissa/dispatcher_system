@@ -35,12 +35,14 @@ def service(db_mock):
 
 
 def test_get_services_details_from_dispatcher(service):
+    """Deve listar os serviços vinculados ao despachante."""
     service_db = MagicMock()
     service_db.id = 5
     service_db.name = "Transferência"
 
     detail = MagicMock()
     detail.id = 1
+    detail.dispatcher_id = 2
     detail.service = service_db
     detail.price = 100
     detail.created_at = datetime.now()
@@ -54,12 +56,19 @@ def test_get_services_details_from_dispatcher(service):
     pagination.total = 1
     pagination.per_page = 10
 
-    query_mock = MagicMock()
-    query_mock.options.return_value.filter.return_value.order_by.return_value.paginate.return_value = pagination
+    service_details_mock = MagicMock()
 
-    with patch(
-        "services.associate_service_details.ServiceDetailsDB",
-        query_mock,
+    service_details_mock.query.options.return_value.filter.return_value.order_by.return_value.paginate.return_value = pagination
+
+    with (
+        patch(
+            "services.associate_service_details.ServiceDetailsDB",
+            service_details_mock,
+        ),
+        patch(
+            "services.associate_service_details.joinedload",
+            return_value=None,
+        ),
     ):
         result = service.get_services_details_from_dispatcher(dispatcher_id=2)
 
@@ -74,12 +83,14 @@ def test_get_services_details_from_dispatcher(service):
 
 
 def test_add_service_for_dispatcher_success(service, db_mock):
-    query_mock = MagicMock()
-    query_mock.filter_by.return_value.first.return_value = None
+    """Deve vincular um serviço ao despachante."""
+    service_details_mock = MagicMock()
+
+    service_details_mock.query.filter_by.return_value.first.return_value = None
 
     with patch(
         "services.associate_service_details.ServiceDetailsDB",
-        query_mock,
+        service_details_mock,
     ):
         result = service.add_service_for_dispatcher(
             dispatcher_id=1,
@@ -93,14 +104,16 @@ def test_add_service_for_dispatcher_success(service, db_mock):
 
 
 def test_add_service_for_dispatcher_duplicate(service):
+    """Deve impedir vínculo duplicado de serviço."""
     existing_relation = MagicMock()
 
-    query_mock = MagicMock()
-    query_mock.filter_by.return_value.first.return_value = existing_relation
+    service_details_mock = MagicMock()
+
+    service_details_mock.query.filter_by.return_value.first.return_value = existing_relation
 
     with patch(
         "services.associate_service_details.ServiceDetailsDB",
-        query_mock,
+        service_details_mock,
     ):
         with pytest.raises(HTTPException) as exc:
             service.add_service_for_dispatcher(
@@ -117,15 +130,17 @@ def test_add_service_for_dispatcher_duplicate(service):
 
 
 def test_update_dispatcher_service_details_success(service, db_mock):
+    """Deve atualizar os detalhes do serviço vinculado."""
     relation = MagicMock()
     relation.price = 100
 
-    query_mock = MagicMock()
-    query_mock.filter.return_value.first.return_value = relation
+    service_details_mock = MagicMock()
+
+    service_details_mock.query.filter.return_value.first.return_value = relation
 
     with patch(
         "services.associate_service_details.ServiceDetailsDB",
-        query_mock,
+        service_details_mock,
     ):
         result = service.update_dispatcher_service_details(
             dispatcher_id=1,
@@ -140,12 +155,14 @@ def test_update_dispatcher_service_details_success(service, db_mock):
 
 
 def test_update_dispatcher_service_details_not_found(service):
-    query_mock = MagicMock()
-    query_mock.filter.return_value.first.return_value = None
+    """Deve retornar erro ao atualizar vínculo inexistente."""
+    service_details_mock = MagicMock()
+
+    service_details_mock.query.filter.return_value.first.return_value = None
 
     with patch(
         "services.associate_service_details.ServiceDetailsDB",
-        query_mock,
+        service_details_mock,
     ):
         with pytest.raises(HTTPException) as exc:
             service.update_dispatcher_service_details(
@@ -163,15 +180,17 @@ def test_update_dispatcher_service_details_not_found(service):
 
 
 def test_delete_dispatcher_service_details_success(service, db_mock):
+    """Deve remover o vínculo entre serviço e despachante."""
     relation = MagicMock()
     relation.deleted_at = None
 
-    query_mock = MagicMock()
-    query_mock.filter.return_value.first.return_value = relation
+    service_details_mock = MagicMock()
+
+    service_details_mock.query.filter.return_value.first.return_value = relation
 
     with patch(
         "services.associate_service_details.ServiceDetailsDB",
-        query_mock,
+        service_details_mock,
     ):
         result = service.delete_dispatcher_service_details(
             dispatcher_id=1,
@@ -185,12 +204,14 @@ def test_delete_dispatcher_service_details_success(service, db_mock):
 
 
 def test_delete_dispatcher_service_details_not_found(service):
-    query_mock = MagicMock()
-    query_mock.filter.return_value.first.return_value = None
+    """Deve retornar erro ao remover vínculo inexistente."""
+    service_details_mock = MagicMock()
+
+    service_details_mock.query.filter.return_value.first.return_value = None
 
     with patch(
         "services.associate_service_details.ServiceDetailsDB",
-        query_mock,
+        service_details_mock,
     ):
         with pytest.raises(HTTPException) as exc:
             service.delete_dispatcher_service_details(

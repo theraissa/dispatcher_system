@@ -25,6 +25,9 @@ class TicketResponse(BaseModel):
     """Resposta básica do chamado."""
 
     id: int
+    user_id: int
+    dispatcher_id: int
+    service_details_id: int
     status: str
     created_at: datetime
 
@@ -142,6 +145,7 @@ class TimelineResponse(BaseModel):
 
     id: int
     description: str
+    ticket_id: int
     status: TicketTimeline
     action_by: Optional[int]
     created_at: datetime
