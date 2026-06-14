@@ -1,3 +1,4 @@
+import { isValidCPF } from "@/utils/masks"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { useRegisterDispatcher } from "../../../hooks/dispatcher/use-dispatcher-register"
@@ -57,8 +58,24 @@ export default function FormDispatcher() {
   }
 
   function handleSubmit(event: React.FormEvent) {
-    event.preventDefault()
-    register(formData)
+    event.preventDefault();
+
+    // 1. Validação preventiva de Senhas
+    if (formData.user.password !== formData.user.confirm_password) {
+      toast.warning("As senhas não coincidem!", {
+        description: "Certifique-se de digitar a mesma senha em ambos os campos."
+      });
+      return;
+    }
+
+    // 2. Validação centralizada do CPF
+    if (!isValidCPF(formData.user.cpf)) {
+      toast.warning("CPF Inválido!", {
+        description: "Por favor, verifique os números digitados nas informações pessoais."
+      });
+      return;
+    }
+    register(formData);
   }
 
   return (

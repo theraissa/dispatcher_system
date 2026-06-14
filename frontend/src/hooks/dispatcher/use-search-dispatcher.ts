@@ -23,8 +23,7 @@ export function useSearchDispatchers(query: string) {
         setLoading(true);
 
         // Se não houver query, busca dados iniciais
-        const result = await dispatcherService.searchDispatchers(query || "");
-
+        const result = await dispatcherService.searchDispatchers(query);
         setData(result.items);
 
       } catch (error) {

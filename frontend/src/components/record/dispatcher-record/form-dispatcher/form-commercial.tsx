@@ -36,7 +36,7 @@ export default function FormCommercial({ dispatcher, address, onChange, readOnly
     const { name, value } = event.target
     onChange?.("dispatcher", name, value)
   }
-  console.log("date_exp_regis", dispatcher.date_exp_regis)
+
   function handleAddressChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target
     onChange?.("address", name, value)

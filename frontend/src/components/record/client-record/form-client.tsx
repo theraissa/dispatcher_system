@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card"
 import InputPassword from "@/components/ui/input-password"
-import { cpfMask } from "@/utils/masks"
+import { cpfMask, isValidCPF } from "@/utils/masks"
 import { CreditCard, Mail, User } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -34,21 +34,31 @@ export function FormClient() {
   }
 
   async function handleSubmit(event: React.FormEvent) {
-    event.preventDefault()
+    event.preventDefault();
 
+    // 1. Validação de Senhas
     if (formData.password !== formData.confirmar_senha) {
       toast.warning("As senhas não coincidem!", {
         description: "Certifique-se de digitar a mesma senha em ambos os campos."
-      })
-      return
+      });
+      return;
     }
 
+    // 2. Validação do CPF com a sua função
+    if (!isValidCPF(formData.cpf)) {
+      toast.warning("CPF Inválido!", {
+        description: "Por favor, verifique os números digitados."
+      });
+      return;
+    }
+
+    // Se passou nas validações, envia para a API
     await register({
       name: formData.name,
       cpf: formData.cpf,
       email: formData.email,
       password: formData.password
-    })
+    });
   }
 
   return (

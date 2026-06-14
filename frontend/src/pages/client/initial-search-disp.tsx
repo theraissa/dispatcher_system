@@ -1,21 +1,43 @@
 import { useSearchDispatchers } from "@/hooks/dispatcher/use-search-dispatcher";
 import { clientLinksNavbar } from "@/routes/frontend-routes";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom"; // 1. IMPORTANTE: Importamos o hook de parâmetros da URL
 import CardDispatcher from "../../components/client/initial-search-disp/card";
 import Search from "../../components/client/initial-search-disp/search";
 import NavbarPage from "../../components/record/ui/navbar-page";
 
+
 export default function InitialSearchDisp() {
+  // 2. Substituímos o useState da query pelo gerenciador de parâmetros da URL
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [input, setInput] = useState(""); // Estado para o valor do input de busca
-  const [query, setQuery] = useState(""); // Estado para a query que será enviada para a API
-  const [hasSearched, setHasSearched] = useState(false); // Estado para controlar se o usuário já realizou uma busca
+  // Pegamos o termo 'search' direto da URL (se existir). Ex: ?search=pedro
+  const urlQuery = searchParams.get("search") || "";
 
-  const { data, loading } = useSearchDispatchers(query);
+  // O input de texto começa preenchido com o que estiver na URL (caso o usuário esteja voltando)
+  const [input, setInput] = useState(urlQuery);
 
+  // Passamos a query da URL direto para o seu hook de busca do backend
+  const { data, loading } = useSearchDispatchers(urlQuery);
+
+  /**
+   * 3. Sincroniza o input caso a URL mude externamente 
+   * e garante que o input não fique em branco ao clicar em "Voltar"
+   */
+  useEffect(() => {
+    setInput(urlQuery);
+  }, [urlQuery]);
+
+  /**
+   * Executa a busca ao clicar no botão.
+   * Em vez de salvar em um estado local, salvamos na URL do navegador.
+   */
   const handleSearch = () => {
-    setQuery(input);
-    setHasSearched(true);
+    if (input.trim()) {
+      setSearchParams({ search: input });
+    } else {
+      setSearchParams({});
+    }
   };
 
   return (
@@ -41,7 +63,8 @@ export default function InitialSearchDisp() {
         <CardDispatcher
           dispatchers={data}
           loading={loading}
-          hasSearched={hasSearched}
+          hasSearched={!!urlQuery}
+          searchTerm={urlQuery}
         />
       </main>
     </div>

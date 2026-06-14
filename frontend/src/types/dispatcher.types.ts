@@ -1,3 +1,4 @@
+import type { AssociateServiceDetailsResponse } from "./service.types";
 import type { Address, CreateAddress, CreateDispatcher, CreateUserType, Dispatcher, UserType } from "./type";
 
 
@@ -26,4 +27,5 @@ export type ProfileDispatcher = {
   user: UserType
   dispatcher: Dispatcher
   address: Address
+  service_details?: AssociateServiceDetailsResponse[]
 }
