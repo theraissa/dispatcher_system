@@ -29,7 +29,7 @@ def seed():
 
     user1 = UserDB(
         name="Pedro Henrique",
-        cpf="12345678900",
+        cpf="761.581.840-04",
         date_birth="2005-03-18",
         contact="55999999999",
         email="pedro@gmail.com",
@@ -41,7 +41,7 @@ def seed():
 
     user2 = UserDB(
         name="Maria Souza",
-        cpf="98765432100",
+        cpf="425.055.810-02",
         date_birth="1998-07-10",
         contact="55888888888",
         email="maria@gmail.com",
@@ -53,7 +53,7 @@ def seed():
 
     admin = UserDB(
         name="Administrador",
-        cpf="00000000000",
+        cpf="464.021.470-79",
         email="admin@admin.com",
         password=new_password,
         role="admin",

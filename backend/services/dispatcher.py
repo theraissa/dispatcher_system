@@ -12,15 +12,15 @@ from sqlalchemy.orm import joinedload
 from werkzeug.security import generate_password_hash
 
 from database.tables import AddressDB, DispatcherDB, ServiceDB, ServiceDetailsDB, UserDB
-from models.auth import UserRoleEnum
+from models.auth import DispatcherStatusEnum, UserRoleEnum
 from models.dispatcher import (
     CreateDispatcherFullRequest,
-    DispatcherFilters,
     DispatcherFullResponse,
     DispatcherResponse,
     UpdateDispatcherFullRequest,
 )
 from models.pagination import PaginatedResponse
+from models.service_catalog import AssociateServiceDetailsResponse
 from models.user import AddressResponse, UserResponse
 
 
@@ -232,7 +232,7 @@ class DispatcherService:
 
     def search_dispatchers(
         self,
-        filters: DispatcherFilters | None = None,
+        filters: str | None = None,
         page: int = 1,
         per_page: int = 10,
     ) -> PaginatedResponse[DispatcherFullResponse]:
@@ -241,12 +241,17 @@ class DispatcherService:
         Os filtros podem ser aplicados sobre: nome do usuário, cidade e nome do serviço
 
         Args:
-            filters (DispatcherFilters | None): Filtros utilizados na busca.
+            filters (str | None): Filtros utilizados na busca.
             page (int): Página atual da paginação.
             per_page (int): Quantidade de itens por página.
         Returns:
             PaginatedResponse[DispatcherFullResponse]: Lista paginada de despachantes.
         """
+        # Se não houver termo ou for apenas espaços, retorna vazio direto
+        if not filters or not filters.strip():
+            return PaginatedResponse[DispatcherFullResponse](items=[], total=0, page=page, per_page=per_page, pages=0)
+
+        # Query base carregando os relacionamentos necessários
         base_query = (
             self.db.session.query(DispatcherDB)
             .options(
@@ -254,37 +259,50 @@ class DispatcherService:
                 joinedload(DispatcherDB.service_details).joinedload(ServiceDetailsDB.service),
             )
             .filter(DispatcherDB.deleted_at.is_(None))
+            .filter(DispatcherDB.status == DispatcherStatusEnum.APROVADO)
         )
 
-        if filters:
-            base_query = base_query.join(DispatcherDB.user)
+        # Montagem inteligente dos filtros usando a mesma string para os três cenários
+        search_term = f"%{filters.strip()}%"
 
-            search_filters = []
+        search_filters = [
+            # 1. Busca pelo nome do usuário usando .has() a partir do Dispatcher
+            DispatcherDB.user.has(UserDB.name.ilike(search_term)),
+            # 2. Busca pela cidade encadeando .has() (Dispatcher -> User -> Address)
+            DispatcherDB.user.has(UserDB.address.has(AddressDB.city.ilike(search_term))),
+            # 3. Busca cirúrgica na lista de serviços usando .any() (Dispatcher -> Lista de Serviços)
+            DispatcherDB.service_details.any(ServiceDetailsDB.service.has(ServiceDB.name.ilike(search_term))),
+        ]
 
-            if filters.name:
-                search_filters.append(UserDB.name.ilike(f"%{filters.name}%"))
+        # Aplica o OR com segurança isolando a lógica
+        base_query = base_query.filter(or_(*search_filters))
 
-            if filters.city:
-                search_filters.append(UserDB.address.has(AddressDB.city.ilike(f"%{filters.city}%")))
-
-            if filters.service_name:
-                base_query = base_query.outerjoin(DispatcherDB.service_details)
-
-                search_filters.append(ServiceDetailsDB.service.has(ServiceDB.name.ilike(f"%{filters.service_name}%")))
-
-            if search_filters:
-                base_query = base_query.filter(or_(*search_filters))
-
+        # Paginação e montagem do response continuam exatamente iguais abaixo...
         paginated = base_query.distinct().paginate(
             page=page,
             per_page=per_page,
             error_out=False,
         )
+
         response = [
             DispatcherFullResponse(
                 user=UserResponse.model_validate(dispatcher.user),
                 dispatcher=DispatcherResponse.model_validate(dispatcher),
                 address=(AddressResponse.model_validate(dispatcher.user.address) if dispatcher.user.address else None),
+                service_details=[
+                    AssociateServiceDetailsResponse(
+                        id=detail.id,
+                        dispatcher_id=detail.dispatcher_id,
+                        service_id=detail.service.id,
+                        service_name=detail.service.name,
+                        price=detail.price,
+                        created_at=detail.created_at,
+                        updated_at=detail.updated_at,
+                        deleted_at=detail.deleted_at,
+                    )
+                    for detail in dispatcher.service_details
+                    if detail.deleted_at is None
+                ],
             )
             for dispatcher in paginated.items
         ]

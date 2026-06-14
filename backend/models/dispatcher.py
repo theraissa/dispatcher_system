@@ -7,6 +7,7 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
+from models.service_catalog import AssociateServiceDetailsResponse
 from models.user import (
     AddressResponse,
     CreateAddressRequest,
@@ -15,16 +16,6 @@ from models.user import (
     UpdateUserRequest,
     UserResponse,
 )
-
-
-class DispatcherFilters(BaseModel):
-    """Filtros para busca de despachantes."""
-
-    city: Optional[str] = None
-    name: Optional[str] = None
-    service_name: Optional[str] = None
-
-    model_config = ConfigDict(extra="ignore")
 
 
 class CreateDispatcherRequest(BaseModel):
@@ -81,3 +72,4 @@ class DispatcherFullResponse(BaseModel):
     user: UserResponse
     dispatcher: DispatcherResponse
     address: AddressResponse
+    service_details: list[AssociateServiceDetailsResponse] = []
