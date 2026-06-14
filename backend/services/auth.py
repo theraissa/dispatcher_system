@@ -31,10 +31,14 @@ class AuthService:
         Returns:
             LoginUserResponse: Informações de autenticação.
         """
-        user = UserDB.query.filter(
-            UserDB.email == user_data.email,
-            UserDB.deleted_at.is_(None),
-        ).first()
+        user = (
+            self.db.session.query(UserDB)
+            .filter(
+                UserDB.email == user_data.email,
+                UserDB.deleted_at.is_(None),
+            )
+            .first()
+        )
 
         if not user:
             abort(404, description="Usuário não foi encontrado.")
@@ -46,10 +50,14 @@ class AuthService:
 
         if user.role == UserRoleEnum.DESPACHANTE:
 
-            dispatcher = DispatcherDB.query.filter(
-                DispatcherDB.user_id == user.id,
-                DispatcherDB.deleted_at.is_(None),
-            ).first()
+            dispatcher = (
+                self.db.session.query(DispatcherDB)
+                .filter(
+                    DispatcherDB.user_id == user.id,
+                    DispatcherDB.deleted_at.is_(None),
+                )
+                .first()
+            )
 
             if not dispatcher:
                 abort(401, description="Despachante inválido.")

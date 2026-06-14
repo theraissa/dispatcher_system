@@ -66,10 +66,19 @@ case "$1" in
     ;;
 
   coverage)
-    echo "📊 Executando cobertura de testes..."
+    echo "📊 Executando cobertura de testes (unitários + integração)..."
+    
+    # Executa testes unitários com cobertura
+    $TEST_COMPOSE run --rm unit \
+        pytest tests/unit --cov=services--cov=admin \
+        --cov-report=term-missing --cov-append
+    
+    # Executa testes de integração com cobertura (acumulando)
     $TEST_COMPOSE run --rm integration \
-        pytest tests --cov=services --cov=routes --cov=admin \
-        --cov-report=term-missing --cov-report=html
+        pytest tests/integration --cov=services --cov=routes --cov=admin \
+        --cov-report=term-missing --cov-append
+    
+    echo "✅ Relatório de cobertura consolidado."
     ;;
 
   venv)

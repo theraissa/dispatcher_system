@@ -32,9 +32,13 @@ class ServiceCatalogService:
         Returns:
             ListServiceCatalogResponse: Lista de serviços serializados.
         """
-        services = ServiceDB.query.filter(
-            ServiceDB.deleted_at.is_(None),
-        ).all()
+        services = (
+            self.db.session.query(ServiceDB)
+            .filter(
+                ServiceDB.deleted_at.is_(None),
+            )
+            .all()
+        )
 
         response = ListServiceCatalogResponse(root=[ServiceCatalogResponse.model_validate(service) for service in services])
 
@@ -68,13 +72,17 @@ class ServiceCatalogService:
         Returns:
             dict[str, Any]: Serviço atualizado serializado.
         """
-        service = ServiceDB.query.filter(
-            ServiceDB.id == service_id,
-            ServiceDB.deleted_at.is_(None),
-        ).first()
+        service = (
+            self.db.session.query(ServiceDB)
+            .filter(
+                ServiceDB.id == service_id,
+                ServiceDB.deleted_at.is_(None),
+            )
+            .first()
+        )
 
         if not service:
-            abort(404, description=f"Service with ID '{service_id}' not found.")
+            abort(404, description=f"Serviço com o ID '{service_id}' não encontrado.")
 
         for key, value in service_data.model_dump(mode="json").items():
             setattr(service, key, value)
@@ -94,13 +102,17 @@ class ServiceCatalogService:
         Returns:
             dict[str, Any]: Dados do serviço após marcação de exclusão.
         """
-        service = ServiceDB.query.filter(
-            ServiceDB.id == service_id,
-            ServiceDB.deleted_at.is_(None),
-        ).first()
+        service = (
+            self.db.session.query(ServiceDB)
+            .filter(
+                ServiceDB.id == service_id,
+                ServiceDB.deleted_at.is_(None),
+            )
+            .first()
+        )
 
         if not service:
-            abort(404, description=f"Service with ID '{service_id}' not found.")
+            abort(404, description=f"Serviço com o ID '{service_id}' não encontrado.")
 
         service.deleted_at = datetime.now()
         self.db.session.commit()
