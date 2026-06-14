@@ -1,6 +1,7 @@
 import { Separator } from "@/components/ui/separator"
 import type { CreateAddress, CreateDispatcher } from "@/types/type"
 import { ESTADOS_BR } from "@/utils/constants"
+import { formatTimestamp } from "@/utils/formatters"
 import { phoneMask, zipCodeMask } from "@/utils/masks"
 import {
   Briefcase,
@@ -35,7 +36,7 @@ export default function FormCommercial({ dispatcher, address, onChange, readOnly
     const { name, value } = event.target
     onChange?.("dispatcher", name, value)
   }
-
+  console.log("date_exp_regis", dispatcher.date_exp_regis)
   function handleAddressChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target
     onChange?.("address", name, value)
@@ -96,7 +97,7 @@ export default function FormCommercial({ dispatcher, address, onChange, readOnly
             type="date"
             name="date_exp_regis"
             icon={<Calendar size={18} />}
-            value={dispatcher.date_exp_regis}
+            value={formatTimestamp(dispatcher.date_exp_regis)}
             onChange={handleDispatcherChange}
             readOnly={readOnly}
           />

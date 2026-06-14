@@ -1,5 +1,6 @@
 import ServiceModal from "@/components/admin/service-modal";
-import { FRONTEND_ROUTES } from "@/routes/frontend-routes";
+import NavbarPage from "@/components/record/ui/navbar-page";
+import { adminLinksNavbar, FRONTEND_ROUTES } from "@/routes/frontend-routes";
 import { adminService } from "@/services/admin-service";
 import type { CreateServiceRequest, ServiceResponse } from "@/types/service.types";
 import { ArrowLeft, Edit2, Eye, LayoutGrid, Plus, Search, Trash2 } from "lucide-react"; // Adicionado Eye
@@ -57,6 +58,10 @@ export default function AdminServices() {
 
     return (
         <div className="min-h-screen bg-[#F8F9FA] font-sans">
+
+            {/* Navbar superior com título dinâmico */}
+            <NavbarPage links={adminLinksNavbar} />
+
             <div className="pt-6 md:pt-10 px-6 md:px-10 pb-16 max-w-7xl mx-auto">
 
                 <button

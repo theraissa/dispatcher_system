@@ -38,3 +38,27 @@ export function formatToInputDate(dateString: string) {
     const date = new Date(dateString);
     return date.toISOString().split("T")[0];
 }
+
+
+/**
+ * Converte um timestamp (Data/Hora) para o formato compatível com inputs HTML do tipo "date".
+ *
+ * Garante uma conversão segura de valores do tipo timestamp, Date, nulos ou indefinidos
+ * para o padrão "YYYY-MM-DD" exigido por componentes de formulário, tratando cenários
+ * onde a informação de data possa estar ausente.
+ *
+ * Exemplo:
+ * - Entrada: "2026-06-14T21:00:00.000Z"
+ * - Saída: "2026-06-14"
+ * - Entrada: null
+ * - Saída: ""
+ *
+ * @param timestamp - O timestamp recebido (string, objeto Date, null ou undefined)
+ * @returns Data formatada no padrão "YYYY-MM-DD" ou uma string vazia caso seja inválido
+ */
+export const formatTimestamp = (timestamp: string | Date | null | undefined) => {
+    if (!timestamp) return "";
+
+    const date = new Date(timestamp);
+    return date.toISOString().split("T")[0];
+};

@@ -1,6 +1,6 @@
-import Navbar from "@/components/record/ui/navbar-with-title";
+import NavbarPage from "@/components/record/ui/navbar-page";
 import { useAdminDispatchers } from "@/hooks/use-admin-dispatchers";
-import { FRONTEND_ROUTES } from "@/routes/frontend-routes";
+import { adminLinksNavbar, FRONTEND_ROUTES } from "@/routes/frontend-routes";
 import { ArrowLeft, Search } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -38,8 +38,8 @@ export default function AdminDispatchers() {
     return (
         <div className="min-h-screen bg-[#F8F9FA] font-sans">
 
-            {/* Navbar superior colada no topo */}
-            <Navbar title="Gerenciar Despachantes" />
+            {/* Navbar superior com título dinâmico */}
+            <NavbarPage links={adminLinksNavbar} />
 
             {/* CONTAINER DO CONTEÚDO*/}
             <div className="pt-6 md:pt-10 px-6 md:px-10 pb-16 max-w-5xl mx-auto">

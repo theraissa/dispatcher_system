@@ -32,14 +32,14 @@ export default function LoginSection() {
 
         {/* Título Responsivo: */}
         <h1 className="text-4xl md:text-6xl font-extrabold text-[#1E1E1E] tracking-tight leading-[1.1]">
-          Despachante de <span className="text-[#21314D]">Trânsito</span>
+          Conecta <span className="text-[#21314D]">Despachante</span>
         </h1>
 
         {/* Texto de apoio: text-base (mobile) -> text-lg (desktop) */}
-        <p className="text-base md:text-lg text-zinc-700 max-w-xl mx-auto leading-relaxed">
-          Sistema Web para centralizar serviços e comunicação,
+        <p className="text-xs md:text-base text-zinc-700 max-w-xl mx-auto leading-relaxed">
+          Compare preços, avalie despachantes e contrate serviços de trânsito
           <br className="hidden md:block" /> {/* Quebra de linha apenas no desktop */}
-          otimizando a gestão do seu escritório.
+          com transparência e segurança — tudo em um só lugar.
         </p>
 
         <form

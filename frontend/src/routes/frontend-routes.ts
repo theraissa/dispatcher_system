@@ -1,4 +1,4 @@
-import { ClipboardList, Home, Search, User } from "lucide-react";
+import { ClipboardList, Home, LayoutDashboard, Search, User, UserCheck } from "lucide-react";
 
 /**
  * Rotas da aplicação (frontend).
@@ -57,4 +57,14 @@ export const dispatcherLinksNavbar = [
     { label: "Início", path: FRONTEND_ROUTES.DISPATCHER.INITIAL, icon: Home },
     { label: "Chamados", path: FRONTEND_ROUTES.DISPATCHER.TICKET, icon: ClipboardList },
     { label: "Perfil", path: FRONTEND_ROUTES.DISPATCHER.PROFILE, icon: User },
+];
+
+/**
+ * Links de navegação para o administrador, usados no NavbarPage.
+ * Cada link tem um rótulo, caminho e ícone associado.
+ */
+export const adminLinksNavbar = [
+    { label: "Início", path: FRONTEND_ROUTES.ADMIN.INITIAL, icon: LayoutDashboard },
+    { label: "Gerenciar Serviços", path: FRONTEND_ROUTES.ADMIN.SERVICES, icon: ClipboardList },
+    { label: "Gerenciar Cadastro Despachante", path: FRONTEND_ROUTES.ADMIN.DISPATCHERS, icon: UserCheck },
 ];

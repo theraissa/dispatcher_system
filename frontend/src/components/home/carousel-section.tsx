@@ -5,26 +5,27 @@ import { LayoutDashboard, MessageSquare, Search, ShieldCheck } from "lucide-reac
  * Componente de Funcionalidades (Carousel/Grid).
  */
 export default function CarouselSection() {
+
   const cards = [
     {
-      title: "1. Busca e Solicitação",
+      title: "1. Busca, Comparação e Solicitação",
       icon: <Search className="w-6 h-6 text-[#21314D]" />,
-      text: "Clientes pesquisam despachantes por nome ou município, acessam perfis e solicitam serviços com orientações claras sobre documentos.",
+      text: "Clientes pesquisam despachantes por nome ou município, comparam valores e avaliações, acessam perfis completos e solicitam serviços com orientações claras sobre documentos.",
     },
     {
-      title: "2. Gestão de Perfil",
+      title: "2. Gestão de Perfil e Serviços",
       icon: <LayoutDashboard className="w-6 h-6 text-[#21314D]" />,
-      text: "Despachantes controlam seus serviços: cadastram, editam atividades e acompanham chamados em tempo real com agenda organizada.",
+      text: "Despachantes controlam seus serviços: cadastram, editam atividades, definem preços e acompanham chamados em tempo real com agenda organizada.",
     },
     {
-      title: "3. Acompanhamento",
+      title: "3. Acompanhamento e Transparência",
       icon: <MessageSquare className="w-6 h-6 text-[#21314D]" />,
-      text: "Histórico e status atual de cada solicitação — de 'Pendente' a 'Completo' — garantindo transparência e comunicação eficiente.",
+      text: "Histórico e status atual de cada solicitação — de 'Pendente' a 'Em Andamento' ou 'Finalizada' — garantindo transparência e comunicação eficiente entre cliente e despachante de trânsito.",
     },
     {
-      title: "4. Segurança e Validação",
+      title: "4. Segurança e Credibilidade",
       icon: <ShieldCheck className="w-6 h-6 text-[#21314D]" />,
-      text: "Validação de identidade, autenticação em dois fatores e verificação periódica do CRDD. Interações protegidas por criptografia.",
+      text: "Apenas despachantes habilitados atuam na plataforma, com interações protegidas por criptografia.",
     },
   ];
 
@@ -38,7 +39,7 @@ export default function CarouselSection() {
           <h2 className="text-3xl md:text-4xl font-bold text-[#1E1E1E] tracking-tight">
             Funcionalidades do Sistema
           </h2>
-          <p className="text-zinc-600 mt-3 text-base md:text-lg max-w-2xl">
+          <p className="text-zinc-600 mt-3 text-base md:text-lg max-w-3xl">
             Tudo o que você precisa para gerenciar seus processos de trânsito em um só lugar.
           </p>
         </div>

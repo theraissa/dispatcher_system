@@ -1,10 +1,10 @@
 import FormsContainer from "@/components/layout/form-container";
 import FormCommercial from "@/components/record/dispatcher-record/form-dispatcher/form-commercial";
 import FormPersonal from "@/components/record/dispatcher-record/form-dispatcher/form-personal";
-import Navbar from "@/components/record/ui/navbar-with-title";
+import NavbarPage from "@/components/record/ui/navbar-page";
 import { useDispatcherProfile } from "@/hooks/dispatcher/use-dispatcher-profile";
 import { useAdminDispatchers } from "@/hooks/use-admin-dispatchers";
-import { FRONTEND_ROUTES } from "@/routes/frontend-routes";
+import { adminLinksNavbar, FRONTEND_ROUTES } from "@/routes/frontend-routes";
 import { ArrowLeft, Check, X } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -51,7 +51,9 @@ export default function AdminDispatcherDetails() {
 
     return (
         <div className="min-h-screen bg-[#F8F9FA] font-sans pb-16">
-            <Navbar title="Análise de Cadastro" />
+
+            {/* Navbar superior com título dinâmico */}
+            <NavbarPage links={adminLinksNavbar} />
 
             {/* HEADER CONTAINER */}
             <header className="pt-6 md:pt-10 px-8 md:px-16 max-w-[1400px] mx-auto w-full">

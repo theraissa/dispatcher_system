@@ -1,7 +1,7 @@
-import Navbar from "@/components/record/ui/navbar-with-title";
 // 1. Importe o hook customizado
+import NavbarPage from "@/components/record/ui/navbar-page";
 import { useAdminDispatchers } from "@/hooks/use-admin-dispatchers";
-import { FRONTEND_ROUTES } from "@/routes/frontend-routes";
+import { adminLinksNavbar, FRONTEND_ROUTES } from "@/routes/frontend-routes";
 import { ArrowRight, LayoutGrid, ShieldCheck, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AdminDashboardCard from "../../components/admin/dashboard-card";
@@ -19,7 +19,8 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-[#F8F9FA] font-sans">
 
       {/* Navbar superior com título dinâmico */}
-      <Navbar title="Painel Administrativo" />
+      <NavbarPage links={adminLinksNavbar} />
+
 
       <div className="pt-6 md:pt-10 px-6 md:px-10 pb-16 max-w-7xl mx-auto">
         {/* CARD DE DESTAQUE (Banner) */}
