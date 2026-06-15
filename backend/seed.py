@@ -51,15 +51,25 @@ def seed():
         website="https://mariadespachante.com",
     )
 
+    user3 = UserDB(
+        name="Despachante Teste",
+        cpf="248.805.980-38",
+        date_birth="1990-07-04",
+        contact="55999999999",
+        email="despachante@teste.com",
+        password=new_password,
+        role="despachante",
+    )
+
     admin = UserDB(
         name="Administrador",
         cpf="464.021.470-79",
-        email="admin@admin.com",
+        email="admin@teste.com",
         password=new_password,
         role="admin",
     )
 
-    db.session.add_all([user1, user2, admin])
+    db.session.add_all([user1, user2, user3, admin])
     db.session.flush()
 
     # =========================
@@ -87,7 +97,18 @@ def seed():
         state="RS",
     )
 
-    db.session.add_all([address1, address2])
+    address3 = AddressDB(
+        user_id=user3.id,
+        contact="55888888888",
+        address="Endereço Teste",
+        number=123,
+        neighborhood="Bairro Teste",
+        zip_code="95630000",
+        city="Porto Alegre",
+        state="RS",
+    )
+
+    db.session.add_all([address1, address2, address3])
     db.session.flush()
 
     # =========================
@@ -105,7 +126,13 @@ def seed():
         date_exp_regis=datetime(2032, 5, 10),
     )
 
-    db.session.add_all([dispatcher1, dispatcher2])
+    dispatcher3 = DispatcherDB(
+        user_id=user3.id,
+        regis_crdd="CRDD789",
+        date_exp_regis=datetime(2040, 4, 15),
+    )
+
+    db.session.add_all([dispatcher1, dispatcher2, dispatcher3])
     db.session.flush()
 
     # =========================
@@ -146,10 +173,19 @@ def seed():
             dispatcher_id=dispatcher2.id,
             price=80.00,
         ),
+        ServiceDetailsDB(
+            service_id=services[4].id,
+            dispatcher_id=dispatcher3.id,
+            price=200.00,
+        ),
+        ServiceDetailsDB(
+            service_id=services[1].id,
+            dispatcher_id=dispatcher3.id,
+            price=250.00,
+        ),
     ]
 
     db.session.add_all(service_details)
-
     db.session.commit()
 
     print("✅ Seed executado com sucesso!")
