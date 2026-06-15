@@ -27,7 +27,7 @@ export default function HomeDispatcher() {
                 <HomeStaticsDispatcher userId={user.id} />
 
                 {/* Avaliações recebidas dos clientes */}
-                <HomeReviewDispatcher userId={user.id} />
+                <HomeReviewDispatcher userId={user.dispatcherId ?? 0} />
             </main>
         </div>
     );

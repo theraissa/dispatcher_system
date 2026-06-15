@@ -273,7 +273,7 @@ export default function FormProfileClient({ data, handleChange, isEditing, showP
                         options={cities}
                         value={data.address?.city || ""}
                         placeholder={loadingCities ? "Carregando..." : "Selecione a cidade"}
-                        disabled={!isEditing || !data.address?.state || loadingCities}
+                        disabled={!isEditing || loadingCities}
                         onChange={(val) => handleChange("address", "city", val)}
                     />
                 </InlineField>

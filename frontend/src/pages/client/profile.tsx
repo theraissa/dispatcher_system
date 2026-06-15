@@ -132,7 +132,7 @@ export default function ProfileClient() {
                         <form onSubmit={handleSaveAllData}>
                             <div className="flex flex-col gap-6 md:gap-8">
                                 <ProfileHeader
-                                    key={`${displayUser.instagram}-${displayUser.website}-${displayUser.photo}`}
+                                    key={user.id}
                                     user={displayUser}
                                     roleLabel="Cliente"
                                     isOwner={true}

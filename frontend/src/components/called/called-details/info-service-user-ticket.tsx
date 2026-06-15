@@ -13,6 +13,8 @@ import { toast } from "sonner";
  */
 type InfoServiceAndUserProps = {
     ticket: TicketUserResponse;
+    isDispatcher?: boolean;
+
 };
 
 
@@ -24,7 +26,7 @@ type InfoServiceAndUserProps = {
  * - Exibir informações do solicitante (usuário)
  * - Mostrar descrição/observações do serviço
  */
-export function InfoServiceAndUser({ ticket }: InfoServiceAndUserProps) {
+export function InfoServiceAndUser({ ticket, isDispatcher = false }: InfoServiceAndUserProps) {
 
     const { createTimeline, refetch } = useTicketTimeline(ticket.id);
 
@@ -130,6 +132,7 @@ export function InfoServiceAndUser({ ticket }: InfoServiceAndUserProps) {
                         ÁREA DE AÇÕES / BOTÃO DE CANCELAR
                     ======================================================== */}
                 {(() => {
+                    if (isDispatcher) return null
                     // Normaliza o status atual para evitar problemas de caixa alta/baixa
                     const currentStatus = ticket.status.toLowerCase();
 

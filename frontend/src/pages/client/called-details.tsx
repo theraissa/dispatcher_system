@@ -59,10 +59,12 @@ export default function TicketDetails() {
         updateReview,
         updatingReview,
     } = useDispatcherReviews(selectedTicket?.dispatcher?.id ?? 0);
+    console.log(reviews)
 
     // Controla a abertura/fechamento do modal de avaliação.
     const [isReviewOpen, setIsReviewOpen] = useState(false);
-    const [initialRating, setInitialRating] = useState(0); // <-- Novo estado
+    const [initialRating, setInitialRating] = useState(0);
+    const [initialComment, setInitialComment] = useState("");
 
     // Hook responsável por enviar a avaliação do atendimento.
     const { loading: reviewLoading, handleSubmit } = useTicketReview(
@@ -206,23 +208,24 @@ export default function TicketDetails() {
                        ========================= */}
                     <aside className="space-y-6 md:space-y-8 lg:sticky lg:top-10 self-start h-fit">
 
-                        {/* Perfil do despachante */}
                         <AsideProfileDispatcher
                             dispatcher={dispatcherProfile}
                             onOpenReview={(rating) => {
                                 setInitialRating(rating);
+                                setInitialComment("");
                                 setIsReviewOpen(true);
                             }}
                             canReview={!hasBeenReviewed}
                         />
 
-                        {/* Modal para avaliar o despachante */}
                         <ReviewModal
                             isOpen={isReviewOpen}
                             initialRating={initialRating}
+                            initialComment={initialComment}
                             onClose={() => {
                                 setIsReviewOpen(false);
                                 setInitialRating(0);
+                                setInitialComment("");
                             }}
                             onSubmit={handleReviewSubmit}
                             loading={hasBeenReviewed ? updatingReview : reviewLoading}
@@ -235,6 +238,7 @@ export default function TicketDetails() {
                                 clientName={user.name || selectedTicket.user.name}
                                 onEdit={() => {
                                     setInitialRating(currentTicketReview.rating);
+                                    setInitialComment(currentTicketReview.comment || "");
                                     setIsReviewOpen(true);
                                 }}
                             />

@@ -105,18 +105,18 @@ def register_ticket_routes(
     # AVALIAÇÕES (reviews do despachante)
     # ==========================================================
 
-    @app.get("/api/dispatcher-system/ticket/<int:user_id>/review")
+    @app.get("/api/dispatcher-system/ticket/<int:dispatcher_id>/review")
     @jwt_required()
-    def list_dispatcher_reviews(user_id):
+    def list_dispatcher_reviews(dispatcher_id):
         """Lista todas as avaliações recebidas pelo despachante."""
-        listed_reviews = review_service.list_dispatcher_reviews(user_id)
+        listed_reviews = review_service.list_dispatcher_reviews(dispatcher_id)
         return jsonify(listed_reviews), 200
 
-    @app.get("/api/dispatcher-system/ticket/<int:user_id>/review/summary")
+    @app.get("/api/dispatcher-system/ticket/<int:dispatcher_id>/review/summary")
     @jwt_required()
-    def get_dispatcher_review_summary(user_id):
+    def get_dispatcher_review_summary(dispatcher_id):
         """Retorna média e total de avaliações do despachante."""
-        review_summary = review_service.get_dispatcher_review_summary(user_id)
+        review_summary = review_service.get_dispatcher_review_summary(dispatcher_id)
         return jsonify(review_summary.model_dump(mode="json")), 200
 
     @app.post("/api/dispatcher-system/ticket/<int:ticket_id>/review")

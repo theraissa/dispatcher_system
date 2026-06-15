@@ -18,6 +18,8 @@ type ReviewModalProps = {
     isOpen: boolean;
     /** Pega estrelas selecionados antes do modal*/
     initialRating?: number;
+    /** Pega o comentário realizado no review*/
+    initialComment?: string;
     /** Callback disparado ao fechar o modal */
     onClose: (open: boolean) => void;
     /** Callback responsável por enviar a avaliação */
@@ -47,14 +49,15 @@ type ReviewModalProps = {
  * - O envio é delegado via `onSubmit`, permitindo desacoplamento da lógica de API
  * - O estado `loading` controla feedback visual no botão
  */
-export function ReviewModal({ isOpen, onClose, onSubmit, loading, initialRating = 0 }: ReviewModalProps) {
+export function ReviewModal({ isOpen, onClose, onSubmit, loading, initialRating = 0, initialComment }: ReviewModalProps) {
 
     // Comentário e nota do usuário em relação ao chamado   
     const [rating, setRating] = useState(initialRating);
-    const [comment, setComment] = useState("");
+    const [comment, setComment] = useState(initialComment || "");
 
     // Armazenamos o valor da prop anterior para comparar
     const [prevInitialRating, setPrevInitialRating] = useState(initialRating);
+    const [prevComment, setPrevComment] = useState(initialComment);
 
     // Se a prop mudou, ajustamos o estado imediatamente durante a renderização
     if (initialRating !== prevInitialRating) {
@@ -62,6 +65,14 @@ export function ReviewModal({ isOpen, onClose, onSubmit, loading, initialRating 
         setPrevInitialRating(initialRating);
     }
 
+    // Se o pai mandou algo diferente do que estava guardado, 
+    // atualizamos o estado local IMEDIATAMENTE durante a renderização
+    if (initialComment !== prevComment || initialRating !== prevInitialRating) {
+        setComment(initialComment || "");
+        setRating(initialRating || 0);
+        setPrevComment(initialComment);
+        setPrevInitialRating(initialRating);
+    }
     /**
      * Manipula o envio da avaliação.
      *

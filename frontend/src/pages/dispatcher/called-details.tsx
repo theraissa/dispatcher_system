@@ -1,9 +1,11 @@
 import { TicketChat } from '@/components/called/called-details/chat-ticket';
 import { InfoServiceAndUser } from "@/components/called/called-details/info-service-user-ticket";
+import { TicketReviewCard } from '@/components/called/called-details/review-card-ticket';
 import { TimelineTicket } from '@/components/called/called-details/timeline-ticket';
 import { ReviewModal } from "@/components/called/modal/review-modal";
 import { AsideProfileDispatcher } from '@/components/client/card-profile-dispatcher/aside-profile';
 import { useAuthRequired } from '@/hooks/auth/auth-requirered';
+import { useDispatcherReviews } from '@/hooks/dispatcher/use-dispatcher-reviews';
 import { useTickets } from "@/hooks/ticket/use-ticket";
 import { useTicketReview } from "@/hooks/ticket/use-ticket-review";
 import { dispatcherLinksNavbar } from "@/routes/frontend-routes";
@@ -25,6 +27,9 @@ export default function TicketDetailsDispatcher() {
     // Hook responsável por gerenciar tickets
     const { selectedTicket, loading, fetchTicketById } = useTickets(user.id);
 
+    // Hook para buscar as avaliações do despachante atual
+    const { reviews } = useDispatcherReviews(selectedTicket?.dispatcher?.id ?? 0);
+
     // Controla a abertura/fechamento do modal de avaliação.
     const [isReviewOpen, setIsReviewOpen] = useState(false);
 
@@ -33,8 +38,6 @@ export default function TicketDetailsDispatcher() {
         Number(ticketId),
         user.id
     );
-
-    console.log(ticketId)
 
     /**
      * Efeito responsável por buscar os dados do chamado
@@ -70,7 +73,10 @@ export default function TicketDetailsDispatcher() {
     if (!selectedTicket) {
         return <p className="text-center mt-10">Chamado não encontrado.</p>;
     }
-
+    // 4. ADICIONADO: Lógica para encontrar se este chamado específico já foi avaliado
+    const currentTicketReview = reviews?.find(
+        (review: any) => Number(review.ticket_id) === Number(ticketId)
+    );
     /**
      * Adapta estrutura do dispatcher para o formato esperado
      * pelo componente AsideProfileDispatcher.
@@ -131,7 +137,10 @@ export default function TicketDetailsDispatcher() {
                     <div className="space-y-8">
 
                         {/* Informações do serviço + cliente */}
-                        <InfoServiceAndUser ticket={selectedTicket} />
+                        <InfoServiceAndUser
+                            ticket={selectedTicket}
+                            isDispatcher={true}
+                        />
 
                         {/* Timeline do chamado */}
                         <TimelineTicket
@@ -166,6 +175,14 @@ export default function TicketDetailsDispatcher() {
                             onSubmit={handleReviewSubmit}
                             loading={reviewLoading}
                         />
+                        {/* 5. ADICIONADO: Se o cliente já avaliou, exibe o card travado para apenas visualização */}
+                        {currentTicketReview && (
+                            <TicketReviewCard
+                                review={currentTicketReview}
+                                clientName={selectedTicket.user.name}
+                                isDispatcher={true} // <-- Trava o botão de editar e muda o texto!
+                            />
+                        )}
                     </aside>
                 </div>
 

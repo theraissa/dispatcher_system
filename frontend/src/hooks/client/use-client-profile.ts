@@ -56,8 +56,6 @@ export function useClientProfile(userId: number) {
     // Função para enviar atualizações para a API
     async function handleSubmit() {
         if (!data) return
-
-        console.log("ANTES DE ENVIAR:", data)
         await clientService.updateClientProfile(userId, data)
     }
 

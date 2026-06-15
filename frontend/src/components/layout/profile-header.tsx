@@ -57,14 +57,19 @@ export default function ProfileHeader({
     }
   };
 
-  const handleEditClick = () => {
+  const handleEditClick = (e: React.MouseEvent) => {
     if (!setIsEditing) return;
-    if (!isEditing) {
-      setIsEditing(true);
-      // Já avisa o pai com os dados atuais ao abrir a edição
-      if (onChangeData) {
-        onChangeData({ instagram, website, photoFile });
-      }
+
+    if (isEditing) {
+      return;
+    }
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    setIsEditing(true);
+    if (onChangeData) {
+      onChangeData({ instagram: instagram || "", website: website || "", photoFile });
     }
   };
 

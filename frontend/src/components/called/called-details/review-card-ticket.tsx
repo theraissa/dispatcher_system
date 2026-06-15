@@ -9,10 +9,11 @@ type TicketReviewCardProps = {
         created_at: string;
     };
     clientName: string;
-    onEdit?: () => void; // <-- Callback para abrir o modal de edição
+    onEdit?: () => void;
+    isDispatcher?: boolean;
 };
 
-export function TicketReviewCard({ review, clientName, onEdit }: TicketReviewCardProps) {
+export function TicketReviewCard({ review, clientName, onEdit, isDispatcher = false }: TicketReviewCardProps) {
     return (
         <div className="bg-white p-5 rounded-[24px] border border-zinc-100 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500 border-t-[4px] border-t-amber-400">
 
@@ -23,7 +24,7 @@ export function TicketReviewCard({ review, clientName, onEdit }: TicketReviewCar
                 </h4>
 
                 {/* Só renderiza o botão se a função onEdit for passada (ex: apenas na tela do cliente) */}
-                {onEdit && (
+                {onEdit && !isDispatcher && (
                     <button
                         onClick={onEdit}
                         className="cursor-pointer flex items-center gap-1 text-[10px] md:text-xs font-bold text-[#21314D] hover:text-[#1A263D] bg-zinc-50 hover:bg-zinc-100 border border-zinc-200/60 px-2 py-1 rounded-lg transition-all active:scale-95"

@@ -25,31 +25,31 @@ class TicketReviewService:
     def __init__(self, db: SQLAlchemy):
         self.db = db
 
-    def list_dispatcher_reviews(self, user_id: int) -> list[ReviewResponse]:
+    def list_dispatcher_reviews(self, dispatcher_id: int) -> list[ReviewResponse]:
         """
         Lista todas as avaliações associadas a um despachante.
 
         Args:
-            user_id (int): ID do usuário (despachante).
+            dispatcher_id (int): ID do usuário despachante.
         Returns:
             list[ReviewResponse]: Lista de avaliações ordenadas da mais recente para a mais antiga.
         """
         dispatcher = DispatcherDB.query.filter(
-            DispatcherDB.user_id == user_id,
+            DispatcherDB.id == dispatcher_id,
             DispatcherDB.deleted_at.is_(None),
         ).first()
 
         if not dispatcher:
             abort(
                 404,
-                description=f"Despachante vinculado ao usuário {user_id} não encontrado.",
+                description=f"Despachante com o ID {dispatcher_id} não encontrado.",
             )
 
         reviews = (
             self.db.session.query(TicketReviewDB)
             .join(TicketDB)
             .options(joinedload(TicketReviewDB.ticket).joinedload(TicketDB.user))
-            .filter(TicketDB.dispatcher_id == dispatcher.id)
+            .filter(TicketDB.dispatcher_id == dispatcher_id)
             .order_by(TicketReviewDB.created_at.desc())
             .all()
         )
@@ -181,7 +181,7 @@ class TicketReviewService:
             created_at=update_review.created_at,
         )
 
-    def get_dispatcher_review_summary(self, user_id: int) -> ReviewSummaryResponse:
+    def get_dispatcher_review_summary(self, dispatcher_id: int) -> ReviewSummaryResponse:
         """
         Retorna o resumo das avaliações de um despachante.
 
@@ -189,15 +189,19 @@ class TicketReviewService:
         funções agregadas do banco de dados.
 
         Args:
-            user_id (int): ID do usuário (despachante).
+            dispatcher_id (int): ID do despachante.
         Returns:
             ReviewSummaryResponse: Dicionário contendo média e total de avaliações.
         """
-        user = UserDB.query.options(joinedload(UserDB.dispatcher)).filter(UserDB.id == user_id).first()
-        if not user or not user.dispatcher:
-            abort(404, description=f"Despachante com o ID {user_id} não encontrado.")
-
-        dispatcher_id = user.dispatcher.id
+        dispatcher = DispatcherDB.query.filter(
+            DispatcherDB.id == dispatcher_id,
+            DispatcherDB.deleted_at.is_(None),
+        ).first()
+        if not dispatcher:
+            abort(
+                404,
+                description=f"Despachante com o ID {dispatcher_id} não encontrado.",
+            )
 
         # filtramos apenas os tickets do despachante informado.
         average_rating, total_reviews = (
