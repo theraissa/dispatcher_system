@@ -178,6 +178,7 @@ def build_dispatcher_payload():
         "dispatcher": {
             "regis_crdd": f"CRDD-{suffix}",
             "date_exp_regis": "2030-01-01",
+            "status": "aprovado",
         },
         "address": {
             "contact": "51999999999",

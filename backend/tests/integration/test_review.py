@@ -119,15 +119,17 @@ def test_list_dispatcher_reviews(
     """
     Deve listar avaliações do despachante.
     """
-    user_id = created_dispatcher["user_id"]
+
+    dispatcher_id = created_dispatcher["dispatcher_id"]
 
     response = client.get(
-        f"/api/dispatcher-system/ticket/{user_id}/review",
+        f"/api/dispatcher-system/ticket/{dispatcher_id}/review",
         headers=auth_headers,
     )
     assert response.status_code == 200
 
     body = response.get_json()
+
     assert isinstance(body, list)
     assert len(body) >= 1
 
@@ -141,15 +143,17 @@ def test_get_dispatcher_review_summary(
     """
     Deve retornar resumo das avaliações.
     """
-    user_id = created_dispatcher["user_id"]
+
+    dispatcher_id = created_dispatcher["dispatcher_id"]
 
     response = client.get(
-        f"/api/dispatcher-system/ticket/{user_id}/review/summary",
+        f"/api/dispatcher-system/ticket/{dispatcher_id}/review/summary",
         headers=auth_headers,
     )
     assert response.status_code == 200
 
     body = response.get_json()
+
     assert "average_rating" in body
     assert "total_reviews" in body
 

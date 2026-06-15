@@ -414,17 +414,14 @@ def test_update_review_not_found(
 # ==========================================================
 
 
-@patch("services.review.UserDB")
-def test_get_dispatcher_review_summary_success(
-    user_db_mock,
-    service,
-):
+@patch("services.review.DispatcherDB")
+def test_get_dispatcher_review_summary_success(dispatcher_db_mock, service):
     """Deve retornar resumo das avaliações."""
 
-    user = MagicMock()
-    user.dispatcher.id = 10
+    dispatcher = MagicMock()
+    dispatcher.id = 10
 
-    user_db_mock.query.options.return_value.filter.return_value.first.return_value = user
+    dispatcher_db_mock.query.filter.return_value.first.return_value = dispatcher
 
     service.db.session.query.return_value.join.return_value.filter.return_value.one.return_value = (
         4.5,
@@ -437,14 +434,11 @@ def test_get_dispatcher_review_summary_success(
     assert result.total_reviews == 8
 
 
-@patch("services.review.UserDB")
-def test_get_dispatcher_review_summary_not_found(
-    user_db_mock,
-    service,
-):
+@patch("services.review.DispatcherDB")
+def test_get_dispatcher_review_summary_not_found(dispatcher_db_mock, service):
     """Deve retornar erro para despachante inexistente."""
 
-    user_db_mock.query.options.return_value.filter.return_value.first.return_value = None
+    dispatcher_db_mock.query.filter.return_value.first.return_value = None
 
     with pytest.raises(HTTPException) as exc:
         service.get_dispatcher_review_summary(1)

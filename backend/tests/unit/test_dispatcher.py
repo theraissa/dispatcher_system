@@ -381,42 +381,32 @@ def test_delete_dispatcher_not_found(dispatcher_db_mock, service):
 # ==========================================================
 
 
+# ==========================================================
+# SEARCH
+# ==========================================================
+
+
 @patch("services.dispatcher.PaginatedResponse")
-def test_search_dispatchers_without_filters(paginated_response_mock, service, db, dispatcher):
-    """Deve buscar despachantes sem filtros."""
+def test_search_dispatchers_without_filters(paginated_response_mock, service):
+    """Deve retornar vazio quando não houver filtros."""
 
-    pagination = MagicMock()
-    pagination.items = [dispatcher]
-
-    query = db.session.query.return_value.options.return_value.filter.return_value
-
-    query.distinct.return_value.paginate.return_value = pagination
-
-    paginated_response_mock.__getitem__.return_value.from_pagination.return_value = "resultado"
-
+    empty_response = MagicMock()
+    paginated_response_mock.__getitem__.return_value.return_value = empty_response
     result = service.search_dispatchers()
-
-    assert result == "resultado"
+    assert result == empty_response
 
 
 @patch("services.dispatcher.PaginatedResponse")
 def test_search_dispatchers_with_filters(paginated_response_mock, service, db, dispatcher):
     """Deve buscar despachantes utilizando filtros."""
 
-    filters = MagicMock()
-    filters.name = "João"
-    filters.city = None
-    filters.service_name = None
-
     pagination = MagicMock()
     pagination.items = [dispatcher]
 
-    query = db.session.query.return_value.options.return_value.filter.return_value
-
-    query.join.return_value.filter.return_value.distinct.return_value.paginate.return_value = pagination
+    query = db.session.query.return_value.options.return_value.filter.return_value.filter.return_value.filter.return_value
+    query.distinct.return_value.paginate.return_value = pagination
 
     paginated_response_mock.__getitem__.return_value.from_pagination.return_value = "resultado"
 
-    result = service.search_dispatchers(filters)
-
+    result = service.search_dispatchers("João")
     assert result == "resultado"
