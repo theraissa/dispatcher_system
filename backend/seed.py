@@ -61,6 +61,16 @@ def seed():
         role="despachante",
     )
 
+    user4 = UserDB(
+        name="Cliente Teste",
+        cpf="662.388.620-68",
+        date_birth="2000-07-04",
+        contact="55999999999",
+        email="cliente@teste.com",
+        password=new_password,
+        role="cliente",
+    )
+
     admin = UserDB(
         name="Administrador",
         cpf="464.021.470-79",
@@ -108,7 +118,18 @@ def seed():
         state="RS",
     )
 
-    db.session.add_all([address1, address2, address3])
+    address4 = AddressDB(
+        user_id=user4.id,
+        contact="55888888888",
+        address="Endereço Teste",
+        number=123,
+        neighborhood="Bairro Teste",
+        zip_code="95630000",
+        city="Porto Alegre",
+        state="RS",
+    )
+
+    db.session.add_all([address1, address2, address3, address4])
     db.session.flush()
 
     # =========================
