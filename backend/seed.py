@@ -12,6 +12,7 @@ from database.tables import (
     ServiceDetailsDB,
     UserDB,
 )
+from models.auth import DispatcherStatusEnum
 
 
 def seed():
@@ -29,7 +30,7 @@ def seed():
 
     user1 = UserDB(
         name="Pedro Henrique",
-        cpf="761.581.840-04",
+        cpf="111.111.111-11",
         date_birth="2005-03-18",
         contact="55999999999",
         email="pedro@gmail.com",
@@ -41,7 +42,7 @@ def seed():
 
     user2 = UserDB(
         name="Maria Souza",
-        cpf="425.055.810-02",
+        cpf="222.222.222-22",
         date_birth="1998-07-10",
         contact="55888888888",
         email="maria@gmail.com",
@@ -52,34 +53,86 @@ def seed():
     )
 
     user3 = UserDB(
-        name="Despachante Teste",
-        cpf="248.805.980-38",
+        name="Despachante Gabriel Teste",
+        cpf="333.333.333-33",
         date_birth="1990-07-04",
         contact="55999999999",
-        email="despachante@teste.com",
+        email="despachante-gabriel@teste.com",
         password=new_password,
         role="despachante",
     )
 
     user4 = UserDB(
-        name="Cliente Teste",
-        cpf="662.388.620-68",
+        name="Despachante Fabio Teste",
+        cpf="888.888.888-88",
+        date_birth="1990-07-04",
+        contact="55999999999",
+        email="despachante-fabio@teste.com",
+        password=new_password,
+        role="despachante",
+    )
+
+    # Usuários - Cliente
+
+    user5 = UserDB(
+        name="Cliente Gabriel Teste",
+        cpf="444.444.444-44",
         date_birth="2000-07-04",
         contact="55999999999",
-        email="cliente@teste.com",
+        email="cliente-gabriel@teste.com",
         password=new_password,
         role="cliente",
     )
 
+    user6 = UserDB(
+        name="Cliente Fabio Teste",
+        cpf="777.777.777-77",
+        date_birth="2000-07-04",
+        contact="55999999999",
+        email="cliente-fabio@teste.com",
+        password=new_password,
+        role="cliente",
+    )
+
+    # Usuários - Administrador
+
     admin = UserDB(
         name="Administrador",
-        cpf="464.021.470-79",
+        cpf="000.000.000-00",
         email="admin@teste.com",
         password=new_password,
         role="admin",
     )
 
-    db.session.add_all([user1, user2, user3, admin])
+    admin1 = UserDB(
+        name="Administrador Gabriel Teste",
+        cpf="555.555.555-55",
+        email="admin-gabriel@teste.com",
+        password=new_password,
+        role="admin",
+    )
+
+    admin2 = UserDB(
+        name="Administrador Fabio Teste",
+        cpf="666.666.666-66",
+        email="admin-fabio@teste.com",
+        password=new_password,
+        role="admin",
+    )
+
+    db.session.add_all(
+        [
+            user1,
+            user2,
+            user3,
+            user4,
+            user5,
+            user6,
+            admin,
+            admin1,
+            admin2,
+        ]
+    )
     db.session.flush()
 
     # =========================
@@ -129,7 +182,38 @@ def seed():
         state="RS",
     )
 
-    db.session.add_all([address1, address2, address3, address4])
+    address5 = AddressDB(
+        user_id=user5.id,
+        contact="55888888888",
+        address="Endereço Teste",
+        number=123,
+        neighborhood="Bairro Teste",
+        zip_code="95630000",
+        city="Parobé",
+        state="RS",
+    )
+
+    address6 = AddressDB(
+        user_id=user6.id,
+        contact="55888888888",
+        address="Endereço Teste",
+        number=123,
+        neighborhood="Bairro Teste",
+        zip_code="95630000",
+        city="Rolante",
+        state="RS",
+    )
+
+    db.session.add_all(
+        [
+            address1,
+            address2,
+            address3,
+            address4,
+            address5,
+            address6,
+        ]
+    )
     db.session.flush()
 
     # =========================
@@ -151,9 +235,24 @@ def seed():
         user_id=user3.id,
         regis_crdd="CRDD789",
         date_exp_regis=datetime(2040, 4, 15),
+        status=DispatcherStatusEnum.APROVADO,
     )
 
-    db.session.add_all([dispatcher1, dispatcher2, dispatcher3])
+    dispatcher4 = DispatcherDB(
+        user_id=user4.id,
+        regis_crdd="CRDD234",
+        date_exp_regis=datetime(2040, 2, 1),
+        status=DispatcherStatusEnum.APROVADO,
+    )
+
+    db.session.add_all(
+        [
+            dispatcher1,
+            dispatcher2,
+            dispatcher3,
+            dispatcher4,
+        ]
+    )
     db.session.flush()
 
     # =========================
@@ -203,6 +302,16 @@ def seed():
             service_id=services[1].id,
             dispatcher_id=dispatcher3.id,
             price=250.00,
+        ),
+        ServiceDetailsDB(
+            service_id=services[1].id,
+            dispatcher_id=dispatcher4.id,
+            price=100.00,
+        ),
+        ServiceDetailsDB(
+            service_id=services[2].id,
+            dispatcher_id=dispatcher4.id,
+            price=300.00,
         ),
     ]
 
