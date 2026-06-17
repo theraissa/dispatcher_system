@@ -35,7 +35,7 @@ jobs:
             git pull origin master
 
             echo "==> Sincronizando dependências Python"
-            ${{ secrets.VPS_PROJECT_PATH }}/venv/bin/pip install -r requirements.txt
+            ${{ secrets.VPS_PROJECT_PATH }}venv/bin/pip install -r requirements.txt
 
             echo "==> Reiniciando o serviço Gunicorn"
             sudo systemctl restart dispatcher.service
