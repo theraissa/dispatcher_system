@@ -16,7 +16,6 @@ from routes.dispatcher import register_dispatcher_routes
 from routes.management import register_admin_routes
 from routes.ticket import register_ticket_routes
 from routes.user import register_users_routes
-from seed import seed
 from services.associate_service_details import AssociateServiceDetailsDispatcherService
 from services.auth import AuthService
 from services.dispatcher import DispatcherService
@@ -51,7 +50,6 @@ def create_app():
     # ========= Migrações ==========
     with app.app_context():
         upgrade()
-        seed()
 
     # ========= Serviços ==========
     admin_service = AdminService(db)
