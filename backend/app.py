@@ -1,7 +1,9 @@
 """Módulo principal do backend"""
 
 import os
+from datetime import datetime
 
+from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, Response, jsonify, request, send_from_directory
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, get_jwt_identity, jwt_required
@@ -11,7 +13,8 @@ from werkzeug.exceptions import HTTPException
 from admin.management import AdminService
 from admin.service_catalog import ServiceCatalogService
 from database import db, migrate
-from models.auth import LoginUserRequest
+from database.tables import DispatcherDB
+from models.auth import DispatcherStatusEnum, LoginUserRequest
 from routes.dispatcher import register_dispatcher_routes
 from routes.management import register_admin_routes
 from routes.ticket import register_ticket_routes
@@ -144,6 +147,44 @@ def create_app():
     def uploaded_files(filename):
         """Serve imagens de perfil dos usuários."""
         return send_from_directory("uploads/profile", filename)
+
+    # ========= Job ==========
+
+    def verify_expired_dispatchers():
+        """
+        Verifica diariamente se o registro CRDD do despachante de trânsito
+        não está expirado, se sim, o seu cadastro dá como pendente novamente.
+        """
+
+        with app.app_context():
+            now = datetime.now()
+
+            dispatchers = DispatcherDB.query.filter(
+                DispatcherDB.deleted_at.is_(None),
+                DispatcherDB.date_exp_regis < now,
+                DispatcherDB.status != DispatcherStatusEnum.PENDENTE,
+            ).all()
+
+            for dispatcher in dispatchers:
+                dispatcher.status = DispatcherStatusEnum.PENDENTE
+
+            if dispatchers:
+                db.session.commit()
+
+            return len(dispatchers)
+
+    scheduler = BackgroundScheduler()
+
+    scheduler.add_job(
+        func=verify_expired_dispatchers,
+        trigger="cron",
+        hour=0,
+        minute=0,
+        id="verify_expired_dispatchers",
+        replace_existing=True,
+    )
+
+    scheduler.start()
 
     return app
 
